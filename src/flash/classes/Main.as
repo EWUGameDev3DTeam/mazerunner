@@ -97,8 +97,6 @@
 				this._view.camera.rotationZ -= 3;
 			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 				this._view.camera.rotationZ += 3;
-			if (KeyboardManager.instance.isKeyDown(KeyCode.F))
-				trace(this.mouseX);
 			_view.render();
 		}
 		
