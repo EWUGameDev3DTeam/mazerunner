@@ -22,6 +22,8 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
+	import com.jakobwilson.Model3D;
+	
 	/**
 	 * drive class for Operation Silent Badger
 	 *
@@ -44,6 +46,9 @@
 		private var _floor		:Mesh;
 		/** the fps camera controller */
 		private var _fpc		:FirstPersonController;
+		/** the wall model */
+		private var _wall:Model3D;
+		
 		/* -------------------------------------------------------------------------------------------------------- */
 		
 		private var _fullscreen	:Boolean;
@@ -126,11 +131,11 @@
 			this.addChild(_textField);
 			
 			
-			this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
-			this._view.scene.addChild(this._cube);
-			this._cube.x = 0;
-			this._cube.y = 0;
-			this._cube.z = 0;
+			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
+			//this._view.scene.addChild(this._cube);
+			//this._cube.x = 0;
+			//this._cube.y = 0;
+			//this._cube.z = 0;
 			
 			this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
 			this._greenCube.x = 200;
@@ -145,9 +150,15 @@
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
 			
+			
+			//Model loading
+			this._wall = new Model3D;
+			this._wall.modelReadySignal.add(this.initWall);
+			this._wall.load("Models/Wall/WallSegment.awd");
+			
 			this._view.camera.z = 0;
 			this._view.camera.y = 1000;
-			this._view.camera.z = 0;
+			this._view.camera.z = 50;
 			this._view.camera.lookAt(new Vector3D());
 			
 			//_view.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
@@ -157,6 +168,16 @@
 			_fpc.minTiltAngle = 0;
 		}
 		
+		/* ---------------------------------------------------------------------------------------- */
+		/**
+		*	adds the wall to the game
+		*/
+		public function initWall()
+		{
+			this._wall.model.scale(20);
+			this._wall.model.z = -50;
+			this._view.scene.addChild(_wall.model);
+		}
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
