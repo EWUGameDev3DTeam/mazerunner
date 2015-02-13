@@ -49,10 +49,9 @@
 		/**
 		*	Starts starts loading model and it's texture
 		*/
-		public function load(meshPath:String, texturePath:String )
+		public function load(meshPath:String )
 		{
 			this._modelPath = meshPath;
-			this._texturePath = texturePath;
 			this.loadModel();
 		}
 		
@@ -73,18 +72,23 @@
 		/* -------------------------------------------------------------------------------------------------------- */
 		
 		/**
-		*	Checks if a the correct texture was applied, if so, it will load the user defined texture 
+		*	reloads the textures and applies them with a new material since the loader always fails to load textures
+		* 	of you are going to export from away builder, uncheck "embed textures" to save space and place 
+		*	textures in /textures as this is where the .awd expects them to be. 
 		*/
 		private function onModelComplete(ev : AssetEvent) : void
 		{
 			if (ev.asset.assetType == AssetType.MESH) 
 				{
 					_model = Mesh(ev.asset);
-					//_model.scale(100);
-					trace(TextureMaterial(_model.material).name);
-					trace(TextureMaterial(_model.material).texture.originalName);
+					
+					//trace("Normal: " + TextureMaterial(_model.material).specularMap.originalName);
+					
+					if(TextureMaterial(_model.material).texture != null)
+						_texturePath = TextureMaterial(_model.material).texture.originalName;
 					
 					loadTexture()
+
 					if (_model.material == null)
 						_model.material = new ColorMaterial(Math.random() * 0xffffff);
 				}
@@ -96,7 +100,7 @@
 		*/
 		private function loadTexture()
 		{
-			_textureLoader = new Loader()
+			_textureLoader = new Loader();
 			_textureLoader.load(new URLRequest(this._texturePath));
 			_textureLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onTextureComplete);
 		}
@@ -109,7 +113,8 @@
 			
 			var bmp:Bitmap = _textureLoader.content as Bitmap;
 			this._texture = new BitmapTexture(bmp.bitmapData);
-			_model.material = new TextureMaterial(new BitmapTexture(bmp.bitmapData));
+			//_model.material = new TextureMaterial(new BitmapTexture(bmp.bitmapData));
+			TextureMaterial(_model.material).texture = new BitmapTexture(bmp.bitmapData);
 			modelReadySignal.dispatch();
 			this._textureLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onTextureComplete);
 			this._modelLoader.removeEventListener(AssetEvent.ASSET_COMPLETE, onModelComplete);
