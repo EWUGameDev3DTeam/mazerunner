@@ -47,7 +47,7 @@
 		/** the fps camera controller */
 		private var _fpc		:FirstPersonController;
 		/** the wall model */
-		private var _wall:Model3D;
+		private var _model:Model3D;
 		
 		/* -------------------------------------------------------------------------------------------------------- */
 		
@@ -172,11 +172,14 @@
 		/**
 		*	adds the wall to the game
 		*/
-		public function initWall()
+		public function initWall(assetType:int, asset:Object)
 		{
-			this._wall.model.scale(20);
-			this._wall.model.z = -50;
-			this._view.scene.addChild(_wall.model);
+			if(assetType == Model3D.MESH)
+			{
+				Mesh(asset).scale(20);
+				Mesh(asset).z = -50;
+				this._view.scene.addChild(Mesh(asset));
+			}
 		}
 		/* ---------------------------------------------------------------------------------------- */
 		
