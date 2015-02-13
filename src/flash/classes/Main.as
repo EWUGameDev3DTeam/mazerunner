@@ -152,13 +152,13 @@
 			
 			
 			//Model loading
-			this._wall = new Model3D;
-			this._wall.modelReadySignal.add(this.initWall);
-			this._wall.load("Models/Wall/WallSegment.awd");
+			this._model = new Model3D;
+			this._model.modelReadySignal.add(this.initWall);
+			this._model.load("Models/Wall/WallSegment.awd");
 			
 			this._view.camera.z = 0;
 			this._view.camera.y = 1000;
-			this._view.camera.z = 50;
+			this._view.camera.z = 250;
 			this._view.camera.lookAt(new Vector3D());
 			
 			//_view.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
@@ -176,9 +176,34 @@
 		{
 			if(assetType == Model3D.MESH)
 			{
-				Mesh(asset).scale(20);
-				Mesh(asset).z = -50;
-				this._view.scene.addChild(Mesh(asset));
+				var base:Mesh = Mesh(asset);
+				var copy:Mesh;
+				for(var i:int = 0; i < 11;i++)
+				{
+					for(var j:int = 0;j<11;j++)
+					{
+						if((Math.random()<0.5 || i==0 || i==10 || j==0) && j != 10)
+						{
+							copy =Mesh(base.clone());
+							copy.scale(20);
+							copy.x = i*320;
+							copy.y = j*320;
+							copy.z = -50;
+							this._view.scene.addChild(copy);
+						}
+						
+						if((Math.random()<0.5 || i==0 || j==10 || j==0) && i != 10)
+						{
+							copy =Mesh(base.clone());
+							copy.scale(20);
+							copy.roll(90);
+							copy.x = i*320 + 160;
+							copy.y = j*320 - 160;
+							copy.z = -50.001; 	//the extra .001 gets rid of any overlapping faces
+							this._view.scene.addChild(copy);	
+						}
+					}
+				}
 			}
 		}
 		/* ---------------------------------------------------------------------------------------- */
