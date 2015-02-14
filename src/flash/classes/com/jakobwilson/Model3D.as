@@ -78,21 +78,20 @@
 		*/
 		private function onModelComplete(ev : AssetEvent) : void
 		{
-			if (ev.asset.assetType == AssetType.MESH) 
-				{
-					_model = Mesh(ev.asset);
+			if (ev.asset.assetType == AssetType.MESH)
+			{
+				_model = Mesh(ev.asset);
+				
+				//trace("Normal: " + TextureMaterial(_model.material).specularMap.originalName);
+				
+				if (TextureMaterial(_model.material).texture != null)
+					_texturePath = TextureMaterial(_model.material).texture.originalName;
 					
-					//trace("Normal: " + TextureMaterial(_model.material).specularMap.originalName);
-					
-					if(TextureMaterial(_model.material).texture != null)
-						_texturePath = TextureMaterial(_model.material).texture.originalName;
-					
-					loadTexture()
-
-					if (_model.material == null)
-						_model.material = new ColorMaterial(Math.random() * 0xffffff);
-				}
-				//@NOTE could I add something like: if (ev.asset.assetType == AssetType.TEXTURE) to handle failed texture load?
+				loadTexture();
+				if (_model.material == null)
+					_model.material = new ColorMaterial(Math.random() * 0xffffff);
+			}
+			//@NOTE could I add something like: if (ev.asset.assetType == AssetType.TEXTURE) to handle failed texture load?
 		}
 		
 		/**
@@ -110,7 +109,6 @@
 		*/
 		private function onTextureComplete(evt:Event)
 		{
-			
 			var bmp:Bitmap = _textureLoader.content as Bitmap;
 			this._texture = new BitmapTexture(bmp.bitmapData);
 			//_model.material = new TextureMaterial(new BitmapTexture(bmp.bitmapData));

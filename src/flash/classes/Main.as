@@ -1,4 +1,4 @@
-﻿package
+﻿package 
 {
 	import away3d.controllers.FirstPersonController;
 	import away3d.controllers.HoverController;
@@ -130,7 +130,6 @@
 			this.addChild(_view);
 			this.addChild(_textField);
 			
-			
 			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
 			//this._view.scene.addChild(this._cube);
 			//this._cube.x = 0;
@@ -152,7 +151,7 @@
 			
 			
 			//Model loading
-			this._wall = new Model3D;
+			this._wall = new Model3D();
 			this._wall.modelReadySignal.add(this.initWall);
 			this._wall.load("Models/Wall/WallSegment.awd");
 			
@@ -160,8 +159,6 @@
 			this._view.camera.y = 1000;
 			this._view.camera.z = 50;
 			this._view.camera.lookAt(new Vector3D());
-			
-			//_view.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			
 			this._fpc = new FirstPersonController(this._view.camera);
 			_fpc.maxTiltAngle = 180;
@@ -174,6 +171,7 @@
 		*/
 		public function initWall()
 		{
+			trace("here");
 			this._wall.model.scale(20);
 			this._wall.model.z = -50;
 			this._view.scene.addChild(_wall.model);
