@@ -22,7 +22,12 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import com.jakobwilson.Model3D;
+	
+	import com.jakobwilson.AssetBuilder;
+	//physics
+	import awayphysics.collision.shapes.AWPBoxShape;
+	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.dynamics.AWPRigidBody;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -38,16 +43,14 @@
 		
 		/** view object that holds the scene and camera */
 		private var _view		:View3D;
-		/** a cube mesh model */
-		private var _cube		:Mesh;
 		/** a green cube model */
 		private var	_greenCube	:Mesh;
 		/** a plane mesh model */
 		private var _floor		:Mesh;
 		/** the fps camera controller */
-		private var _fpc		:FirstPersonController;
-		/** the wall model */
-		private var _model:Model3D;
+		private var _fpc		:FirstPersonController;;
+		/* The physics world */
+		private var _world:AWPDynamicsWorld;
 		
 		/* -------------------------------------------------------------------------------------------------------- */
 		
@@ -127,35 +130,53 @@
 			
 			this._view = new View3D();
 			
+			//Set up the physics world
+			this._world = AWPDynamicsWorld.getInstance();
+			this._world.initWithDbvtBroadphase();
+			this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
+
+			
 			this.addChild(_view);
 			this.addChild(_textField);
 			
 			
-			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
-			//this._view.scene.addChild(this._cube);
-			//this._cube.x = 0;
-			//this._cube.y = 0;
-			//this._cube.z = 0;
-			
+						
 			this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
 			this._greenCube.x = 200;
 			this._greenCube.y = 300;
-			this._greenCube.z = 50;
+			this._greenCube.z = 10000;
 			this._view.scene.addChild(this._greenCube);
+			
+			//ugly Cube hysics
+			var cubeShape:AWPBoxShape=new AWPBoxShape(100,100,100);
+			var cubeRigidBody:AWPRigidBody=new AWPRigidBody(cubeShape,this._greenCube,1);
+			_world.addRigidBody(cubeRigidBody);
+			cubeRigidBody.friction=1;
+			cubeRigidBody.position=new Vector3D(this._greenCube.x,this._greenCube.y,this._greenCube.z);
+			cubeRigidBody.applyTorque(new Vector3D(0, 1, 1));
+			//end ugly physics			
+			
 			
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
 			this._view.scene.addChild(this._floor);
+			//Ugly Floor Physics
+			var floorCol:AWPBoxShape=new AWPBoxShape(10000,10000,1);
+			var floorRigidBody:AWPRigidBody=new AWPRigidBody(floorCol,_floor,0);
+			_world.addRigidBody(floorRigidBody);
+			floorRigidBody.friction=1;
+			floorRigidBody.position=new Vector3D(0,0,-50);
+			// end ugly physics		
 			this._floor.x = 0;
 			this._floor.y = 0;
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
 			
+			//Make a wall
+			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
+			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
+			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.DYNAMIC);	//load the wall with a box collider and Dynamic physics			
 			
-			//Model loading
-			this._model = new Model3D;
-			this._model.modelReadySignal.add(this.initWall);
-			this._model.load("Models/Wall/WallSegment.awd");
-			
+			//Camera setup
 			this._view.camera.z = 0;
 			this._view.camera.y = 1000;
 			this._view.camera.z = 250;
@@ -163,6 +184,7 @@
 			
 			//_view.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			
+	
 			this._fpc = new FirstPersonController(this._view.camera);
 			_fpc.maxTiltAngle = 180;
 			_fpc.minTiltAngle = 0;
@@ -170,40 +192,31 @@
 		
 		/* ---------------------------------------------------------------------------------------- */
 		/**
-		*	adds the wall to the game
+		*	adds the walls to the game
 		*/
 		public function initWall(assetType:int, asset:Object)
 		{
-			if(assetType == Model3D.MESH)
+			if(assetType == AssetBuilder.MESH)
 			{
-				var base:Mesh = Mesh(asset);
-				var copy:Mesh;
-				for(var i:int = 0; i < 11;i++)
-				{
-					for(var j:int = 0;j<11;j++)
-					{
-						if((Math.random()<0.5 || i==0 || i==10 || j==0) && j != 10)
-						{
-							copy =Mesh(base.clone());
-							copy.scale(20);
-							copy.x = i*320;
-							copy.y = j*320;
-							copy.z = -50;
-							this._view.scene.addChild(copy);
-						}
-						
-						if((Math.random()<0.5 || i==0 || j==10 || j==0) && i != 10)
-						{
-							copy =Mesh(base.clone());
-							copy.scale(20);
-							copy.roll(90);
-							copy.x = i*320 + 160;
-							copy.y = j*320 - 160;
-							copy.z = -50.001; 	//the extra .001 gets rid of any overlapping faces
-							this._view.scene.addChild(copy);	
-						}
-					}
-				}
+				Mesh(asset).scale(50);
+				this._view.scene.addChild(Mesh(asset));
+				trace("Added non physics object");
+			}
+			if(assetType == AssetBuilder.RIGIDBODY)
+			{
+				
+				//apply some scaling, move the wall up and rotate it a little to see the physics
+				AWPRigidBody(asset).scale = new Vector3D(50,50,50);
+				AWPRigidBody(asset).position = new Vector3D(0,0,400);
+				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
+				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
+				
+				//Add the rigidbody to the physics world
+				this._world.addRigidBody(AWPRigidBody(asset));
+				trace("Added physics object");
+				
+				//add the mesh to the view scene using rigidbody.skin
+				this._view.scene.addChild(AWPRigidBody(asset).skin);
 			}
 		}
 		/* ---------------------------------------------------------------------------------------- */
@@ -240,6 +253,7 @@
 				this._view.camera.x += 10 * Math.cos((this._view.camera.rotationZ * Math.PI) / 180);
 			}
 			
+			_world.step(1/30, 1, 1/30);
 			_view.render();
 		}
 		
