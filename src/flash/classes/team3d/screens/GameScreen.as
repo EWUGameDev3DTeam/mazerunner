@@ -6,6 +6,10 @@ package team3d.screens
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.PlaneGeometry;
+	import awayphysics.collision.shapes.AWPBoxShape;
+	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.dynamics.AWPRigidBody;
+	import com.jakobwilson.AssetBuilder;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Sprite;
@@ -40,6 +44,8 @@ package team3d.screens
 		private var _fullscreen	:Boolean;
 		
 		private var _player		:HumanPlayer;
+		/* The physics world */
+		private var _world		:AWPDynamicsWorld;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -68,11 +74,10 @@ package team3d.screens
 		{
 			this.addChild(_view);
 			
-			this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
-			this._view.scene.addChild(this._cube);
-			this._cube.x = 0;
-			this._cube.y = 0;
-			this._cube.z = 0;
+			//Set up the physics world
+			this._world = AWPDynamicsWorld.getInstance();
+			this._world.initWithDbvtBroadphase();
+			this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
 			
 			this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
 			this._greenCube.x = 200;
@@ -80,12 +85,34 @@ package team3d.screens
 			this._greenCube.z = 50;
 			this._view.scene.addChild(this._greenCube);
 			
+			//ugly Cube hysics
+			var cubeShape:AWPBoxShape = new AWPBoxShape(100,100,100);
+			var cubeRigidBody:AWPRigidBody = new AWPRigidBody(cubeShape,this._greenCube,1);
+			_world.addRigidBody(cubeRigidBody);
+			cubeRigidBody.friction = 1;
+			cubeRigidBody.position = new Vector3D(this._greenCube.x,this._greenCube.y,this._greenCube.z);
+			cubeRigidBody.applyTorque(new Vector3D(0, 1, 1));
+			//end ugly physics			
+			
+			
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
 			this._view.scene.addChild(this._floor);
+			//Ugly Floor Physics
+			var floorCol:AWPBoxShape = new AWPBoxShape(10000,10000,1);
+			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol,_floor,0);
+			_world.addRigidBody(floorRigidBody);
+			floorRigidBody.friction = 1;
+			floorRigidBody.position = new Vector3D(0,0,-50);
+			// end ugly physics		
 			this._floor.x = 0;
 			this._floor.y = 0;
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
+			
+			//Make a wall
+			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
+			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
+			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 30;
@@ -111,6 +138,13 @@ package team3d.screens
 			// player shit
 			// basic player model
 			var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
+			var pShape:AWPBoxShape = new AWPBoxShape(100,100,100);
+			var pRigidBody:AWPRigidBody = new AWPRigidBody(pShape, p, 1);
+			_world.addRigidBody(cubeRigidBody);
+			pRigidBody.friction = 1;
+			pRigidBody.position = new Vector3D(p.x, p.y, p.z);
+			pRigidBody.applyTorque(new Vector3D(0, 1, 1));
+			
 			// add the model to the scene
 			_view.scene.addChild(p);
 			// create a new player and give it the camera and the model
@@ -130,6 +164,40 @@ package team3d.screens
 		{
 			_view.width = World.instance.stage.stageWidth;
 			_view.height = World.instance.stage.stageHeight;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		/**
+		*	adds the walls to the game
+		*/
+		public function initWall(assetType:int, asset:Object)
+		{
+			if(assetType == AssetBuilder.MESH)
+			{
+				Mesh(asset).scale(50);
+				this._view.scene.addChild(Mesh(asset));
+				trace("Added non physics object");
+			}
+			if(assetType == AssetBuilder.RIGIDBODY)
+			{
+				
+				//apply some scaling, move the wall up and rotate it a little to see the physics
+				AWPRigidBody(asset).scale = new Vector3D(50,50,50);
+				//AWPRigidBody(asset).position = new Vector3D(0,0,-50);
+				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
+				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
+				
+				
+				var cpy:AWPRigidBody;
+				for(var i:int = 0;i < 10;i++)
+				{
+					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
+					cpy.position = new Vector3D(i*260, 0, 0);
+					this._view.scene.addChild(cpy.skin);
+					this._world.addRigidBody(cpy);
+				}
+				
+			}
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -161,6 +229,7 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
+			_world.step(1/30, 1, 1/30);
 			_view.render();
 		}
 		
