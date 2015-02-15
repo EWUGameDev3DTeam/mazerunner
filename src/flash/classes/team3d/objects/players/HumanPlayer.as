@@ -9,6 +9,7 @@ package team3d.objects.players
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import team3d.bases.BasePlayer;
+	import team3d.controllers.FlyController;
 	import team3d.controllers.HumanController;
 	import team3d.interfaces.IController;
 	
@@ -32,7 +33,10 @@ package team3d.objects.players
 			_cam = $cam;
 			_model = $model;
 			_fpc = new FirstPersonController(_cam, 0, 90, 0, 180, 0, true);
-			_controller = new HumanController(_model, _cam, _fpc);
+			//_fpc.fly = true;
+			//_controller = new HumanController(_model, _cam, _fpc);
+			_cam.z = 100;
+			_controller = new FlyController(_cam, _fpc);
 		}
 		
 		/**

@@ -13,7 +13,7 @@ package team3d.bases
 	 */
 	public class BaseController implements IController
 	{
-		
+		public static const TORADS		:Number = Math.PI / 180.0;
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -22,6 +22,26 @@ package team3d.bases
 		public function BaseController()
 		{	
 			
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * 
+		 */
+		public function Begin():void
+		{
+			// do nothing
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * 
+		 */
+		public function End():void
+		{
+			// do nothing
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

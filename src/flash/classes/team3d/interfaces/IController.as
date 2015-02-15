@@ -9,6 +9,8 @@ package team3d.interfaces
 	 */
 	public interface IController
 	{
+		function Begin():void;
+		function End():void;
 		function Move($speed:Number):void;
 		//function MoveCamera($dx:Number, $dy:Number):void;
 	}

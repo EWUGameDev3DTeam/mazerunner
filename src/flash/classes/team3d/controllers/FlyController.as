@@ -18,15 +18,13 @@ package team3d.controllers
 	 * ...
 	 * @author Dan Watt
 	 */
-	public class HumanController extends BaseController
+	public class FlyController extends BaseController
 	{
 		private var _fpc	:FirstPersonController;
-		private var _model	:Mesh;
 		private var _cam	:Camera3D;
 		
-		public function HumanController($model:Mesh, $cam:Camera3D, $fpc:FirstPersonController)
+		public function FlyController($cam:Camera3D, $fpc:FirstPersonController)
 		{
-			_model = $model;
 			_cam = $cam;
 			_fpc = $fpc;
 		}
@@ -60,39 +58,39 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
-			var zrot:Number = _model.rotationZ * BaseController.TORADS;
+			var zrots:Number = _cam.rotationZ * BaseController.TORADS;
+			var yrots:Number = _cam.rotationY * BaseController.TORADS;
+			var xrots:Number = _cam.rotationX * BaseController.TORADS;
 			// move forward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
 			{
 				//trace("moving forward");
-				_model.x += $speed * Math.sin(zrot);
-				_model.y -= $speed * Math.cos(zrot);
+				_cam.x += $speed * Math.sin(zrots);
+				_cam.y -= $speed * Math.cos(zrots);
+				_cam.z += $speed * Math.cos(_fpc.tiltAngle * BaseController.TORADS);
 			}
 			
 			// move backward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				//trace("moving backward");
-				_model.x -= $speed * Math.sin(zrot);
-				_model.y += $speed * Math.cos(zrot);
+				_cam.x -= $speed * Math.sin(zrots);
+				_cam.y += $speed * Math.cos(zrots);
+				_cam.z -= $speed * Math.cos(_fpc.tiltAngle * BaseController.TORADS);
 			}
 			
 			// strafe left
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
 			{
-				_model.y -= $speed * Math.sin(zrot);
-				_model.x -= $speed * Math.cos(zrot);
+				_cam.y -= $speed * Math.sin(zrots);
+				_cam.x -= $speed * Math.cos(zrots);
 			}
 			// strafe right
 			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
-				_model.y += $speed * Math.sin(zrot);
-				_model.x += $speed * Math.cos(zrot);
+				_cam.y += $speed * Math.sin(zrots);
+				_cam.x += $speed * Math.cos(zrots);
 			}
-			
-			_cam.x = _model.x;
-			_cam.y = _model.y;
-			_cam.z = _model.z;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -109,8 +107,7 @@ package team3d.controllers
 			// move the camera up or down
 			_fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
-			_model.rotationZ += $e.movementX * 0.1;
-			_cam.rotationZ = _model.rotationZ;
+			_cam.rotationZ += $e.movementX * 0.1;
 		}
 	}
 }
