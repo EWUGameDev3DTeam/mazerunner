@@ -1,4 +1,4 @@
-package away3d.loaders.parsers
+﻿package away3d.loaders.parsers
 {
 	import away3d.*;
 	import away3d.animators.*;
