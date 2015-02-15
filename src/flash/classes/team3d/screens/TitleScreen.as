@@ -71,7 +71,7 @@ package team3d.screens
 		 */
 		public function Show():void
 		{
-			this.visible = true;
+			
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		

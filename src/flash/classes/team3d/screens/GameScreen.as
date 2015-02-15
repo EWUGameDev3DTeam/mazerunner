@@ -15,6 +15,7 @@ package team3d.screens
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import team3d.objects.players.HumanPlayer;
 	import team3d.utils.World;
 
 	
@@ -35,10 +36,10 @@ package team3d.screens
 		private var	_greenCube	:Mesh;
 		/** a plane mesh model */
 		private var _floor		:Mesh;
-		/** the fps camera controller */
-		private var _fpc		:FirstPersonController;
 		
 		private var _fullscreen	:Boolean;
+		
+		private var _player		:HumanPlayer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -67,11 +68,11 @@ package team3d.screens
 		{
 			this.addChild(_view);
 			
-			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
-			//this._view.scene.addChild(this._cube);
-			//this._cube.x = 0;
-			//this._cube.y = 0;
-			//this._cube.z = 0;
+			this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF0000));
+			this._view.scene.addChild(this._cube);
+			this._cube.x = 0;
+			this._cube.y = 0;
+			this._cube.z = 0;
 			
 			this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
 			this._greenCube.x = 200;
@@ -85,15 +86,6 @@ package team3d.screens
 			this._floor.y = 0;
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
-			
-			this._view.camera.z = 0;
-			this._view.camera.y = 1000;
-			this._view.camera.z = 50;
-			this._view.camera.lookAt(new Vector3D());
-			
-			this._fpc = new FirstPersonController(this._view.camera);
-			_fpc.maxTiltAngle = 180;
-			_fpc.minTiltAngle = 0;
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 30;
@@ -115,6 +107,16 @@ package team3d.screens
 			tf.x = tf.y = 125;
 			tf.text = "This is in the game screen";
 			this.addChild(tf);
+			
+			// player shit
+			// basic player model
+			var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
+			// add the model to the scene
+			_view.scene.addChild(p);
+			// create a new player and give it the camera and the model
+			_player = new HumanPlayer(_view.camera, p);
+			// start the player, this also starts the HumanController associated with it
+			_player.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -143,14 +145,12 @@ package team3d.screens
 			{
 				trace("going full screen");
 				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-				//World.instance.stage.mouseLock = true;
-				//World.instance.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+				World.instance.stage.mouseLock = true;
 			}
 			else
 			{
 				trace("leaving full screen");
 				World.instance.stage.displayState = StageDisplayState.NORMAL;
-				//World.instance.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			}
 		}
 		
@@ -161,33 +161,6 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
-			// move forward
-			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
-			{
-				this._view.camera.x += 10 * Math.sin((this._view.camera.rotationZ * Math.PI) / 180);
-				this._view.camera.y -= 10 * Math.cos((this._view.camera.rotationZ * Math.PI) / 180);
-			}
-			
-			// move backward
-			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
-			{
-				this._view.camera.x -= 10 * Math.sin((this._view.camera.rotationZ * Math.PI) / 180);
-				this._view.camera.y += 10 * Math.cos((this._view.camera.rotationZ * Math.PI) / 180);
-			}
-			
-			// strafe left
-			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
-			{
-				this._view.camera.y -= 10 * Math.sin((this._view.camera.rotationZ * Math.PI) / 180);
-				this._view.camera.x -= 10 * Math.cos((this._view.camera.rotationZ * Math.PI) / 180);
-			}
-			// strafe right
-			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
-			{
-				this._view.camera.y += 10 * Math.sin((this._view.camera.rotationZ * Math.PI) / 180);
-				this._view.camera.x += 10 * Math.cos((this._view.camera.rotationZ * Math.PI) / 180);
-			}
-			
 			_view.render();
 		}
 		

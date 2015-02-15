@@ -54,8 +54,8 @@
 			_titleScreen = new TitleScreen();
 			_gameScreen = new GameScreen();
 			
-			this.addChild(_titleScreen);
 			this.addChild(_gameScreen);
+			this.addChild(_titleScreen);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -109,11 +109,6 @@
 			if (World.instance.stage.mouseLock)
 			{
 				this._textField.appendText("Movement( X:" + $e.movementX + "Y:" + $e.movementY + ")");
-				
-				// move the camera up or down
-				//this._fpc.tiltAngle += $e.movementY * 0.07;
-				// move the camera left or right
-				//this._view.camera.rotationZ += $e.movementX * 0.1;
 			}
 			else
 				this._textField.appendText("Local( X:" + $e.stageX + "Y:" + $e.stageY + ")");
