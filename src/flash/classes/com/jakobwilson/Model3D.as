@@ -1,11 +1,50 @@
 ﻿package  com.jakobwilson
+<<<<<<< HEAD
+{
+	import away3d.containers.View3D;
+	import flash.events.Event;
+	import flash.display.MovieClip;
+	import away3d.containers.View3D;
+	import flash.geom.Vector3D;
+	import away3d.materials.ColorMaterial;
+	import away3d.materials.TextureMaterial;
+	import away3d.textures.BitmapTexture;
+	import away3d.events.LoaderEvent;
+	import away3d.loaders.Loader3D;
+	import away3d.loaders.parsers.Parsers;
+	import flash.display.Sprite;
+=======
 {	
+>>>>>>> master
 	import flash.events.Event;
 	import flash.net.URLRequest;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display.Bitmap;
 	import away3d.entities.Mesh;
+<<<<<<< HEAD
+	import away3d.containers.ObjectContainer3D;
+	import away3d.lights.PointLight;
+	import away3d.materials.lightpickers.StaticLightPicker;
+	import away3d.cameras.lenses.PerspectiveLens;
+	import away3d.events.AssetEvent;
+	import away3d.library.assets.AssetType;
+	import org.osflash.signals.Signal;
+	
+	public class Model3D 
+	{
+		private var _model:Mesh;
+		private var _texture:BitmapTexture;
+		
+		private var _modelPath:String;
+		private var _texturePath:String;
+		
+		private var _modelLoader:Loader3D;
+		private var _textureLoader:Loader;
+		
+		public var modelReadySignal:Signal = new Signal();
+		
+=======
 	import away3d.events.LoaderEvent;
 	import away3d.events.AssetEvent;
 	import away3d.loaders.Loader3D;
@@ -34,6 +73,7 @@
 		/**
 		*	The constructor
 		*/
+>>>>>>> master
 		public function Model3D()
 		{
 			//do nothing
@@ -43,7 +83,10 @@
 		
 		/**
 		*	Starts starts loading model and it's texture
+<<<<<<< HEAD
+=======
 		*	@param String - the relative path to the 3d file to load
+>>>>>>> master
 		*/
 		public function load(meshPath:String )
 		{
@@ -74,6 +117,24 @@
 		*/
 		private function onModelComplete(ev : AssetEvent) : void
 		{
+<<<<<<< HEAD
+			if (ev.asset.assetType == AssetType.MESH)
+			{
+				_model = Mesh(ev.asset);
+				
+				//trace("Normal: " + TextureMaterial(_model.material).specularMap.originalName);
+				
+				if (TextureMaterial(_model.material).texture != null)
+					_texturePath = TextureMaterial(_model.material).texture.originalName;
+					
+				loadTexture();
+				if (_model.material == null)
+					_model.material = new ColorMaterial(Math.random() * 0xffffff);
+			}
+			//@NOTE could I add something like: if (ev.asset.assetType == AssetType.TEXTURE) to handle failed texture load?
+		}
+		
+=======
 			if (ev.asset.assetType == AssetType.MESH) 
 			{
 				_model = Mesh(ev.asset);
@@ -90,6 +151,7 @@
 
 		/* -------------------------------------------------------------------------------------------------------- */
 
+>>>>>>> master
 		/**
 		* Starts loading the texture
 		*/
@@ -99,35 +161,59 @@
 			_textureLoader.load(new URLRequest(this._texturePath));
 			_textureLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onTextureComplete);
 		}
+<<<<<<< HEAD
+		
+=======
 
 		/* -------------------------------------------------------------------------------------------------------- */
 
+>>>>>>> master
 		/**
 		*	Once the texture is loaded create a new TextureMaterial and apply it to the model, once this is done, dispatch the model ready signal
 		*/
 		private function onTextureComplete(evt:Event)
 		{
+<<<<<<< HEAD
+			var bmp:Bitmap = _textureLoader.content as Bitmap;
+			this._texture = new BitmapTexture(bmp.bitmapData);
+			//_model.material = new TextureMaterial(new BitmapTexture(bmp.bitmapData));
+			TextureMaterial(_model.material).texture = new BitmapTexture(bmp.bitmapData);
+			modelReadySignal.dispatch();
+=======
 			
 			var bmp:Bitmap = _textureLoader.content as Bitmap;
 			this._texture = new BitmapTexture(bmp.bitmapData);
 			TextureMaterial(_model.material).texture = new BitmapTexture(bmp.bitmapData);
 			modelReadySignal.dispatch(MESH, this._model);
+>>>>>>> master
 			this._textureLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onTextureComplete);
 			this._modelLoader.removeEventListener(AssetEvent.ASSET_COMPLETE, onModelComplete);
 		}
 		
 		
+<<<<<<< HEAD
+		/**
+		*	Allows the user to grab the model and add it to their scene
+=======
 		/* -------------------------------------------------------------------------------------------------------- */
 
 		/**
 		*	Allows the user to grab the model and add it to their scene
 		*	@return Mesh the loaded mesh
+>>>>>>> master
 		*/
 		public function get model():Mesh
 		{
 			return this._model;
 		}
 		
+<<<<<<< HEAD
+		
+		
+
+	}
+	
+=======
 		/* -------------------------------------------------------------------------------------------------------- */
 		
 		/**
@@ -140,4 +226,5 @@
 			return Mesh(this._model.clone());
 		}
 	}
+>>>>>>> master
 }

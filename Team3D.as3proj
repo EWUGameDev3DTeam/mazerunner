@@ -52,7 +52,9 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <!-- example: <element path="..." /> -->
+    <element path="src\flash\libs\as3-signals-v0.8.swc" />
+    <element path="src\flash\libs\away3d-core-fp11_4_1_6.swc" />
+    <element path="src\flash\libs\SoundAS.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
