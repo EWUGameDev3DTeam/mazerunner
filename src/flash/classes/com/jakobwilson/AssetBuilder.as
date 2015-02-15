@@ -100,7 +100,7 @@
 		*	Adds a rigidbody of the specified type to the model.
 		* 	Note that this is public, so if the user already has a model, they can use this method to apply a rigidbody to it
 		*/
-		public function addRigidBody(model:Mesh ,physicsType:int, colliderType:int)
+		public function addRigidBody(model:Mesh ,physicsType:int, colliderType:int):AWPRigidBody
 		{
 			Bounds.getMeshBounds(model);//get _model bounds
 			//trace("Bounds: " + Bounds.width + ", " + Bounds.depth + ", " + Bounds.height);
@@ -109,30 +109,26 @@
 			if(colliderType == NONE)// no collider
 			{
 				assetReadySignal.dispatch(MESH, this._model)
-				return;
+				return null;
 			}
 			else if(colliderType == BOX)	//Bounding box
 			{
 				colliderShape = new AWPBoxShape( Bounds.width, Bounds.depth, Bounds.height);
-				trace("w/h/d: " + Bounds.width + ", " + Bounds.height  + ", " + Bounds.depth);
 			}
 			else if(colliderType == SPHERE)	//bounding sphere
 			{
 				var radius = Math.sqrt(Math.pow(Bounds.width/2,2) + Math.sqrt(Math.pow(Bounds.depth/2, 2) + Math.pow(Bounds.height/2, 2)));
 				colliderShape = new AWPSphereShape(radius);
 			}
-			
+			//create a shape container
 			var shapeContainer:AWPCompoundShape = new AWPCompoundShape();//A shape container to compensate for oggset origins
-			var offset:Vector3D = new Vector3D((Bounds.maxX + Bounds.minX)/2, (Bounds.maxZ + Bounds.minZ)/2, (Bounds.maxY + Bounds.minY)/2);
-			trace("Max : " + Bounds.maxX + ", " + Bounds.maxY + ", " + Bounds.maxZ);
-			trace("Min : " + Bounds.minX + ", " + Bounds.minY + ", " + Bounds.minZ);
-			trace("Offset: " + (Bounds.maxX + Bounds.minX)/2 + ", " +(Bounds.maxY + Bounds.minY)/2 + ", " + (Bounds.maxZ + Bounds.minZ)/2);
+			var offset:Vector3D = new Vector3D((Bounds.maxX + Bounds.minX)/2, (Bounds.maxZ + Bounds.minZ)/2, (Bounds.maxY + Bounds.minY)/2);//the offset 
 			shapeContainer.addChildShape(colliderShape, offset);
-				
-			var rigidBody:AWPRigidBody=new AWPRigidBody(shapeContainer,model,physicsType);
+			var rigidBody:AWPRigidBody=new AWPRigidBody(shapeContainer,model,physicsType);//create the rigidbody
 			rigidBody.friction = 1;
-			rigidBody.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);
+			//rigidBody.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);//used to force rigidbodies to stay active
 			assetReadySignal.dispatch(RIGIDBODY, rigidBody);
+			return rigidBody;
 		}
 		
 		/* -------------------------------------------------------------------------------------------------------- */
@@ -144,6 +140,47 @@
 		public function get model():Mesh
 		{
 			return this._model;
+		}
+
+
+		/* -------------------------------------------------------------------------------------------------------- */
+		
+		/**
+		* Allows the user to apply a rigidbody in a static context
+		*/
+		public static function cloneRigidBody( body:AWPRigidBody, colliderType:int,physicsType:int):AWPRigidBody
+		{
+			var model:Mesh = Mesh(body.skin.clone());
+			
+			Bounds.getMeshBounds(model);//get _model bounds
+			
+			var colliderShape:AWPCollisionShape;//create correct Collision shape with dimentions to encompass the model
+			
+			if(colliderType == NONE)// no collider
+			{
+				trace("AssetBuilder.as: Cannot create rigidbody for type NONE");
+				return null;
+			}
+			else if(colliderType == BOX)	//Bounding box
+			{
+				colliderShape = new AWPBoxShape( Bounds.width, Bounds.depth, Bounds.height);
+			}
+			else if(colliderType == SPHERE)	//bounding sphere
+			{
+				var radius = Math.sqrt(Math.pow(Bounds.width/2,2) + Math.sqrt(Math.pow(Bounds.depth/2, 2) + Math.pow(Bounds.height/2, 2)));
+				colliderShape = new AWPSphereShape(radius);
+			}
+			
+			//create a shape container
+			var shapeContainer:AWPCompoundShape = new AWPCompoundShape();//A shape container to compensate for oggset origins
+			var offset:Vector3D = new Vector3D((Bounds.maxX + Bounds.minX)/2, (Bounds.maxZ + Bounds.minZ)/2, (Bounds.maxY + Bounds.minY)/2);//the offset 
+			shapeContainer.addChildShape(colliderShape, offset);
+			var rigidBody:AWPRigidBody=new AWPRigidBody(shapeContainer,model,physicsType);//create the rigidbody
+			rigidBody.friction = 1;
+			//copy  attributes
+			rigidBody.rotation = body.rotation;
+			rigidBody.position = body.position;
+			return rigidBody;
 		}
 		
 	}

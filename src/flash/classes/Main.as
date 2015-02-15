@@ -174,7 +174,7 @@
 			//Make a wall
 			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
 			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
-			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.DYNAMIC);	//load the wall with a box collider and Dynamic physics			
+			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics			
 			
 			//Camera setup
 			this._view.camera.z = 0;
@@ -207,16 +207,20 @@
 				
 				//apply some scaling, move the wall up and rotate it a little to see the physics
 				AWPRigidBody(asset).scale = new Vector3D(50,50,50);
-				AWPRigidBody(asset).position = new Vector3D(0,0,400);
+				//AWPRigidBody(asset).position = new Vector3D(0,0,-50);
 				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
 				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
 				
-				//Add the rigidbody to the physics world
-				this._world.addRigidBody(AWPRigidBody(asset));
-				trace("Added physics object");
 				
-				//add the mesh to the view scene using rigidbody.skin
-				this._view.scene.addChild(AWPRigidBody(asset).skin);
+				var cpy:AWPRigidBody;
+				for(var i:int = 0;i < 10;i++)
+				{
+					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
+					cpy.position = new Vector3D(i*260, 0, 0);
+					this._view.scene.addChild(cpy.skin);
+					this._world.addRigidBody(cpy);
+				}
+				
 			}
 		}
 		/* ---------------------------------------------------------------------------------------- */
