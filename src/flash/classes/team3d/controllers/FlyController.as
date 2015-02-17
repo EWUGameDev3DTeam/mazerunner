@@ -27,6 +27,8 @@ package team3d.controllers
 		{
 			_cam = $cam;
 			_fpc = $fpc;
+			
+			_cam.z = 300;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -58,6 +60,7 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
+			$speed += 20;
 			var zrots:Number = _cam.rotationZ * BaseController.TORADS;
 			var yrots:Number = _cam.rotationY * BaseController.TORADS;
 			var xrots:Number = _cam.rotationX * BaseController.TORADS;

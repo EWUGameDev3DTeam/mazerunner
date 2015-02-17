@@ -35,7 +35,6 @@ package team3d.objects.players
 			_fpc = new FirstPersonController(_cam, 0, 90, 0, 180, 0, true);
 			//_fpc.fly = true;
 			//_controller = new HumanController(_model, _cam, _fpc);
-			_cam.z = 100;
 			_controller = new FlyController(_cam, _fpc);
 		}
 		
