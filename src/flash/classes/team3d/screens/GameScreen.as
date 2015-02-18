@@ -209,13 +209,15 @@ package team3d.screens
 				var startx:Number = _floor.position.x - boardwidth * 0.5;
 				var starty:Number = _floor.position.y - boardheight * 0.5;
 				
-				var rows:int = 30;
+				var rows:int = 15;
 				var cols:int = rows;
 				
-				var maze:Vector.<MazeRoom> = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
+				var maze:Vector.<Vector.<MazeRoom>> = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
 				var count:int = 0;
-				for each(var r in maze)
+				for each(var row in maze)
 				{
+					for each(var r in row)
+					{
 					if (r.ColumnWall != null)
 					{
 						_view.scene.addChild(r.ColumnWall.skin);
@@ -228,6 +230,7 @@ package team3d.screens
 						_world.addRigidBody(r.RowWall);
 					}
 					count++;
+					}
 				}
 				trace("count: " + count);
 				//var startz:Number = _floor.position.z - boarddepth * 0.5;

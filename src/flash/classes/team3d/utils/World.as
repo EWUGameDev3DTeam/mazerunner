@@ -29,6 +29,23 @@ package team3d.utils
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
+		 * Provides a random number between $min and $max. $max must be equal to or larger than $min
+		 *
+		 * @param	$min	The minimum number (inclusive)
+		 * 			$max	The maximum number (inclusive)
+		 * @return			A random number between $min and $max
+		 */
+		public function Random($min:int, $max:int):int
+		{
+			if ($max < $min)
+				throw new Error("Max is less than min.");
+				
+			return Math.floor(Math.random() * ($max - $min + 1) + $min);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
 		 * Gets or sets the stage reference
 		 */
 		public function get	stage():Stage
