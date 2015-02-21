@@ -8,6 +8,7 @@ package team3d.builders
 	import flash.display.Sprite;
 	import flash.geom.Vector3D;
 	import team3d.builders.MazePieces.MazeRoom;
+	import team3d.objects.maze.Maze;
 	import team3d.utils.World;
 	
 	/**
@@ -52,7 +53,7 @@ package team3d.builders
 		 * 			$starty		The starting y location for the maze
 		 * @return				A vector containing all the rooms for the maze
 		 */
-		public function Build($rows:int, $cols:int, $startx:Number, $starty:Number, $rigidBody:AWPRigidBody = null):Vector.<Vector.<MazeRoom>>
+		public function Build($rows:int, $cols:int, $startx:Number, $starty:Number, $rigidBody:AWPRigidBody = null):Maze
 		{
 			var rb:AWPRigidBody = $rigidBody;
 			// if there was no rb passed in, assign the predefined set one
@@ -64,7 +65,8 @@ package team3d.builders
 				throw new Error("No wall rigid body was found. Maze cannot be generated. Either pass one in or set one via WallRigidBody");
 			
 			// create the new 2d vector that will house the maze's rooms.
-			var maze:Vector.<Vector.<MazeRoom>> = buildRooms($rows, $cols);
+			var maze:Maze = new Maze($rows, $cols);
+			buildRooms(maze);
 			
 			var randRow:int;
 			var randCol:int;
@@ -73,6 +75,7 @@ package team3d.builders
 			var sets:int = $rows * $cols;
 			_wallsRemoved = 0;
 			
+			if(1==2)
 			while (sets - _wallsRemoved > 1)
 			{
 				randCol = World.instance.Random(0, $cols - 1);
@@ -84,12 +87,12 @@ package team3d.builders
 				if (Math.random() > 0.5 && room.HasRowWall)
 				{
 					if (randRow > 0)
-						combineSets(room, randRow, randCol, maze, true);
+						;//combineSets(room, randRow, randCol, maze, true);
 				}
 				else if (room.HasColumnWall)
 				{
 					if (randCol > 0)
-						combineSets(room, randRow, randCol, maze, false);
+						;//combineSets(room, randRow, randCol, maze, false);
 				}
 				rooms[randCol] = room;
 				maze[randRow] = rooms;
@@ -156,21 +159,22 @@ package team3d.builders
 		 * 			$cols	The number of columns in the maze
 		 * @return			The 2d vector array that represents the maze guide
 		 */
-		protected function buildRooms($rows:int, $cols:int):Vector.<Vector.<MazeRoom>>
+		protected function buildRooms($maze:Maze):void
 		{
-			var mr:Vector.<Vector.<MazeRoom>> = new Vector.<Vector.<MazeRoom>>();
 			var rowRooms:Vector.<MazeRoom>;
 			// create the rooms
-			for (var row:int = 0; row < $rows; row++)
+			var sets:int = 0;
+			for (var row:int = 0; row < $maze.Rows; row++)
 			{
 				rowRooms = new Vector.<MazeRoom>();
-				for (var col:int = 0; col < $cols; col++)
-					rowRooms[col] = new MazeRoom(col + row * $rows);
-					
-				mr[row] = rowRooms;
+				for (var col:int = 0; col < $maze.Columns; col++)
+				{
+					rowRooms[col] = new MazeRoom(sets);
+					trace("set: " + sets);
+					sets++;
+				}	
+				$maze.SetRow(row, rowRooms);
 			}
-			
-			return mr;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -185,7 +189,7 @@ package team3d.builders
 		 * 			$starty	The starting y for the maze
 		 * @return			A vector containing all the rooms for the maze
 		 */
-		protected function genMaze($mg:Vector.<Vector.<MazeRoom>>, $startx:Number, $starty:Number, $rb:AWPRigidBody):void
+		protected function genMaze($maze:Maze, $startx:Number, $starty:Number, $rb:AWPRigidBody):void
 		{
 			// get the bounds from the wall
 			Bounds.getMeshBounds(Mesh($rb.skin));
@@ -204,37 +208,27 @@ package team3d.builders
 			var x:Number;
 			var y:Number;
 			var room:MazeRoom;
+			var roomRow:Vector.<MazeRoom>;
 			
 			// assign walls to each room
-			for (var row:int = 0; row < $mg.length; row++)
+			for (var row:int = 0; row < $maze.Rows; row++)
 			{
 				// null the walls out each time through to prevent any walls from being messed up or carried over
 				rowwall = null
 				colwall = null;
-				for (var col:int = 0; col < $mg[row].length; col++)
+				for (var col:int = 0; col < $maze.Columns; col++)
 				{
-					if ($mg[row][col].HasRowWall && $mg[row][col].HasColumnWall) // both walls
+					roomRow = $maze.GetRow(row);
+					if (roomRow[col].HasRowWall) // row wall only
 					{
-						x = $startx;
-						y = $starty;
-						colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
-						colwall.position = new Vector3D(x + row * spacing, y + col * spacing, 0);
-						
-						x = $startx + wallheight * 0.5 - wallthickness * 0.5;
+						x = $startx + wallheight * 0.5 + wallthickness * 0.5;
 						y = $starty - wallheight * 0.5 - wallthickness * 0.5;
 						rowwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
 						rowwall.rotationZ += 90;
-						rowwall.position = new Vector3D(x + col * (spacing - wallthickness), y + row * spacing, 0);
+						rowwall.position = new Vector3D(x + col * spacing, y + row * spacing, 0);
 					}
-					else if ($mg[row][col].HasRowWall) // row wall only
-					{
-						x = $startx + wallheight * 0.5 - wallthickness * 0.5;
-						y = $starty - wallheight * 0.5 - wallthickness * 0.5;
-						rowwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-						rowwall.rotationZ += 90;
-						rowwall.position = new Vector3D(x + col * (spacing - wallthickness), y + row * spacing, 0);
-					}
-					else if ($mg[row][col].HasColumnWall) // col wall only
+					
+					if (roomRow[col].HasColumnWall) // col wall only
 					{
 						x = $startx;
 						y = $starty;
@@ -242,10 +236,16 @@ package team3d.builders
 						colwall.position = new Vector3D(x + row * spacing, y + col * spacing, 0);
 					}
 					
-					$mg[row][col].ColumnWall = colwall;
-					$mg[row][col].RowWall = rowwall;
+					
+					roomRow[col].ColumnWall = colwall;
+					roomRow[col].RowWall = rowwall;
+					
+					$maze.SetRow(row, roomRow);
 				}
 			}
+			
+			// add border walls
+			
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

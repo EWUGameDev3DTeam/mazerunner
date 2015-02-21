@@ -1,12 +1,8 @@
 package team3d.screens
 {
-	import adobe.utils.CustomActions;
-	import away3d.cameras.Camera3D;
-	import away3d.cameras.lenses.CoordinateSystem;
 	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.containers.View3D;
-	import away3d.controllers.FirstPersonController;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.CubeGeometry;
@@ -27,6 +23,7 @@ package team3d.screens
 	import flash.text.TextFormat;
 	import team3d.builders.MazeBuilder;
 	import team3d.builders.MazePieces.MazeRoom;
+	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.utils.World;
 
@@ -209,27 +206,27 @@ package team3d.screens
 				var startx:Number = _floor.position.x - boardwidth * 0.5;
 				var starty:Number = _floor.position.y - boardheight * 0.5;
 				
-				var rows:int = 15;
+				var rows:int = 1;
 				var cols:int = rows;
 				
-				var maze:Vector.<Vector.<MazeRoom>> = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
+				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
 				var count:int = 0;
-				for each(var row in maze)
+				for each(var row in maze.Rooms)
 				{
 					for each(var r in row)
 					{
-					if (r.ColumnWall != null)
-					{
-						_view.scene.addChild(r.ColumnWall.skin);
-						_world.addRigidBody(r.ColumnWall);
-					}
-					
-					if (r.RowWall != null)
-					{
-						_view.scene.addChild(r.RowWall.skin);
-						_world.addRigidBody(r.RowWall);
-					}
-					count++;
+						if (r.ColumnWall != null)
+						{
+							_view.scene.addChild(r.ColumnWall.skin);
+							_world.addRigidBody(r.ColumnWall);
+						}
+						
+						if (r.RowWall != null)
+						{
+							_view.scene.addChild(r.RowWall.skin);
+							_world.addRigidBody(r.RowWall);
+						}
+						count++;
 					}
 				}
 				trace("count: " + count);
