@@ -7,7 +7,7 @@ package team3d.screens
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import team3d.utils.World;
+	import team3d.objects.World;
 	
 	/**
 	 * Title Screen

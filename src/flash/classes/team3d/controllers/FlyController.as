@@ -12,7 +12,7 @@ package team3d.controllers
 	import flash.geom.Vector3D;
 	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
-	import team3d.utils.World;
+	import team3d.objects.World;
 	
 	/**
 	 * ...
@@ -28,7 +28,7 @@ package team3d.controllers
 			_cam = $cam;
 			_fpc = $fpc;
 			
-			_cam.z = 300;
+			_cam.z = 3000;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

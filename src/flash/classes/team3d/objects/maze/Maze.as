@@ -14,6 +14,8 @@ package team3d.objects.maze
 		private var _rooms		:Vector.<Vector.<MazeRoom>>;
 		private var _colWall	:Vector.<AWPRigidBody>;
 		private var _rowWall	:Vector.<AWPRigidBody>;
+		private var _rows		:int;
+		private var _cols		:int;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -22,10 +24,68 @@ package team3d.objects.maze
 		 */
 		public function Maze($rows:int, $cols:int)
 		{
-			_rooms = new Vector.<Vector.<MazeRoom>>($rows * $cols, true);
-			_colWall = new Vector.<AWPRigidBody>($cols, true);
-			_rowWall = new Vector.<AWPRigidBody>($rows, true);
+			_rows = $rows;
+			_cols = $cols;
+			_rooms = new Vector.<Vector.<MazeRoom>>(_rows * _cols, true);
+			_colWall = new Vector.<AWPRigidBody>(_rows, true);
+			_rowWall = new Vector.<AWPRigidBody>(_cols, true);
 		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets the specified room
+		 *
+		 * @param	$row	The maze row associated with the room
+		 * 			$col	The maze column associated with the room
+		 * @return			The maze room requested
+		 */
+		public function GetRoom($row:int, $col:int):MazeRoom
+		{
+			return _rooms[$row][$col];
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets or sets the row border wall
+		 *
+		 * @param	$rowWall	The row border wall
+		 * @return			The row border wall
+		 */
+		public function get RowBorder():Vector.<AWPRigidBody>
+		{
+			return _rowWall;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set RowBorder($rowWall:Vector.<AWPRigidBody>):void
+		{
+			_rowWall = $rowWall;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets or sets the column wall border
+		 *
+		 * @param	$colWall	The column wall border
+		 * @return			The column wall border
+		 */
+		public function get ColumnBorder():Vector.<AWPRigidBody>
+		{
+			return _colWall;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set ColumnBorder($colWall:Vector.<AWPRigidBody>):void
+		{
+			_colWall = $colWall;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
 		 * Adds the given mazeroom $room to the current maze at the location $x,$y
@@ -52,7 +112,7 @@ package team3d.objects.maze
 		 */
 		public function get Rows():int
 		{
-			return _rowWall.length;
+			return _rows;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -64,7 +124,7 @@ package team3d.objects.maze
 		 */
 		public function get Columns():int
 		{
-			return _colWall.length;
+			return _cols;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

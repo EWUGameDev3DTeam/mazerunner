@@ -9,7 +9,7 @@ package team3d.builders
 	import flash.geom.Vector3D;
 	import team3d.builders.MazePieces.MazeRoom;
 	import team3d.objects.maze.Maze;
-	import team3d.utils.World;
+	import team3d.utils.Utils;
 	
 	/**
 	 * ...
@@ -75,27 +75,26 @@ package team3d.builders
 			var sets:int = $rows * $cols;
 			_wallsRemoved = 0;
 			
-			if(1==2)
 			while (sets - _wallsRemoved > 1)
 			{
-				randCol = World.instance.Random(0, $cols - 1);
-				randRow = World.instance.Random(0, $rows - 1);
+				randCol = Utils.instance.Random(0, $cols - 1);
+				randRow = Utils.instance.Random(0, $rows - 1);
 				
-				rooms = maze[randRow];
+				rooms = maze.GetRow(randRow);
 				room = rooms[randCol];
 				
 				if (Math.random() > 0.5 && room.HasRowWall)
 				{
 					if (randRow > 0)
-						;//combineSets(room, randRow, randCol, maze, true);
+						combineSets(room, randRow, randCol, maze, true);
 				}
 				else if (room.HasColumnWall)
 				{
 					if (randCol > 0)
-						;//combineSets(room, randRow, randCol, maze, false);
+						combineSets(room, randRow, randCol, maze, false);
 				}
 				rooms[randCol] = room;
-				maze[randRow] = rooms;
+				maze.SetRow(randRow,rooms);
 			}
 			
 			genMaze(maze, $startx, $starty, rb);
@@ -112,14 +111,14 @@ package team3d.builders
 		 * @param	$param1	Describe param1 here.
 		 * @return			Describe the return value here.
 		 */
-		protected function combineSets($r:MazeRoom, $row:int, $col:int, $mg:Vector.<Vector.<MazeRoom>>, $dropRow:Boolean):void
+		protected function combineSets($r:MazeRoom, $row:int, $col:int, $maze:Maze, $dropRow:Boolean):void
 		{
 			var nextRoom:MazeRoom = null;
 			// grab the neighboring room
 			if ($dropRow)
-				nextRoom = $mg[$row - 1][$col];
+				nextRoom = $maze.GetRoom($row - 1,$col);
 			else
-				nextRoom = $mg[$row][$col - 1];
+				nextRoom = $maze.GetRoom($row, $col - 1);
 			
 			// if they are already part of the same set, just return
 			if (nextRoom.Set == $r.Set)
@@ -135,15 +134,15 @@ package team3d.builders
 			var nextSet:int = nextRoom.Set;
 				
 			var rowRoom:Vector.<MazeRoom>;
-			for (var row:int = 0; row < $mg.length; row++)
+			for (var row:int = 0; row < $maze.Rows; row++)
 			{
-				rowRoom = $mg[row];
-				for (var col:int = 0; col < rowRoom.length; col++)
+				rowRoom = $maze.GetRow(row);
+				for (var col:int = 0; col < $maze.Columns; col++)
 				{
 					if (rowRoom[col].Set == nextSet)
 						rowRoom[col].Set = curSet;
 				}
-				$mg[row] = rowRoom;
+				$maze.SetRow(row, rowRoom);
 			}
 			
 			_wallsRemoved++;
@@ -170,7 +169,6 @@ package team3d.builders
 				for (var col:int = 0; col < $maze.Columns; col++)
 				{
 					rowRooms[col] = new MazeRoom(sets);
-					trace("set: " + sets);
 					sets++;
 				}	
 				$maze.SetRow(row, rowRooms);
@@ -233,7 +231,7 @@ package team3d.builders
 						x = $startx;
 						y = $starty;
 						colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
-						colwall.position = new Vector3D(x + row * spacing, y + col * spacing, 0);
+						colwall.position = new Vector3D(x + col * spacing, y + row * spacing, 0);
 					}
 					
 					
@@ -245,7 +243,30 @@ package team3d.builders
 			}
 			
 			// add border walls
+			var colWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Rows, true);
+			var rowWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Columns, true);
 			
+			x = $startx;
+			y = $starty;
+			var i:int;
+			for (i = 0; i < $maze.Rows; i++)
+			{
+				colWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
+				colWallBorder[i].position = new Vector3D(x + $maze.Columns * spacing, y + i * spacing, 0);
+			}
+			$maze.ColumnBorder = colWallBorder;
+			
+			//*
+			x = $startx + wallheight * 0.5 + wallthickness * 0.5;
+			y = $starty - wallheight * 0.5 - wallthickness * 0.5;
+			for (i = 0; i < $maze.Columns; i++)
+			{
+				rowWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
+				rowWallBorder[i].rotationZ += 90;
+				rowWallBorder[i].position = new Vector3D(x + i * spacing, y + $maze.Rows * spacing, 0);
+			}
+			$maze.RowBorder = rowWallBorder;
+			//*/
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

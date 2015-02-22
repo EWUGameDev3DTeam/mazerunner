@@ -25,7 +25,7 @@ package team3d.screens
 	import team3d.builders.MazePieces.MazeRoom;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
-	import team3d.utils.World;
+	import team3d.objects.World;
 
 	
 	/**
@@ -38,19 +38,19 @@ package team3d.screens
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/** view object that holds the scene and camera */
-		private var _view		:View3D;
+		//private var _view		:View3D;
 		/** a cube mesh model */
-		private var _cube		:Mesh;
+		//private var _cube		:Mesh;
 		/** a green cube model */
-		private var	_greenCube	:Mesh;
+		//private var	_greenCube	:Mesh;
 		/** a plane mesh model */
-		private var _floor		:Mesh;
+		//private var _floor		:Mesh;
 		
 		private var _fullscreen	:Boolean;
 		
-		private var _player		:HumanPlayer;
+		//private var _player		:HumanPlayer;
 		/* The physics world */
-		private var _world		:AWPDynamicsWorld;
+		//private var _world		:AWPDynamicsWorld;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -61,12 +61,11 @@ package team3d.screens
 		{
 			super();
 			
-			World.instance.stage.addEventListener(Event.RESIZE, windowResize);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, toggleFullscreen);
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
 			
-			_view = new View3D();
+			//_view = new View3D();
 			_fullscreen = false;
 		}
 		
@@ -77,12 +76,12 @@ package team3d.screens
 		 */
 		public function Begin():void
 		{
-			this.addChild(_view);
+			this.addChild(World.instance.View);
 			
 			//Set up the physics world
-			this._world = AWPDynamicsWorld.getInstance();
-			this._world.initWithDbvtBroadphase();
-			this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
+			//this._world = AWPDynamicsWorld.getInstance();
+			//this._world.initWithDbvtBroadphase();
+			//this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
 			
 			//this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
 			//this._greenCube.x = 200;
@@ -97,23 +96,23 @@ package team3d.screens
 			//cubeRigidBody.friction = 1;
 			//cubeRigidBody.position = new Vector3D(this._greenCube.x,this._greenCube.y,this._greenCube.z);
 			//cubeRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			//end ugly physics			
+			//end ugly physics
 			
-			
+			/*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
 			this._view.scene.addChild(this._floor);
 			//Ugly Floor Physics
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000,10000,1);
-			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol,_floor,0);
+			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 10000, 1);
+			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
 			_world.addRigidBody(floorRigidBody);
 			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(0,0,-50);
+			floorRigidBody.position = new Vector3D(0, 0, -50);
 			// end ugly physics		
 			this._floor.x = 0;
 			this._floor.y = 0;
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
-			
+			*/
 			//Make a wall
 			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
 			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
@@ -140,9 +139,9 @@ package team3d.screens
 			tf.text = "This is in the game screen";
 			this.addChild(tf);
 			
-			// player shit
+			// player stuff
 			// basic player model
-			var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
+			/*var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
 			p.x = 300;
 			p.y = 300;
 			p.z = 3000;
@@ -152,29 +151,14 @@ package team3d.screens
 			pRigidBody.friction = 1;
 			pRigidBody.position = new Vector3D(p.x, p.y, p.z);
 			pRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			
-			var lb:LensBase = new PerspectiveLens(75);
-			lb.far = 20000;
-			_view.camera.lens = lb;
+			*/
+			World.instance.AddPlayer(new HumanPlayer(World.instance.View.camera));
 			// add the model to the scene
-			_view.scene.addChild(p);
+			//_view.scene.addChild(p);
 			// create a new player and give it the camera and the model
-			_player = new HumanPlayer(_view.camera, p);
+			//_player = new HumanPlayer(World.instance.View.camera, p);
 			// start the player, this also starts the HumanController associated with it
-			_player.Begin();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Occurs when the stage is resized
-		 *
-		 * @param	$e	unused event object
-		 */
-		private function windowResize(e:Event = null):void 
-		{
-			_view.width = World.instance.stage.stageWidth;
-			_view.height = World.instance.stage.stageHeight;
+			//_player.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -186,7 +170,7 @@ package team3d.screens
 			if(assetType == AssetBuilder.MESH)
 			{
 				Mesh(asset).scale(50);
-				this._view.scene.addChild(Mesh(asset));
+				World.instance.View.scene.addChild(Mesh(asset));
 				trace("Added non physics object");
 			}
 			
@@ -199,88 +183,20 @@ package team3d.screens
 				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
 				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
 				
-				Bounds.getMeshBounds(_floor);
+				var rows:int = 7;
+				var cols:int = rows + 10;
+				
+				var floor:Mesh = World.instance.GetMesh("floor");
+				Bounds.getMeshBounds(floor);
 				var boardwidth:Number = Bounds.width;
 				var boardheight:Number = Bounds.height;
 				var boarddepth:Number = Bounds.depth;
-				var startx:Number = _floor.position.x - boardwidth * 0.5;
-				var starty:Number = _floor.position.y - boardheight * 0.5;
-				
-				var rows:int = 1;
-				var cols:int = rows;
+				var startx:Number = floor.position.x - boardwidth * 0.5;
+				var starty:Number = floor.position.y - boardheight * 0.5;
 				
 				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
-				var count:int = 0;
-				for each(var row in maze.Rooms)
-				{
-					for each(var r in row)
-					{
-						if (r.ColumnWall != null)
-						{
-							_view.scene.addChild(r.ColumnWall.skin);
-							_world.addRigidBody(r.ColumnWall);
-						}
-						
-						if (r.RowWall != null)
-						{
-							_view.scene.addChild(r.RowWall.skin);
-							_world.addRigidBody(r.RowWall);
-						}
-						count++;
-					}
-				}
-				trace("count: " + count);
-				//var startz:Number = _floor.position.z - boarddepth * 0.5;
-				
-				/*
-				var spacing:Number = wallheight + wallthickness; // it's weird but this is the length of the wall plus the wall thickness
-				
-				trace("boardx: " + startx);
-				trace("boardy: " + starty);
-				//trace("boardz: " + boardz);
-				
-				
-				
-				var maze:Vector.<Array> = new Vector.<Array>();
-				
-				var arr:Array;
-				for (var i:int = 0; i < rows; i++)
-				{
-					arr = new Array;
-					for (var j:int = 0; j < cols; j++)
-						arr[j] = true;
-					maze[i] = arr;
-				}
-				
-				var rowwall:AWPRigidBody;
-				var colwall:AWPRigidBody;
-				var x:Number;
-				var y:Number;
-				for(var row:int = 0;row < rows; row++)
-				{
-					for (var col:int = 0; col < cols; col++)
-					{
-						if (maze[row][col])
-						{
-							x = startx;
-							y = starty;
-							colwall = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX , AssetBuilder.STATIC);
-							colwall.position = new Vector3D(x + row * spacing, y + col * spacing, 0);
-							_view.scene.addChild(colwall.skin);
-							_world.addRigidBody(colwall);
-							
-							///*
-							x = startx + wallheight * 0.5 - wallthickness * 0.5;
-							y = starty - wallheight * 0.5 - wallthickness * 0.5;
-							rowwall = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX, AssetBuilder.STATIC);
-							rowwall.rotationZ += 90;
-							rowwall.position = new Vector3D(x + col * (spacing - wallthickness), y + row * spacing, 0);
-							_view.scene.addChild(rowwall.skin);
-							_world.addRigidBody(rowwall);
-							//
-						}
-					}
-				}*/
+				World.instance.AddMaze(maze);
+				World.instance.Begin();
 			}
 		}
 		
@@ -313,8 +229,7 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
-			_world.step(1/30, 1, 1/30);
-			_view.render();
+			World.instance.Update();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		
