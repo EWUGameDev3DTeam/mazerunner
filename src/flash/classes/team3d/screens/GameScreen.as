@@ -37,20 +37,11 @@ package team3d.screens
 	{
 		/* ---------------------------------------------------------------------------------------- */
 		
-		/** view object that holds the scene and camera */
-		//private var _view		:View3D;
-		/** a cube mesh model */
-		//private var _cube		:Mesh;
-		/** a green cube model */
-		//private var	_greenCube	:Mesh;
-		/** a plane mesh model */
-		//private var _floor		:Mesh;
+		private var _floor		:Mesh;
 		
 		private var _fullscreen	:Boolean;
 		
-		//private var _player		:HumanPlayer;
-		/* The physics world */
-		//private var _world		:AWPDynamicsWorld;
+		private var _player		:HumanPlayer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -61,6 +52,7 @@ package team3d.screens
 		{
 			super();
 			
+			//World.instance.stage.addEventListener(Event.RESIZE, windowResize);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, toggleFullscreen);
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -76,35 +68,17 @@ package team3d.screens
 		 */
 		public function Begin():void
 		{
-			this.addChild(World.instance.View);
+			//this.addChild(_view);
+			this.addChild(World.instance.view);
+			World.instance.Begin();
 			
-			//Set up the physics world
-			//this._world = AWPDynamicsWorld.getInstance();
-			//this._world.initWithDbvtBroadphase();
-			//this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
-			
-			//this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
-			//this._greenCube.x = 200;
-			//this._greenCube.y = 300;
-			//this._greenCube.z = 50;
-			//this._view.scene.addChild(this._greenCube);
-			
-			//ugly Cube hysics
-			//var cubeShape:AWPBoxShape = new AWPBoxShape(100,100,100);
-			//var cubeRigidBody:AWPRigidBody = new AWPRigidBody(cubeShape,this._greenCube,1);
-			//_world.addRigidBody(cubeRigidBody);
-			//cubeRigidBody.friction = 1;
-			//cubeRigidBody.position = new Vector3D(this._greenCube.x,this._greenCube.y,this._greenCube.z);
-			//cubeRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			//end ugly physics
-			
-			/*
+			//*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
-			this._view.scene.addChild(this._floor);
+			//World.instance.view.scene.addChild(this._floor);
 			//Ugly Floor Physics
 			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 10000, 1);
 			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
-			_world.addRigidBody(floorRigidBody);
+			//World.instance.physics.addRigidBody(floorRigidBody);
 			floorRigidBody.friction = 1;
 			floorRigidBody.position = new Vector3D(0, 0, -50);
 			// end ugly physics		
@@ -112,7 +86,9 @@ package team3d.screens
 			this._floor.y = 0;
 			this._floor.z = -50;
 			this._floor.rotationX += 180;
-			*/
+			World.instance.addObject(floorRigidBody);
+			//*/
+			
 			//Make a wall
 			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
 			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
@@ -139,26 +115,10 @@ package team3d.screens
 			tf.text = "This is in the game screen";
 			this.addChild(tf);
 			
-			// player stuff
-			// basic player model
-			/*var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
-			p.x = 300;
-			p.y = 300;
-			p.z = 3000;
-			var pShape:AWPBoxShape = new AWPBoxShape(100,100,100);
-			var pRigidBody:AWPRigidBody = new AWPRigidBody(pShape, p, 1);
-			_world.addRigidBody(pRigidBody);
-			pRigidBody.friction = 1;
-			pRigidBody.position = new Vector3D(p.x, p.y, p.z);
-			pRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			*/
-			World.instance.AddPlayer(new HumanPlayer(World.instance.View.camera));
-			// add the model to the scene
-			//_view.scene.addChild(p);
-			// create a new player and give it the camera and the model
-			//_player = new HumanPlayer(World.instance.View.camera, p);
+			_player = new HumanPlayer(World.instance.view.camera);
+			World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
-			//_player.Begin();
+			_player.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -170,7 +130,7 @@ package team3d.screens
 			if(assetType == AssetBuilder.MESH)
 			{
 				Mesh(asset).scale(50);
-				World.instance.View.scene.addChild(Mesh(asset));
+				World.instance.view.scene.addChild(Mesh(asset));
 				trace("Added non physics object");
 			}
 			
@@ -184,19 +144,17 @@ package team3d.screens
 				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
 				
 				var rows:int = 7;
-				var cols:int = rows + 10;
+				var cols:int = rows + 3;
 				
-				var floor:Mesh = World.instance.GetMesh("floor");
-				Bounds.getMeshBounds(floor);
+				Bounds.getMeshBounds(_floor);
 				var boardwidth:Number = Bounds.width;
 				var boardheight:Number = Bounds.height;
 				var boarddepth:Number = Bounds.depth;
-				var startx:Number = floor.position.x - boardwidth * 0.5;
-				var starty:Number = floor.position.y - boardheight * 0.5;
+				var startx:Number = _floor.position.x - boardwidth * 0.5;
+				var starty:Number = _floor.position.y - boardheight * 0.5;
 				
 				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
-				World.instance.AddMaze(maze);
-				World.instance.Begin();
+				World.instance.addMaze(maze);
 			}
 		}
 		
@@ -229,7 +187,7 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
-			World.instance.Update();
+			World.instance.update();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		
@@ -247,4 +205,3 @@ package team3d.screens
 		
 	}
 }
-

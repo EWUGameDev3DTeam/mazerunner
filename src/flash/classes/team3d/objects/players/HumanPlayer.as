@@ -39,13 +39,19 @@ package team3d.objects.players
 			//_controller = new HumanController(_model, _cam, _fpc);
 			_controller = new FlyController(_cam, _fpc);
 			
+			
 			_mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
-			_mesh.name = "player";
 			_mesh.x = 300;
 			_mesh.y = 300;
 			_mesh.z = 3000;
 			var pShape:AWPBoxShape = new AWPBoxShape(100,100,100);
 			_rb = new AWPRigidBody(pShape, _mesh, 1);
+			//World.instance.physics.addRigidBody(pRigidBody);
+			_rb.friction = 1;
+			_rb.position = new Vector3D(_mesh.x, _mesh.y, _mesh.z);
+			_rb.applyTorque(new Vector3D(0, 1, 1));
+			
+			//_mesh = $m;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -74,7 +80,7 @@ package team3d.objects.players
 		 * Gets the rigid body of the player
 		 * @return			The rigid body
 		 */
-		public function getRigidBody():AWPRigidBody
+		public function get rigidbody():AWPRigidBody
 		{
 			return _rb;
 		}

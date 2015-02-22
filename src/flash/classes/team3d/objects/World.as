@@ -27,14 +27,9 @@ package team3d.objects {
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		/** The stage for the world */
-		private 		var _stage		:Stage;
-		/** The physics for the world */
+		private			var	_stage		:Stage;
+		private			var _view		:View3D;
 		private			var _physics	:AWPDynamicsWorld;
-		/** view object that holds the scene and camera */
-		private 		var _view		:View3D;
-		private			var _meshes		:Object;
-		private			var _started	:Boolean;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -44,12 +39,10 @@ package team3d.objects {
 				throw new Error("Cannot be initialized");
 			
 			_view = new View3D();
-			_meshes = new Object();
 			
-			initPhysics();
-			createWorld();
-			changeLens();
-			_started = false
+			var lb:LensBase = new PerspectiveLens(75);
+			lb.far = 20000;
+			_view.camera.lens = lb;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -59,166 +52,10 @@ package team3d.objects {
 		 */
 		public function Begin():void
 		{
-			_started = true;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Ends the world
-		 */
-		public function End():void
-		{
-			_started = false;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Adds a player to the world
-		 *
-		 * @param	$p		The player to add to the world
-		 */
-		public function AddPlayer($p:HumanPlayer):void
-		{
-			trace("z: " + $p.mesh.z);
-			addMesh($p.mesh);
-			_physics.addRigidBody($p.getRigidBody());
-			$p.Begin();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Initializs the physics for the world
-		 *
-		 * @param	$param1	Describe param1 here.
-		 * @return			Describe the return value here.
-		 */
-		protected function initPhysics():void
-		{
+			//Set up the physics world
 			_physics = AWPDynamicsWorld.getInstance();
 			_physics.initWithDbvtBroadphase();
 			_physics.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Creates the general world
-		 */
-		protected function createWorld():void
-		{
-			var floor:Mesh = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
-			floor.name = "floor";
-			floor.x = 0;
-			floor.y = 0;
-			floor.z = -50;
-			//floor.rotationY += ;
-			
-			//Ugly Floor Physics
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 10000, 1);
-			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, floor, 0);
-			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(0, 0, -50);
-			// end ugly physics
-			
-			_physics.addRigidBody(floorRigidBody);
-			addMesh(floor);
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Stores a local version of the mesh
-		 *
-		 * @param	$m	The mesh to add
-		 */
-		protected function addMesh($m:Mesh):void
-		{
-			_meshes[$m.name] = $m;
-			_view.scene.addChild($m);
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Adds a maze to the world
-		 *
-		 * @param	$m		The maze to add
-		 */
-		public function AddMaze($m:Maze):void
-		{
-			for each(var row in $m.Rooms)
-			{
-				for each(var r in row)
-				{
-					if (r.HasColumnWall)
-					{
-						_view.scene.addChild(r.ColumnWall.skin);
-						_physics.addRigidBody(r.ColumnWall);
-					}
-					
-					if (r.HasRowWall)
-					{
-						_view.scene.addChild(r.RowWall.skin);
-						_physics.addRigidBody(r.RowWall);
-					}
-				}
-			}
-			//*
-			for each (var colWall in $m.ColumnBorder)
-			{
-				_view.scene.addChild(colWall.skin);
-				_physics.addRigidBody(colWall);
-			}
-			//*
-			for each(var rowWall in $m.RowBorder)
-			{
-				_view.scene.addChild(rowWall.skin);
-				_physics.addRigidBody(rowWall);
-			}
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Gets the mesh object associated with the name
-		 *
-		 * @param	$s		The name of the mesh object
-		 * @return			The mesh object
-		 */
-		public function GetMesh($s:String):Mesh
-		{
-			return _meshes[$s];
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Changes the lens of the camera
-		 */
-		private function changeLens():void
-		{
-			var lb:LensBase = new PerspectiveLens(75);
-			lb.far = 20000;
-			_view.camera.lens = lb;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Returns the View3D of the world
-		 *
-		 * @return		The View3D
-		 */
-		public function get View():View3D
-		{
-			return _view;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -243,14 +80,109 @@ package team3d.objects {
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
+		 * Adds the given object to the world
+		 *
+		 * @param	$m	The mesh to add to the world
+		 * 			$b	The associated rigid body to add to the world
+		 */
+		public function addObject($b:AWPRigidBody = null, $m:Mesh = null):void
+		{
+			// nothing to add
+			if ($b == null && $m == null)
+				return;
+			
+			// check to see if the mesh was passed in, if not, try and grab it from the rigidbody
+			if ($m == null)
+				$m = Mesh($b.skin);
+			
+			// if the mesh exists, grab the name and add it to the scene
+			if ($m != null)
+				_view.scene.addChild($m);
+			
+			// if the rigidbody exists, add it to the physics world
+			if($b != null)
+				_physics.addRigidBody($b);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Adds the given maze to the world
+		 *
+		 * @param	$m	The maze to add
+		 */
+		public function addMaze($m:Maze):void
+		{
+			for each(var row in $m.Rooms)
+			{
+				for each(var r in row)
+				{
+					if (r.HasColumnWall)
+						addObject(r.ColumnWall);
+					
+					if (r.HasRowWall)
+						addObject(r.RowWall);
+				}
+			}
+			for each(var rowBorder in $m.RowBorder)
+				addObject(rowBorder);
+				
+			for each(var colBorder in $m.ColumnBorder)
+				addObject(colBorder);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Updates the world
+		 */
+		public function update():void
+		{
+			_physics.step(1/30, 1, 1/30);
+			_view.render();
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
 		 * Occurs when the stage is resized
 		 *
 		 * @param	$e	unused event object
 		 */
 		private function windowResize(e:Event = null):void 
 		{
-			_view.width = World.instance.stage.stageWidth;
-			_view.height = World.instance.stage.stageHeight;
+			_view.width = _stage.stageWidth;
+			_view.height = _stage.stageHeight;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets the current physics world object
+		 * @return			The Physics object - AWPDynamicsWorld
+		 */
+		public function get physics():AWPDynamicsWorld
+		{
+			return _physics;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set physics($p:AWPDynamicsWorld):void
+		{
+			_physics = $p;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets the current View3D for the world
+		 *
+		 * @return			The View3D for the world
+		 */
+		public function get view():View3D
+		{
+			return _view;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -263,20 +195,6 @@ package team3d.objects {
 		public function get	stage():Stage
 		{
 			return _stage;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Updates the world - KEEP AS SMALL AND SIMPLE AS POSSIBLE
-		 */
-		public function Update():void
-		{
-			if (!_started) return;
-			
-			trace("z: " + ((Mesh)(_meshes["player"])).z);
-			_physics.step(1/30, 1, 1/30);
-			_view.render();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
