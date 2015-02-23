@@ -1,11 +1,15 @@
 package team3d.screens
 {
 	import adobe.utils.CustomActions;
-	import com.greensock.events.LoaderEvent;
+	import com.greensock.loading.display.ContentDisplay;
 	import com.greensock.loading.ImageLoader;
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.events.LoaderEvent;
 	import com.greensock.TweenMax;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
@@ -18,21 +22,21 @@ package team3d.screens
 	 * 
 	 * @author Nate Chatellier
 	 */
-	public class TitleScreen extends Sprite
+	public class LoadScreen extends Sprite
 	{
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public var	DoneSignal	:Signal;
+		public var		DoneSignal	:Signal;
 		
-		private var _titleLogo	:Sprite;
+		private var		_titleLogo	:Sprite;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
 		 * Constructs the TitleScreen object.
 		 */
-		public function TitleScreen()
+		public function LoadScreen()
 		{
 			super();
 			
@@ -40,7 +44,7 @@ package team3d.screens
 			this.mouseChildren = true;
 			this.visible = false;
 			
-			DoneSignal = new Signal(int);
+			this.DoneSignal = new Signal();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -50,10 +54,10 @@ package team3d.screens
 		 */
 		public function Begin():void
 		{
-			World.instance.CurrentScreen = "Title";
-			DebugScreen.Text.text = "Now in title screen";
-			var title:ImageLoader = new ImageLoader("Images/titlescreen.jpg", { name:"titleimage", container:this, x:0, y:0, width:900, height:600, scaleMode:"stretch", onComplete:show } );
-			title.load();
+			World.instance.CurrentScreen = "Loading";
+			DebugScreen.Text.text = "Now in loading screen";
+			var loading:ImageLoader = new ImageLoader("Images/loading.jpg", { name:"loadingImage", container:this, x:0, y:0, width:900, height:600, scaleMode:"strech", onComplete:show } );
+			loading.load();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -62,25 +66,19 @@ package team3d.screens
 		 * @private
 		 * Shows the screen
 		 */
-		public function show($e:LoaderEvent):void
+		private function show($e:LoaderEvent = null):void
 		{
-			trace("title loaded");
+			trace("loaded");
 			_titleLogo = Sprite($e.target.content);
-			TweenMax.fromTo(_titleLogo, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+			TweenMax.fromTo(_titleLogo, 1, { autoAlpha:0 }, { autoAlpha:1 } );
 			this.visible = true;
+			
 			World.instance.stage.addEventListener(MouseEvent.CLICK, mouseClick);
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		private function mouseClick($e:MouseEvent):void 
+		private function mouseClick(e:MouseEvent):void 
 		{
-			if (World.instance.stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE)
-			{
-				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-				World.instance.stage.mouseLock = true;
-			}
-			this.DoneSignal.dispatch(0);
+			this.DoneSignal.dispatch();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -99,10 +97,13 @@ package team3d.screens
 		/**
 		 * @private
 		 * Hides the screen
+		 *
+		 * @param	$param1	Describe param1 here.
+		 * @return			Describe the return value here.
 		 */
 		protected function hide():void
 		{
-			TweenMax.fromTo(_titleLogo, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
+			TweenMax.fromTo(_titleLogo, 1, { autoAlpha: 1 }, { autoAlpha:0, onComplete:destroy } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		

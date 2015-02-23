@@ -46,11 +46,6 @@ package team3d.screens
 		{
 			super();
 			
-			//World.instance.stage.addEventListener(Event.RESIZE, windowResize);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.P, toggleFullscreen);
-			
-			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			
 			//_view = new View3D();
 			_fullscreen = false;
 		}
@@ -62,7 +57,7 @@ package team3d.screens
 		 */
 		public function Begin():void
 		{
-			//this.addChild(_view);
+			World.instance.CurrentScreen = "Game";
 			this.addChild(World.instance.view);
 			World.instance.Begin();
 			
@@ -88,31 +83,24 @@ package team3d.screens
 			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
 			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics
 			
-			var format:TextFormat = new TextFormat();
-			format.size = 30;
-			format.bold = true;
-			
-			var tf:TextField = new TextField();
-			tf.defaultTextFormat = format;
-			tf.autoSize = TextFieldAutoSize.LEFT;
-            tf.mouseEnabled = false;
-            tf.selectable = false;
-			tf.textColor = 0x000000;
-			tf.background = true;
-			tf.backgroundColor = 0xFFFFFF;
-			tf.border = true;
-			tf.borderColor = 0xCC0066;
-			tf.visible = true;
-			tf.alpha = 1;
-			
-			tf.x = tf.y = 125;
-			tf.text = "This is in the game screen";
-			this.addChild(tf);
-			
 			_player = new HumanPlayer(World.instance.view.camera);
 			World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
 			_player.Begin();
+			
+			this.addEventListener(Event.ENTER_FRAME, enterFrame);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Ends the screen
+		 */
+		public function End():void
+		{
+			World.instance.End();
+			_player.End();
+			_floor = null;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -149,28 +137,6 @@ package team3d.screens
 				
 				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
 				World.instance.addMaze(maze);
-			}
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * toggles the full screen settings
-		 */
-		protected function toggleFullscreen():void
-		{
-			_fullscreen = !_fullscreen;
-			if (_fullscreen)
-			{
-				trace("going full screen");
-				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-				World.instance.stage.mouseLock = true;
-			}
-			else
-			{
-				trace("leaving full screen");
-				World.instance.stage.displayState = StageDisplayState.NORMAL;
 			}
 		}
 		
