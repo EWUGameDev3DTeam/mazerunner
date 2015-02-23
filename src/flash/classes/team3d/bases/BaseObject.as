@@ -2,7 +2,7 @@ package team3d.bases
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
-	import team3d.utils.World;
+	import team3d.objects.World;
 
 	
 	/**

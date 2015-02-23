@@ -10,7 +10,7 @@
 	import flash.text.TextFormat;
 	import team3d.screens.GameScreen;
 	import team3d.screens.TitleScreen;
-	import team3d.utils.World;
+	import team3d.objects.World;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -33,7 +33,7 @@
 		public function Main()
 		{
 			KeyboardManager.init(this.stage);
-			World.instance.stage = this.stage;
+			World.instance.init(this.stage);
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, added);
 			

@@ -12,7 +12,7 @@ package team3d.controllers
 	import flash.geom.Vector3D;
 	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
-	import team3d.utils.World;
+	import team3d.objects.World;
 	
 	/**
 	 * ...
@@ -27,6 +27,8 @@ package team3d.controllers
 		{
 			_cam = $cam;
 			_fpc = $fpc;
+			
+			_cam.z = 3000;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -58,6 +60,7 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
+			$speed += 20;
 			var zrots:Number = _cam.rotationZ * BaseController.TORADS;
 			var yrots:Number = _cam.rotationY * BaseController.TORADS;
 			var xrots:Number = _cam.rotationX * BaseController.TORADS;

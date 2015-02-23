@@ -5,6 +5,7 @@ package team3d.controllers
 	import away3d.controllers.FirstPersonController;
 	import away3d.core.partition.MeshNode;
 	import away3d.entities.Mesh;
+	import awayphysics.dynamics.AWPRigidBody;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.MovieClip;
@@ -12,21 +13,21 @@ package team3d.controllers
 	import flash.geom.Vector3D;
 	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
-	import team3d.utils.World;
+	import team3d.objects.World;
 	
 	/**
 	 * ...
 	 * @author Dan Watt
 	 */
-	public class HumanController extends BaseController
+	public class FirstPersonCameraController extends BaseController
 	{
 		private var _fpc	:FirstPersonController;
-		private var _model	:Mesh;
+		private var _rb		:AWPRigidBody;
 		private var _cam	:Camera3D;
 		
-		public function HumanController($model:Mesh, $cam:Camera3D, $fpc:FirstPersonController)
+		public function FirstPersonCameraController($rb:AWPRigidBody, $cam:Camera3D, $fpc:FirstPersonController)
 		{
-			_model = $model;
+			_rb = $rb;
 			_cam = $cam;
 			_fpc = $fpc;
 		}
@@ -60,39 +61,41 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
-			var zrot:Number = _model.rotationZ * BaseController.TORADS;
+			var zrot:Number = _rb.rotationZ * BaseController.TORADS;
 			// move forward
+			var speed:Number = 6;
 			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
 			{
+				_rb.linearVelocity = new Vector3D(speed * Math.sin(zrot), -speed * Math.cos(zrot), 0, 0);
 				//trace("moving forward");
-				_model.x += $speed * Math.sin(zrot);
-				_model.y -= $speed * Math.cos(zrot);
+				//_model.x += $speed * Math.sin(zrot);
+				//_model.y -= $speed * Math.cos(zrot);
 			}
 			
 			// move backward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				//trace("moving backward");
-				_model.x -= $speed * Math.sin(zrot);
-				_model.y += $speed * Math.cos(zrot);
+				//_model.x -= $speed * Math.sin(zrot);
+				//_model.y += $speed * Math.cos(zrot);
 			}
 			
 			// strafe left
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
 			{
-				_model.y -= $speed * Math.sin(zrot);
-				_model.x -= $speed * Math.cos(zrot);
+				//_model.y -= $speed * Math.sin(zrot);
+				//_model.x -= $speed * Math.cos(zrot);
 			}
 			// strafe right
 			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
-				_model.y += $speed * Math.sin(zrot);
-				_model.x += $speed * Math.cos(zrot);
+				//_model.y += $speed * Math.sin(zrot);
+				//_model.x += $speed * Math.cos(zrot);
 			}
 			
-			_cam.x = _model.x;
-			_cam.y = _model.y;
-			_cam.z = _model.z;
+			_cam.x = _rb.x;// - 300 * Math.cos(zrot);
+			_cam.y = _rb.y;// - 300 * Math.sin(zrot);
+			_cam.z = _rb.z;// + 20;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -109,8 +112,14 @@ package team3d.controllers
 			// move the camera up or down
 			_fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
-			_model.rotationZ += $e.movementX * 0.1;
-			_cam.rotationZ = _model.rotationZ;
+			//if($e.movementX != 0)
+			//_cam.rotationZ += $e.movementX * 0.1;
+			_cam.rotationZ += $e.movementX * 0.1;
+			
+			_rb.rotationX = 0;// _cam.rotationX;
+			_rb.rotationY = _cam.rotationY;
+			_rb.rotationZ = _cam.rotationZ;
+			//_cam.rotationZ = _rb.rotationZ;
 		}
 	}
 }
