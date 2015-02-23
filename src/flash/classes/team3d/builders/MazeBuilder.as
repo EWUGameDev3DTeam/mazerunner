@@ -7,7 +7,7 @@ package team3d.builders
 	import com.jakobwilson.AssetBuilder;
 	import flash.display.Sprite;
 	import flash.geom.Vector3D;
-	import team3d.builders.MazePieces.MazeRoom;
+	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.maze.Maze;
 	import team3d.utils.Utils;
 	

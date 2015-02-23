@@ -1,5 +1,4 @@
-package team3d.builders.MazePieces
-{
+package team3d.objects.maze {
 	import awayphysics.dynamics.AWPRigidBody;
 	import team3d.builders.MazeBuilder;
 	

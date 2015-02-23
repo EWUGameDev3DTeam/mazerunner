@@ -1,7 +1,7 @@
 package team3d.objects.maze
 {
 	import awayphysics.dynamics.AWPRigidBody;
-	import team3d.builders.MazePieces.MazeRoom;
+	import team3d.objects.maze.MazeRoom;
 	
 	/**
 	 * ...

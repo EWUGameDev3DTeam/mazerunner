@@ -55,7 +55,7 @@ package team3d.objects {
 			//Set up the physics world
 			_physics = AWPDynamicsWorld.getInstance();
 			_physics.initWithDbvtBroadphase();
-			_physics.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
+			_physics.gravity = new Vector3D(0, 0, -4.6);//move gravity to pull down on z axis
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

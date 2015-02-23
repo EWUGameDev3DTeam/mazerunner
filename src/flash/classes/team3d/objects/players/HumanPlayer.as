@@ -12,7 +12,8 @@ package team3d.objects.players
 	import flash.geom.Vector3D;
 	import team3d.bases.BasePlayer;
 	import team3d.controllers.FlyController;
-	import team3d.controllers.HumanController;
+	import team3d.controllers.FirstPersonCameraController;
+	import team3d.controllers.ThirdPersonCameraController;
 	import team3d.interfaces.IController;
 	
 	/**
@@ -35,23 +36,22 @@ package team3d.objects.players
 			
 			_cam = $cam;
 			_fpc = new FirstPersonController(_cam, 0, 90, 0, 180, 0, true);
-			//_fpc.fly = true;
-			//_controller = new HumanController(_model, _cam, _fpc);
-			_controller = new FlyController(_cam, _fpc);
-			
 			
 			_mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
 			_mesh.x = 300;
 			_mesh.y = 300;
 			_mesh.z = 3000;
 			var pShape:AWPBoxShape = new AWPBoxShape(100,100,100);
-			_rb = new AWPRigidBody(pShape, _mesh, 1);
-			//World.instance.physics.addRigidBody(pRigidBody);
-			_rb.friction = 1;
+			_rb = new AWPRigidBody(pShape, _mesh, 100);
+			_rb.friction = 10;
 			_rb.position = new Vector3D(_mesh.x, _mesh.y, _mesh.z);
-			_rb.applyTorque(new Vector3D(0, 1, 1));
+			//_rb.linearDamping = 0.8;
+			//_rb.angularSleepingThreshold = 0;
+			//_rb.applyTorque(new Vector3D(0, 1, 1));
 			
-			//_mesh = $m;
+			_controller = new ThirdPersonCameraController(_rb, _cam, _fpc);
+			//_controller = new FirstPersonCameraController(_rb, _cam, _fpc);
+			//_controller = new FlyController(_cam, _fpc);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

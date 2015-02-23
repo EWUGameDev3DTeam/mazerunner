@@ -1,15 +1,10 @@
 package team3d.screens
 {
-	import away3d.cameras.lenses.LensBase;
-	import away3d.cameras.lenses.PerspectiveLens;
-	import away3d.containers.View3D;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
-	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.PlaneGeometry;
 	import away3d.tools.utils.Bounds;
 	import awayphysics.collision.shapes.AWPBoxShape;
-	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.AssetBuilder;
 	import com.natejc.input.KeyboardManager;
@@ -22,7 +17,6 @@ package team3d.screens
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import team3d.builders.MazeBuilder;
-	import team3d.builders.MazePieces.MazeRoom;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.objects.World;
