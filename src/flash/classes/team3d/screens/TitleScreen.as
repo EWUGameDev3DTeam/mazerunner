@@ -77,10 +77,13 @@ package team3d.screens
 		{
 			if (World.instance.stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE)
 			{
+				DebugScreen.Text.text = "here";
 				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+				DebugScreen.Text.text += "\nand here";
 				World.instance.stage.mouseLock = true;
+				
 			}
-			this.DoneSignal.dispatch(0);
+			//this.DoneSignal.dispatch(0);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

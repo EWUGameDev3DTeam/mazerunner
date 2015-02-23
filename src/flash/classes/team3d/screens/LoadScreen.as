@@ -68,7 +68,7 @@ package team3d.screens
 		 */
 		private function show($e:LoaderEvent = null):void
 		{
-			trace("loaded");
+			trace("load screen loaded");
 			_titleLogo = Sprite($e.target.content);
 			TweenMax.fromTo(_titleLogo, 1, { autoAlpha:0 }, { autoAlpha:1 } );
 			this.visible = true;
