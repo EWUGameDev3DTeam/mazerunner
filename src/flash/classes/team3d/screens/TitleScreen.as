@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import adobe.utils.CustomActions;
 	import flash.display.Sprite;
@@ -60,7 +60,7 @@ package team3d.screens
 			
 			tf.x = tf.y = 100;
 			tf.text = "This is in the title screen";
-			this.addChild(tf);
+			//this.addChild(tf);
 			Show();
 		}
 		

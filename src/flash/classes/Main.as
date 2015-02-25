@@ -71,8 +71,8 @@
 			_textField.alpha = 1;
 			
 			_textField.x = _textField.y = 0;
-            _textField.text = "why?!";
-			this.addChild(_textField);
+            _textField.text = "No mouse data";
+			//this.addChild(_textField);
 			
             World.instance.stage.scaleMode = StageScaleMode.NO_SCALE;
 			World.instance.stage.align = StageAlign.TOP_LEFT;

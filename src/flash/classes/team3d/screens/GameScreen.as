@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.containers.View3D;
 	import away3d.controllers.FirstPersonController;
@@ -7,7 +7,12 @@ package team3d.screens
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.PlaneGeometry;
 	import awayphysics.collision.shapes.AWPBoxShape;
+	import awayphysics.collision.shapes.AWPCylinderShape;
+	import awayphysics.collision.dispatch.AWPGhostObject;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
+	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.AssetBuilder;
 	import com.natejc.input.KeyboardManager;
@@ -21,6 +26,17 @@ package team3d.screens
 	import flash.text.TextFormat;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.utils.World;
+	import com.jakobwilson.AssetBuilder;
+	import com.jakobwilson.Asset;
+	
+	
+	
+	import away3d.materials.TextureMaterial;
+	import away3d.materials.methods.OutlineMethod;
+	import away3d.Away3D;
+	import awayphysics.collision.shapes.AWPCapsuleShape;
+	import com.jakobwilson.AssetManager;
+	import com.jakobwilson.AssetManager;
 
 	
 	/**
@@ -46,6 +62,12 @@ package team3d.screens
 		private var _player		:HumanPlayer;
 		/* The physics world */
 		private var _world		:AWPDynamicsWorld;
+		
+		private var ghostObject:AWPGhostObject;
+		
+		private var _character:AWPKinematicCharacterController ;
+		
+		private var ASM:AssetManager;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -77,80 +99,86 @@ package team3d.screens
 			//Set up the physics world
 			this._world = AWPDynamicsWorld.getInstance();
 			this._world.initWithDbvtBroadphase();
-			this._world.gravity = new Vector3D(0,0,-1);//move gravity to pull down on z axis
+			this._world.gravity = new Vector3D(0,-1,0);//move gravity to pull down on z axis
+
+			//enqueue each item with the following params:(name, filename, collision type(Asset.[NONE, BOX, SPHERE]), physics type (Asset.[STATIC, DYNAMIC]))
+			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.DYNAMIC);
 			
-			this._greenCube = new Mesh(new CubeGeometry(), new ColorMaterial(0x00FF00));
-			this._greenCube.x = 200;
-			this._greenCube.y = 300;
-			this._greenCube.z = 50;
-			this._view.scene.addChild(this._greenCube);
+			AssetManager.instance.load(this.onProgress, this.onComplete);
 			
-			//ugly Cube hysics
-			var cubeShape:AWPBoxShape = new AWPBoxShape(100,100,100);
-			var cubeRigidBody:AWPRigidBody = new AWPRigidBody(cubeShape,this._greenCube,1);
-			_world.addRigidBody(cubeRigidBody);
-			cubeRigidBody.friction = 1;
-			cubeRigidBody.position = new Vector3D(this._greenCube.x,this._greenCube.y,this._greenCube.z);
-			cubeRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			//end ugly physics			
-			
-			
-			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
-			this._view.scene.addChild(this._floor);
-			//Ugly Floor Physics
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000,10000,1);
-			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol,_floor,0);
-			_world.addRigidBody(floorRigidBody);
-			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(0,0,-50);
-			// end ugly physics		
-			this._floor.x = 0;
-			this._floor.y = 0;
-			this._floor.z = -50;
-			this._floor.rotationX += 180;
-			
-			//Make a wall
-			var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
-			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
-			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics
-			
-			var format:TextFormat = new TextFormat();
-			format.size = 30;
-			format.bold = true;
-			
-			var tf:TextField = new TextField();
-			tf.defaultTextFormat = format;
-			tf.autoSize = TextFieldAutoSize.LEFT;
-            tf.mouseEnabled = false;
-            tf.selectable = false;
-			tf.textColor = 0x000000;
-			tf.background = true;
-			tf.backgroundColor = 0xFFFFFF;
-			tf.border = true;
-			tf.borderColor = 0xCC0066;
-			tf.visible = true;
-			tf.alpha = 1;
-			
-			tf.x = tf.y = 125;
-			tf.text = "This is in the game screen";
-			this.addChild(tf);
 			
 			// player shit
 			// basic player model
 			var p:Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
-			var pShape:AWPBoxShape = new AWPBoxShape(100,100,100);
-			var pRigidBody:AWPRigidBody = new AWPRigidBody(pShape, p, 1);
-			_world.addRigidBody(cubeRigidBody);
-			pRigidBody.friction = 1;
-			pRigidBody.position = new Vector3D(p.x, p.y, p.z);
-			pRigidBody.applyTorque(new Vector3D(0, 1, 1));
-			
+			//var pShape:AWPBoxShape = new AWPBoxShape(1,1,1);
+			//var pRigidBody:AWPRigidBody = new AWPRigidBody(pShape, p, 1);
+			//_world.addRigidBody(pRigidBody);
+			//pRigidBody.friction = 1;
+			//pRigidBody.position = new Vector3D(p.x, p.y, p.z);
+			//pRigidBody.applyTorque(new Vector3D(0, 1, 1));
 			// add the model to the scene
-			_view.scene.addChild(p);
+			//_view.scene.addChild(p);
 			// create a new player and give it the camera and the model
 			_player = new HumanPlayer(_view.camera, p);
 			// start the player, this also starts the HumanController associated with it
 			_player.Begin();
+						
+						
+			//get the asset manager			
+						
+			
+			//Make a character controller
+			/*var shape:AWPCapsuleShape = new AWPCapsuleShape(150, 500);
+			ghostObject = new AWPGhostObject(shape, _view.camera);
+			ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
+
+			 _character = new AWPKinematicCharacterController(ghostObject, 1);
+			_character.setWalkDirection(new Vector3D(0,1,0));
+			_character.ghostObject.position = new Vector3D(0, 5000, -500);
+			this._world.addCharacter(_character);*/
+			
+		}
+		
+		public function onProgress(x:Number)
+		{
+			trace("Progress: " + x);
+		}
+		
+		public function onComplete()
+		{
+			
+			AssetManager.instance.getAsset("Cage").addToScene(this._view, this._world);			//NOTE: if you try to get and asset that hasn't been loaded, you will get a null
+			AssetManager.instance.getAsset("Cage").transformTo(new Vector3D(0,5000,0));			//Note: we are translating the original asset since we used getAsset()
+			AssetManager.instance.getAsset("Cage").rigidBody.applyTorque(new Vector3D(0,10,10));//gets the rigidbody from the asset(read only) and applies torque
+			
+			
+			
+			//Creates a simple grid with a floor and walls
+			var cur:Asset;	//An asset reference
+			for(var i:int = 0;i < 5; i++)		//if you don't know what this does, go get more coffee
+			{
+				for(var j:int = 0;j < 5; j++)
+				{
+					cur = AssetManager.instance.getCopy("Floor");					//getCopy() gets a clone of an asset by name
+					cur.transformTo(new Vector3D(j*850 - 2550,0,i*850 - 2550));		//transformTo() moves that asset to a specific location
+					cur.addToScene(this._view, this._world);						//addToScene() adds the asset to the view and the physics world(if applicable)
+					
+					//repeat process for length walls
+					cur = AssetManager.instance.getCopy("Wall");	
+					cur.transformTo(new Vector3D(j*850 - 2125,0,i*850 - 2550));
+					cur.addToScene(this._view, this._world);
+					
+					//repeat for width walls and apply rotation
+					cur = AssetManager.instance.getCopy("Wall");	
+					cur.transformTo(new Vector3D(j*850 - 2550,0,i*850 - 2125));
+					cur.rotateTo(new Vector3D(0,90,0));								//rotateTo() rotated the asset to a specific rotation
+					cur.addToScene(this._view, this._world);
+					
+				}
+			}
+				
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -162,9 +190,29 @@ package team3d.screens
 		 */
 		private function windowResize(e:Event = null):void 
 		{
+			//this._character.ghostObject.rotationZ += 20;
 			_view.width = World.instance.stage.stageWidth;
 			_view.height = World.instance.stage.stageHeight;
 		}
+		
+	/* ---------------------------------------------------------------------------------------- */
+		/**
+		*	adds the walls to the game
+		*/
+		public function initFloor(assetType:int, asset:Object)		
+		{
+			if(assetType == AssetBuilder.MESH)
+			{
+				Mesh(asset).z = -49;
+				Mesh(asset).x = 0;
+				Mesh(asset).roll(270);
+				
+				this._view.scene.addChild(Mesh(asset));
+				trace("Added non physics object");
+			}
+		}
+		
+		
 		
 		/* ---------------------------------------------------------------------------------------- */
 		/**
@@ -174,7 +222,16 @@ package team3d.screens
 		{
 			if(assetType == AssetBuilder.MESH)
 			{
-				Mesh(asset).scale(50);
+				Mesh(asset).z = 0;
+				Mesh(asset).x = 0;
+				Mesh(asset).roll(270);
+				//the outline method
+				var o:OutlineMethod = new OutlineMethod(0xFFFF00,0.01, false);
+				//add it
+				TextureMaterial(Mesh(asset).material).addMethod(o);
+				//remove it
+				TextureMaterial(Mesh(asset).material).removeMethod(o);
+				
 				this._view.scene.addChild(Mesh(asset));
 				trace("Added non physics object");
 			}
@@ -189,14 +246,22 @@ package team3d.screens
 				
 				
 				var cpy:AWPRigidBody;
-				for(var i:int = 0;i < 10;i++)
+				for(var i:int = 0;i < 3;i++)
 				{
 					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
-					cpy.position = new Vector3D(i*260, 0, 0);
+					cpy.position = new Vector3D( -425,i*850, -50);
 					this._view.scene.addChild(cpy.skin);
 					this._world.addRigidBody(cpy);
 				}
 				
+				for(i = 0;i < 5;i++)
+				{
+					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
+					cpy.rotation = new Vector3D(90,0,90);
+					cpy.position = new Vector3D(0, (i*850)-425, -50);
+					this._view.scene.addChild(cpy.skin);
+					this._world.addRigidBody(cpy);
+				}
 			}
 		}
 		
@@ -229,6 +294,32 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
+		
+			/*if(KeyboardManager.instance.isKeyDown(KeyCode.UP))
+			{
+				this._character.ghostObject.position = new Vector3D
+					(this._character.ghostObject.x + Math.sin(this._character.ghostObject.rotationY)*20,
+					this._character.ghostObject.y,
+					this._character.ghostObject.z + Math.cos(this._character.ghostObject.rotationY)*20);			}
+			if(KeyboardManager.instance.isKeyDown(KeyCode.DOWN))
+			{
+				this._character.ghostObject.position = new Vector3D
+					(this._character.ghostObject.x - Math.sin(this._character.ghostObject.rotationY)*20,
+					this._character.ghostObject.y,
+					this._character.ghostObject.z - Math.cos(this._character.ghostObject.rotationY)*20);
+			}
+			if(KeyboardManager.instance.isKeyDown(KeyCode.LEFT))
+			{
+				this._character.ghostObject.rotationY = ((this._character.ghostObject.rotationY - 1) % 359);
+				trace(this._character.ghostObject.rotationY)
+			}
+			if(KeyboardManager.instance.isKeyDown(KeyCode.RIGHT))
+			{
+				this._character.ghostObject.rotationY = ((this._character.ghostObject.rotationY + 1) % 359);
+				trace(this._character.ghostObject.rotationY)
+			}
+			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
+				this._character.jump();*/
 			_world.step(1/30, 1, 1/30);
 			_view.render();
 		}
