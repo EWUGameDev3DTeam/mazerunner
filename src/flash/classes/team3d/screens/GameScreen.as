@@ -147,6 +147,8 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
+			if (!World.instance.stage.mouseLock)
+				World.instance.stage.mouseLock = true;
 			World.instance.update();
 		}
 		

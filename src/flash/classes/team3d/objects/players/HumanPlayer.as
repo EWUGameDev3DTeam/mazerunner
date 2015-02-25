@@ -49,9 +49,9 @@ package team3d.objects.players
 			//_rb.angularSleepingThreshold = 0;
 			//_rb.applyTorque(new Vector3D(0, 1, 1));
 			
-			_controller = new ThirdPersonCameraController(_rb, _cam, _fpc);
+			//_controller = new ThirdPersonCameraController(_rb, _cam, _fpc);
 			//_controller = new FirstPersonCameraController(_rb, _cam, _fpc);
-			//_controller = new FlyController(_cam, _fpc);
+			_controller = new FlyController(_cam, _fpc);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
