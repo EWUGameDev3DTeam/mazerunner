@@ -1,6 +1,8 @@
 package team3d.screens
 {
+	import com.greensock.loading.LoaderMax;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -17,7 +19,7 @@ package team3d.screens
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public static var Text:TextField = new TextField();
+		private static var _text:TextField = new TextField();
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -35,7 +37,7 @@ package team3d.screens
 		
 		private function clearText():void 
 		{
-			Text.text = "";
+			DebugScreen.Text("");
 		}
 		
 		public function Begin()
@@ -44,21 +46,33 @@ package team3d.screens
 			format.size = 30;
 			format.bold = true;
 			
-			Text.defaultTextFormat = format;
-			Text.autoSize = TextFieldAutoSize.LEFT;
-            Text.mouseEnabled = false;
-            Text.selectable = false;
-			Text.textColor = 0x000000;
-			Text.background = true;
-			Text.backgroundColor = 0xFFFFFF;
-			Text.border = true;
-			Text.borderColor = 0xCC0066;
-			Text.visible = true;
-			Text.alpha = 1;
+			_text.defaultTextFormat = format;
+			_text.autoSize = TextFieldAutoSize.LEFT;
+            _text.mouseEnabled = false;
+            _text.selectable = false;
+			_text.textColor = 0x000000;
+			_text.background = true;
+			_text.backgroundColor = 0xFFFFFF;
+			_text.border = true;
+			_text.borderColor = 0xCC0066;
+			_text.visible = true;
+			_text.alpha = 1;
 			
-			Text.x = Text.y = 0;
-            Text.text = "why?!";
-			this.addChild(Text);
+			_text.x = _text.y = 0;
+			this.addChild(_text);
+		}
+		
+		public static function Text($s:String, $append:Boolean = false):void
+		{
+			if($append)
+				_text.appendText($s);
+			else
+				_text.text = $s;
+			
+			if (_text.length < 1)
+				_text.visible = false;
+			else if(!_text.visible)
+				_text.visible = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		

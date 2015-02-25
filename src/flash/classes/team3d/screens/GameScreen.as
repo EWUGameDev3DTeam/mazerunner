@@ -1,5 +1,7 @@
 package team3d.screens
 {
+	import away3d.cameras.Camera3D;
+	import away3d.controllers.FirstPersonController;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.PlaneGeometry;
@@ -17,6 +19,8 @@ package team3d.screens
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import team3d.builders.MazeBuilder;
+	import team3d.controllers.FirstPersonCameraController;
+	import team3d.controllers.FlyController;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.objects.World;
@@ -89,6 +93,8 @@ package team3d.screens
 			_player.Begin();
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
+			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			World.instance.view.camera = FirstPersonCameraController(_player.Controller).Camera;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -144,11 +150,40 @@ package team3d.screens
 		
 		/**
 		 * @private
+		 * Toggles the camera between first and fly cam
+		 *
+		 * @param	$param1	Describe param1 here.
+		 * @return			Describe the return value here.
+		 */
+		protected function toggleCamera():void
+		{
+			
+			_player.Controller.End();
+			
+			if (_player.Controller is FirstPersonCameraController)
+			{
+				_player.Controller = HumanPlayer.FLYController;
+				World.instance.view.camera = FlyController(_player.Controller).Camera
+			}
+			else
+			{
+				_player.Controller = HumanPlayer.FPCController;
+				World.instance.view.camera = FirstPersonCameraController(HumanPlayer.FPCController).Camera;
+			}
+			
+			_player.Controller.Begin();
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * @private
 		 */
 		protected function enterFrame($e:Event):void
 		{
 			if (!World.instance.stage.mouseLock)
 				World.instance.stage.mouseLock = true;
+				
 			World.instance.update();
 		}
 		

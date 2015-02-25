@@ -2,6 +2,7 @@ package team3d.controllers
 {
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
+	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
 	import away3d.core.partition.MeshNode;
 	import away3d.entities.Mesh;
@@ -111,6 +112,11 @@ package team3d.controllers
 			_fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
 			_cam.rotationZ += $e.movementX * 0.1;
+		}
+		
+		public function get Camera():Camera3D
+		{
+			return _cam;
 		}
 	}
 }

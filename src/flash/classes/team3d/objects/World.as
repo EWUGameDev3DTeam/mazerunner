@@ -43,10 +43,6 @@ package team3d.objects {
 				throw new Error("Cannot be initialized");
 			
 			_view = new View3D();
-			
-			var lb:LensBase = new PerspectiveLens(75);
-			lb.far = 20000;
-			_view.camera.lens = lb;
 			ScreenChange = new Signal();
 		}
 		
@@ -195,24 +191,6 @@ package team3d.objects {
 		{
 			_view.width = _stage.stageWidth;
 			_view.height = _stage.stageHeight;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Gets the current physics world object
-		 * @return			The Physics object - AWPDynamicsWorld
-		 */
-		public function get physics():AWPDynamicsWorld
-		{
-			return _physics;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		public function set physics($p:AWPDynamicsWorld):void
-		{
-			_physics = $p;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

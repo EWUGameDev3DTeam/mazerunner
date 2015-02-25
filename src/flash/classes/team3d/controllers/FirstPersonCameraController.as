@@ -2,9 +2,11 @@ package team3d.controllers
 {
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
+	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
 	import away3d.core.partition.MeshNode;
 	import away3d.entities.Mesh;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
@@ -39,6 +41,8 @@ package team3d.controllers
 		 */
 		override public function Begin():void
 		{
+			this._rb.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);
+			
 			World.instance.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 		}
 		
@@ -64,38 +68,86 @@ package team3d.controllers
 			var zrot:Number = _rb.rotationZ * BaseController.TORADS;
 			// move forward
 			var speed:Number = 6;
-			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
-			{
-				_rb.linearVelocity = new Vector3D(speed * Math.sin(zrot), -speed * Math.cos(zrot), 0, 0);
-				//trace("moving forward");
-				//_model.x += $speed * Math.sin(zrot);
-				//_model.y -= $speed * Math.cos(zrot);
-			}
 			
-			// move backward
-			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
-			{
-				//trace("moving backward");
-				//_model.x -= $speed * Math.sin(zrot);
-				//_model.y += $speed * Math.cos(zrot);
-			}
+			if (KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
+				speed = speed * .5;
 			
-			// strafe left
-			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
+			var upVector:Vector3D = new Vector3D(speed * Math.sin(zrot), -speed * Math.cos(zrot));
+			var downVector:Vector3D = new Vector3D( -speed * Math.sin(zrot), speed * Math.cos(zrot));
+			var leftVector:Vector3D = new Vector3D( -speed * Math.cos(zrot), -speed * Math.sin(zrot));
+			var rightVector:Vector3D = new Vector3D(speed * Math.cos(zrot), speed * Math.sin(zrot));
+			
+			
+			
+			if (this._rb.z > 50.6)
 			{
-				//_model.y -= $speed * Math.sin(zrot);
-				//_model.x -= $speed * Math.cos(zrot);
+				//prevents air walking
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.W) && KeyboardManager.instance.isKeyDown(KeyCode.A))
+			{
+				this._rb.linearVelocity = new Vector3D((speed * .707) * Math.sin(zrot), (-speed * .707) * Math.cos(zrot)).add(new Vector3D((-speed * .707) * Math.cos(zrot),  (-speed * .707) * Math.sin(zrot)));
+				
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.W) && KeyboardManager.instance.isKeyDown(KeyCode.D))
+			{
+				this._rb.linearVelocity = new Vector3D((speed * .707) * Math.sin(zrot), (-speed * .707) * Math.cos(zrot)).add(new Vector3D((speed * .707) * Math.cos(zrot),  (speed * .707) * Math.sin(zrot)));
+				
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.S) && KeyboardManager.instance.isKeyDown(KeyCode.A))
+			{
+				this._rb.linearVelocity = new Vector3D((-speed * .707) * Math.sin(zrot), (speed * .707) * Math.cos(zrot)).add(new Vector3D((-speed * .707) * Math.cos(zrot),  (-speed * .707) * Math.sin(zrot)));
+				
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.S) && KeyboardManager.instance.isKeyDown(KeyCode.D))
+			{
+				this._rb.linearVelocity = new Vector3D((-speed * .707) * Math.sin(zrot), (speed * .707) * Math.cos(zrot)).add(new Vector3D((speed * .707) * Math.cos(zrot),  (speed * .707) * Math.sin(zrot)));
+				
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.W)) // move forward
+			{
+				this._rb.linearVelocity = upVector;
+				
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.S)) // move backward
+			{
+				this._rb.linearVelocity = downVector;
+
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.A)) // strafe left
+			{
+				this._rb.linearVelocity = leftVector;
+				
+				this._rb.linearDamping = .1;//prevents lockup
 			}
 			// strafe right
-			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
-				//_model.y += $speed * Math.sin(zrot);
-				//_model.x += $speed * Math.cos(zrot);
+				this._rb.linearVelocity = rightVector;
+
+				this._rb.linearDamping = .1;//prevents lockup
+			}
+			else if(this._rb.z > 50.4 && this._rb.z < 50.6)
+			{
+				this._rb.linearDamping = 1;
+			}
+			
+			if (KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR) && this._rb.z > 50.4 && this._rb.z < 50.6)
+			{
+				this._rb.linearVelocity = this._rb.linearVelocity.add(new Vector3D(0, 0, 6));
 			}
 			
 			_cam.x = _rb.x;// - 300 * Math.cos(zrot);
 			_cam.y = _rb.y;// - 300 * Math.sin(zrot);
-			_cam.z = _rb.z;// + 20;
+			_cam.z = _rb.z + 100;// + 20;
+			
+			_rb.rotationY = _cam.rotationY;
+			_rb.rotationZ = _cam.rotationZ;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -120,6 +172,11 @@ package team3d.controllers
 			_rb.rotationY = _cam.rotationY;
 			_rb.rotationZ = _cam.rotationZ;
 			//_cam.rotationZ = _rb.rotationZ;
+		}
+		
+		public function get Camera():Camera3D
+		{
+			return _cam;
 		}
 	}
 }

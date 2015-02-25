@@ -4,6 +4,7 @@ package team3d.screens
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.TweenMax;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
 	import flash.events.MouseEvent;
@@ -51,8 +52,7 @@ package team3d.screens
 		public function Begin():void
 		{
 			World.instance.CurrentScreen = "Title";
-			DebugScreen.Text.text = "Now in title screen";
-			var title:ImageLoader = new ImageLoader("Images/titlescreen.jpg", { name:"titleimage", container:this, x:0, y:0, width:900, height:600, scaleMode:"stretch", onComplete:show } );
+			var title:ImageLoader = new ImageLoader("images/titlescreen.jpg", { name:"titleimage", container:this, x:0, y:0, width:900, height:600, scaleMode:"stretch", onComplete:show } );
 			title.load();
 		}
 		
@@ -77,9 +77,7 @@ package team3d.screens
 		{
 			if (World.instance.stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE)
 			{
-				DebugScreen.Text.text = "here";
 				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-				DebugScreen.Text.text += "\nand here";
 			}
 			this.DoneSignal.dispatch(0);
 		}
