@@ -4,10 +4,12 @@ package team3d.ui
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.TweenMax;
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
 	/**
@@ -27,19 +29,21 @@ package team3d.ui
 		
 		public function Button()
 		{
+			super();
 			_btnID = ButtonCount++;
 			this.useHandCursor = true;
 			this.buttonMode = true;
+			this.mouseChildren = false;
 			this.addEventListener(MouseEvent.ROLL_OUT, mouseOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			this.addEventListener(MouseEvent.MOUSE_UP, mouseHover);
 			this.addEventListener(MouseEvent.ROLL_OVER, mouseHover);
-			this.addEventListener(MouseEvent.CLICK, mouseClick);
 			
 			var imgWidth:int = 400;
 			var imgHeight:int = 200;
 			
 			_text = new TextField();
+			_text.autoSize = TextFieldAutoSize.CENTER;
 			_text.mouseEnabled = false;
 			_text.width = imgWidth;
 			_text.height = imgHeight;
@@ -55,12 +59,6 @@ package team3d.ui
 			queue.load();
 		}
 		
-		private function mouseClick(e:MouseEvent):void 
-		{
-			trace("dispatching");
-			this.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
-		}
-		
 		private function completed($e:LoaderEvent):void 
 		{
 			this.addChild(_text);
@@ -73,7 +71,10 @@ package team3d.ui
 			else
 				_text.text = $s;
 			
-			_text.y = this.height * 0.5 - _text.textHeight * 0.5 - 5;
+			var idle:DisplayObject = this.getChildByName("idle" + _btnID);
+				
+			_text.x = idle.width * 0.5 - _text.width * 0.5;
+			_text.y = idle.height * 0.5 - _text.textHeight * 0.5 - 5;
 		}
 		
 		public function set textFormat($tf:TextFormat):void

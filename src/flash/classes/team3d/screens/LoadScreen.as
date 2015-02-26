@@ -81,11 +81,9 @@ package team3d.screens
 		{
 			World.instance.CurrentScreen = "Loading";
 			var queue:LoaderMax = new LoaderMax( { onProgress:initProg, onComplete:show } );
-			var man:ImageLoader = new ImageLoader("images/GUI/Man.png", { name:"runningMan" } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"screenOverlay", width:900, height:600, scaleMode:"strech" } );
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
 			
 			queue.append(overlay);
-			queue.append(man);
 			
 			for (var i:int = 0; i < _aArrows.length; i++)
 				queue.append(new ImageLoader("images/GUI/Arrow.png", { name:("arrow" + i), width:50, height:60, alpha:0 } ));
@@ -116,8 +114,7 @@ package team3d.screens
 		private function show($e:LoaderEvent = null):void
 		{
 			
-			var background:Sprite = Sprite(LoaderMax.getContent("screenOverlay"));
-			var runningman:Sprite = Sprite(LoaderMax.getContent("runningMan"));
+			var background:Sprite = Sprite(LoaderMax.getContent("overlayLoad"));
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 30;
@@ -134,15 +131,35 @@ package team3d.screens
 			tf.alpha = 1;
 			tf.text = "Loading...";
 			tf.x = 50;
-			tf.y = 400;
+			tf.y = 425;
 			
 			this.addChild(background);
 			this.addChild(tf);
-			this.addChild(runningman);
+			
+			format = new TextFormat();
+			format.size = 48;
+			format.bold = true;
+			tf = new TextField();
+			tf.name = "summaryText";
+			tf.defaultTextFormat = format;
+			tf.autoSize = TextFieldAutoSize.LEFT;
+			tf.mouseEnabled = false;
+			tf.selectable = false;
+			tf.textColor = 0x000000;
+			tf.visible = true;
+			tf.alpha = 1;
+			tf.text = "Sentenced to life you have chosen to take\n";
+			tf.appendText("on the Doxen Empire's maze.\n");
+			tf.appendText("This is your only chance for escape;\n");
+			tf.appendText("however, those who fail die...\n");
+			tf.appendText("        ... and there is no turning back.");
+			tf.x = 45;
+			tf.y = 100;
+			this.addChild(tf);
 			
 			_aArrows[0] = LoaderMax.getContent("arrow0");
 			_aArrows[0].x = 50;
-			_aArrows[0].y = 450;
+			_aArrows[0].y = 475;
 			this.addChild(_aArrows[0]);
 			for (var i:int = 1; i < _aArrows.length; i++)
 			{
@@ -156,8 +173,8 @@ package team3d.screens
 			btn.name = "btnContinue";
 			btn.visible = false;
 			btn.x = (this.width - btn.width) * 0.5;
-			btn.y = 450 - btn.height * 0.5;
-			btn.text("Continue");
+			btn.y = 450 - btn.height * 0.5 + 20;
+			btn.text("Proceed");
 			format = new TextFormat();
 			format.size = 60;
 			format.bold = true;
