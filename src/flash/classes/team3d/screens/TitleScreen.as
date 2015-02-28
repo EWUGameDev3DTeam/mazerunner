@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import adobe.utils.CustomActions;
 	import com.greensock.events.LoaderEvent;
@@ -104,6 +104,7 @@ package team3d.screens
 			tf.textColor = 0x000000;
 			tf.visible = true;
 			tf.alpha = 1;
+<<<<<<< HEAD
 			tf.text = "Maze\nRunner";
 			tf.x = 50;
 			tf.y = 100;
@@ -160,6 +161,13 @@ package team3d.screens
 				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			}
 			this.DoneSignal.dispatch(0);
+=======
+			
+			tf.x = tf.y = 100;
+			tf.text = "This is in the title screen";
+			//this.addChild(tf);
+			Show();
+>>>>>>> AssetManagment
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
