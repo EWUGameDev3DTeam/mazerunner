@@ -29,8 +29,6 @@
 	import com.jakobwilson.AssetBuilder;
 	import com.jakobwilson.Asset;
 	
-	
-	
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.methods.OutlineMethod;
 	import away3d.Away3D;
@@ -38,6 +36,7 @@
 	import com.jakobwilson.AssetManager;
 	import com.jakobwilson.AssetManager;
 
+	
 	
 	/**
 	 * 
