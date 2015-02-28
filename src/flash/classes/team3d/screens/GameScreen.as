@@ -14,7 +14,6 @@
 	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPRigidBody;
-	import com.jakobwilson.AssetBuilder;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Sprite;
@@ -26,7 +25,6 @@
 	import flash.text.TextFormat;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.utils.World;
-	import com.jakobwilson.AssetBuilder;
 	import com.jakobwilson.Asset;
 	
 	import away3d.materials.TextureMaterial;
@@ -129,14 +127,14 @@
 						
 			
 			//Make a character controller
-			/*var shape:AWPCapsuleShape = new AWPCapsuleShape(150, 500);
+			var shape:AWPCapsuleShape = new AWPCapsuleShape(150, 500);
 			ghostObject = new AWPGhostObject(shape, _view.camera);
 			ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
 
 			 _character = new AWPKinematicCharacterController(ghostObject, 1);
 			_character.setWalkDirection(new Vector3D(0,1,0));
 			_character.ghostObject.position = new Vector3D(0, 5000, -500);
-			this._world.addCharacter(_character);*/
+			this._world.addCharacter(_character);
 			
 		}
 		
@@ -194,77 +192,6 @@
 			_view.height = World.instance.stage.stageHeight;
 		}
 		
-	/* ---------------------------------------------------------------------------------------- */
-		/**
-		*	adds the walls to the game
-		*/
-		public function initFloor(assetType:int, asset:Object)		
-		{
-			if(assetType == AssetBuilder.MESH)
-			{
-				Mesh(asset).z = -49;
-				Mesh(asset).x = 0;
-				Mesh(asset).roll(270);
-				
-				this._view.scene.addChild(Mesh(asset));
-				trace("Added non physics object");
-			}
-		}
-		
-		
-		
-		/* ---------------------------------------------------------------------------------------- */
-		/**
-		*	adds the walls to the game
-		*/
-		public function initWall(assetType:int, asset:Object)
-		{
-			if(assetType == AssetBuilder.MESH)
-			{
-				Mesh(asset).z = 0;
-				Mesh(asset).x = 0;
-				Mesh(asset).roll(270);
-				//the outline method
-				var o:OutlineMethod = new OutlineMethod(0xFFFF00,0.01, false);
-				//add it
-				TextureMaterial(Mesh(asset).material).addMethod(o);
-				//remove it
-				TextureMaterial(Mesh(asset).material).removeMethod(o);
-				
-				this._view.scene.addChild(Mesh(asset));
-				trace("Added non physics object");
-			}
-			if(assetType == AssetBuilder.RIGIDBODY)
-			{
-				
-				//apply some scaling, move the wall up and rotate it a little to see the physics
-				AWPRigidBody(asset).scale = new Vector3D(50,50,50);
-				//AWPRigidBody(asset).position = new Vector3D(0,0,-50);
-				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
-				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
-				
-				
-				var cpy:AWPRigidBody;
-				for(var i:int = 0;i < 3;i++)
-				{
-					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
-					cpy.position = new Vector3D( -425,i*850, -50);
-					this._view.scene.addChild(cpy.skin);
-					this._world.addRigidBody(cpy);
-				}
-				
-				for(i = 0;i < 5;i++)
-				{
-					cpy = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX ,AssetBuilder.STATIC);
-					cpy.rotation = new Vector3D(90,0,90);
-					cpy.position = new Vector3D(0, (i*850)-425, -50);
-					this._view.scene.addChild(cpy.skin);
-					this._world.addRigidBody(cpy);
-				}
-			}
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
 		 * @private
@@ -294,7 +221,7 @@
 		protected function enterFrame($e:Event):void
 		{
 		
-			/*if(KeyboardManager.instance.isKeyDown(KeyCode.UP))
+			if(KeyboardManager.instance.isKeyDown(KeyCode.UP))
 			{
 				this._character.ghostObject.position = new Vector3D
 					(this._character.ghostObject.x + Math.sin(this._character.ghostObject.rotationY)*20,
@@ -318,7 +245,7 @@
 				trace(this._character.ghostObject.rotationY)
 			}
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
-				this._character.jump();*/
+				this._character.jump();
 			_world.step(1/30, 1, 1/30);
 			_view.render();
 		}
