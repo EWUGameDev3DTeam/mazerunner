@@ -129,12 +129,10 @@ package team3d.screens
 				
 				//apply some scaling, move the wall up and rotate it a little to see the physics
 				AWPRigidBody(asset).scale = new Vector3D(50, 50, 50);
-				//AWPRigidBody(asset).position = new Vector3D(0,0,-50);
 				AWPRigidBody(asset).rotation = new Vector3D(0, 0, 0);
-				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
 				
-				var rows:int = 2;
-				var cols:int = rows;
+				var rows:int = 10;
+				var cols:int = 10;
 				
 				Bounds.getMeshBounds(_floor);
 				var boardwidth:Number = Bounds.width;
@@ -143,16 +141,8 @@ package team3d.screens
 				var startx:Number = _floor.position.x - boardwidth * 0.5;
 				var startz:Number = _floor.position.z - boarddepth * 0.5;
 				
-				/*
-				var wall:AWPRigidBody;
-				wall = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX, AssetBuilder.STATIC);
-				wall.position = new Vector3D(startx, 0, startz);
-				World.instance.addObject(wall);
-				//*/
-				//*
 				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, AWPRigidBody(asset));
 				World.instance.addMaze(maze);
-				//*/
 			}
 		}
 		
