@@ -5,6 +5,9 @@ package team3d.controllers
 	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
 	import away3d.core.partition.MeshNode;
+	import awayphysics.collision.dispatch.AWPGhostObject;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
+	import team3d.screens.DebugScreen;
 	import away3d.entities.Mesh;
 	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.dynamics.AWPRigidBody;
@@ -27,11 +30,14 @@ package team3d.controllers
 		private var _rb		:AWPRigidBody;
 		private var _cam	:Camera3D;
 		
-		public function FirstPersonCameraController($rb:AWPRigidBody, $cam:Camera3D, $fpc:FirstPersonController)
+		public function FirstPersonCameraController($rb:AWPRigidBody, $fpc:FirstPersonController)
 		{
 			_rb = $rb;
-			_cam = $cam;
 			_fpc = $fpc;
+			_cam = Camera3D(_fpc.targetObject);
+			
+			//var c:AWPKinematicCharacterController = new AWPKinematicCharacterController(new AWPGhostObject(_rb, _rb.skin), 5);
+			//c.updateTransform
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -65,21 +71,21 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
-			var zrot:Number = _rb.rotationZ * BaseController.TORADS;
+			var yrot:Number = _rb.rotationY * BaseController.TORADS;
 			// move forward
 			var speed:Number = 6;
 			
 			if (KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
 				speed = speed * .5;
 			
-			var upVector:Vector3D = new Vector3D(speed * Math.sin(zrot), -speed * Math.cos(zrot));
-			var downVector:Vector3D = new Vector3D( -speed * Math.sin(zrot), speed * Math.cos(zrot));
-			var leftVector:Vector3D = new Vector3D( -speed * Math.cos(zrot), -speed * Math.sin(zrot));
-			var rightVector:Vector3D = new Vector3D(speed * Math.cos(zrot), speed * Math.sin(zrot));
+			/*
+			var upVector:Vector3D = new Vector3D(speed * Math.sin(yrot), 0, -speed * Math.cos(yrot));
+			var downVector:Vector3D = new Vector3D(-speed * Math.sin(yrot), 0, speed * Math.cos(yrot));
+			var leftVector:Vector3D = new Vector3D(-speed * Math.cos(yrot), 0, -speed * Math.sin(yrot));
+			var rightVector:Vector3D = new Vector3D(speed * Math.cos(yrot), 0, speed * Math.sin(yrot));
 			
 			
-			
-			if (this._rb.z > 50.6)
+			if (this._rb.y > 50.6)
 			{
 				//prevents air walking
 			}
@@ -141,13 +147,15 @@ package team3d.controllers
 			{
 				this._rb.linearVelocity = this._rb.linearVelocity.add(new Vector3D(0, 0, 6));
 			}
+			//*/
 			
-			_cam.x = _rb.x;// - 300 * Math.cos(zrot);
-			_cam.y = _rb.y;// - 300 * Math.sin(zrot);
-			_cam.z = _rb.z + 100;// + 20;
+			_fpc.targetObject.x = _rb.x;
+			_fpc.targetObject.y = _rb.y + 100;
+			_fpc.targetObject.z = _rb.z;
 			
-			_rb.rotationY = _cam.rotationY;
-			_rb.rotationZ = _cam.rotationZ;
+			_rb.rotationX = _fpc.targetObject.rotationX;
+			_rb.rotationY = _fpc.targetObject.rotationY;
+			_rb.rotationZ = 0;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -161,17 +169,12 @@ package team3d.controllers
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
+			//DebugScreen.Text("Mouse y: " + $e.movementY);
+			//DebugScreen.Text("\nmouse x: " + $e.movementX, true);
 			// move the camera up or down
 			_fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
-			//if($e.movementX != 0)
-			//_cam.rotationZ += $e.movementX * 0.1;
-			_cam.rotationZ += $e.movementX * 0.1;
-			
-			_rb.rotationX = 0;// _cam.rotationX;
-			_rb.rotationY = _cam.rotationY;
-			_rb.rotationZ = _cam.rotationZ;
-			//_cam.rotationZ = _rb.rotationZ;
+			_fpc.panAngle += $e.movementX * 0.1;
 		}
 		
 		public function get Camera():Camera3D

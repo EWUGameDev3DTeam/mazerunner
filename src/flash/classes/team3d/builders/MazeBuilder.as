@@ -53,7 +53,7 @@ package team3d.builders
 		 * 			$starty		The starting y location for the maze
 		 * @return				A vector containing all the rooms for the maze
 		 */
-		public function Build($rows:int, $cols:int, $startx:Number, $starty:Number, $rigidBody:AWPRigidBody = null):Maze
+		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $rigidBody:AWPRigidBody = null):Maze
 		{
 			var rb:AWPRigidBody = $rigidBody;
 			// if there was no rb passed in, assign the predefined set one
@@ -75,6 +75,7 @@ package team3d.builders
 			var sets:int = $rows * $cols;
 			_wallsRemoved = 0;
 			
+			if(1==2)
 			while (sets - _wallsRemoved > 1)
 			{
 				randCol = Utils.instance.Random(0, $cols - 1);
@@ -97,7 +98,7 @@ package team3d.builders
 				maze.SetRow(randRow,rooms);
 			}
 			
-			genMaze(maze, $startx, $starty, rb);
+			genMaze(maze, $startx, $startz, rb);
 			
 			return maze;
 		}
@@ -187,24 +188,28 @@ package team3d.builders
 		 * 			$starty	The starting y for the maze
 		 * @return			A vector containing all the rooms for the maze
 		 */
-		protected function genMaze($maze:Maze, $startx:Number, $starty:Number, $rb:AWPRigidBody):void
+		protected function genMaze($maze:Maze, $startx:Number, $startz:Number, $rb:AWPRigidBody):void
 		{
 			// get the bounds from the wall
 			Bounds.getMeshBounds(Mesh($rb.skin));
 			var walldepth:Number = Bounds.depth;
-			var wallthickness:Number = Bounds.width;
+			var wallwidth:Number = Bounds.width;
 			var wallheight:Number = Bounds.height;
+			trace("depth: " + walldepth);
+			trace("width: " + wallwidth);
+			trace("height: " + wallheight);
 			
-			$startx += wallthickness * 0.5;
-			$starty += wallthickness + wallheight * 0.5;
 			
-			var spacing:Number = wallheight + wallthickness; // it's weird but this is the length of the wall plus the wall thickness
+			$startx += walldepth * 0.5 + wallwidth * 0.5;
+			$startz += walldepth * 0.5 + wallwidth * 0.5;
+			
+			var spacing:Number = walldepth * 0.5; // it's weird but this is the length of the wall plus the wall thickness
 			
 			// declare some variables to help with the build process
 			var rowwall:AWPRigidBody;
 			var colwall:AWPRigidBody;
 			var x:Number;
-			var y:Number;
+			var z:Number;
 			var room:MazeRoom;
 			var roomRow:Vector.<MazeRoom>;
 			
@@ -219,21 +224,20 @@ package team3d.builders
 					roomRow = $maze.GetRow(row);
 					if (roomRow[col].HasRowWall) // row wall only
 					{
-						x = $startx + wallheight * 0.5 + wallthickness * 0.5;
-						y = $starty - wallheight * 0.5 - wallthickness * 0.5;
+						x = $startx - walldepth * 0.5;
+						z = $startz + wallwidth * 0.5;
 						rowwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-						rowwall.rotationZ += 90;
-						rowwall.position = new Vector3D(x + col * spacing, y + row * spacing, 0);
+						rowwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
 					}
 					
 					if (roomRow[col].HasColumnWall) // col wall only
 					{
-						x = $startx;
-						y = $starty;
+						x = $startx + wallwidth * 0.5;
+						z = $startz - walldepth * 0.5;
 						colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
-						colwall.position = new Vector3D(x + col * spacing, y + row * spacing, 0);
+						colwall.rotationY += 90;
+						colwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
 					}
-					
 					
 					roomRow[col].ColumnWall = colwall;
 					roomRow[col].RowWall = rowwall;
@@ -241,29 +245,29 @@ package team3d.builders
 					$maze.SetRow(row, roomRow);
 				}
 			}
-			
+			/*
 			// add border walls
 			var colWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Rows, true);
 			var rowWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Columns, true);
 			
 			x = $startx;
-			y = $starty;
+			z = $startz;
 			var i:int;
 			for (i = 0; i < $maze.Rows; i++)
 			{
 				colWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-				colWallBorder[i].position = new Vector3D(x + $maze.Columns * spacing, y + i * spacing, 0);
+				colWallBorder[i].position = new Vector3D(x + $maze.Columns * spacing, 0, z + i * spacing);
 			}
 			$maze.ColumnBorder = colWallBorder;
 			
 			//*
-			x = $startx + wallheight * 0.5 + wallthickness * 0.5;
-			y = $starty - wallheight * 0.5 - wallthickness * 0.5;
+			x = $startx + wallheight * 0.5 + wallwidth * 0.5;
+			z = $startz - wallheight * 0.5 - wallwidth * 0.5;
 			for (i = 0; i < $maze.Columns; i++)
 			{
 				rowWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-				rowWallBorder[i].rotationZ += 90;
-				rowWallBorder[i].position = new Vector3D(x + i * spacing, y + $maze.Rows * spacing, 0);
+				rowWallBorder[i].rotationY += 90;
+				rowWallBorder[i].position = new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing);
 			}
 			$maze.RowBorder = rowWallBorder;
 			//*/

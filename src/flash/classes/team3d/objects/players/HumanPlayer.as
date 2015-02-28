@@ -9,9 +9,11 @@ package team3d.objects.players
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.SphereGeometry;
+	import awayphysics.collision.dispatch.AWPGhostObject;
 	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.collision.shapes.AWPSphereShape;
 	import awayphysics.dynamics.AWPRigidBody;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import team3d.bases.BasePlayer;
@@ -38,8 +40,8 @@ package team3d.objects.players
 			
 			_mesh = new Mesh(new SphereGeometry(), new ColorMaterial(0x0000FF));
 			_mesh.x = 300;
-			_mesh.y = 300;
-			_mesh.z = 3000;
+			_mesh.y = 3000;
+			_mesh.z = 300;
 			var pShape:AWPSphereShape = new AWPSphereShape(100);
 			_rb = new AWPRigidBody(pShape, _mesh, 1000);
 			_rb.friction = 10;
@@ -52,11 +54,13 @@ package team3d.objects.players
 			lb.far = 20000;
 			
 			var cam:Camera3D = new Camera3D(lb);
-			FPCController = new FirstPersonCameraController(_rb, cam, new FirstPersonController(cam, 0, 90, 0, 180, 0, true));
-			cam = new Camera3D(lb);
-			FLYController = new FlyController(cam, new FirstPersonController(cam, 0, 90, 0, 180, 0, true));
 			
-			_controller = FPCController;
+			FPCController = new FirstPersonCameraController(_rb, new FirstPersonController(cam, 0, 90, -90, 90, 0));
+			cam = new Camera3D(lb);
+			FLYController = new FlyController(new FirstPersonController(cam,0,90,-90,90,0));
+			
+			//_controller = FPCController;
+			_controller = FLYController;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

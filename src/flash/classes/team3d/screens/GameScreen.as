@@ -14,6 +14,7 @@ package team3d.screens
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
@@ -66,19 +67,20 @@ package team3d.screens
 			World.instance.Begin();
 			
 			//*
-			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, false), new ColorMaterial(0xFFFFFF));
+			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
 			//World.instance.view.scene.addChild(this._floor);
 			//Ugly Floor Physics
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 10000, 1);
+			this._floor.x = 0;
+			this._floor.y = -50;
+			this._floor.z = 0;
+			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 1, 10000);
 			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
 			//World.instance.physics.addRigidBody(floorRigidBody);
 			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(0, 0, -50);
+			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
+			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
 			// end ugly physics		
-			this._floor.x = 0;
-			this._floor.y = 0;
-			this._floor.z = -50;
-			this._floor.rotationX += 180;
+			
 			World.instance.addObject(floorRigidBody);
 			//*/
 			
@@ -94,7 +96,7 @@ package team3d.screens
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			World.instance.view.camera = FirstPersonCameraController(_player.Controller).Camera;
+			World.instance.view.camera = FlyController(_player.Controller).Camera;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -126,23 +128,31 @@ package team3d.screens
 			{
 				
 				//apply some scaling, move the wall up and rotate it a little to see the physics
-				AWPRigidBody(asset).scale = new Vector3D(50,50,50);
+				AWPRigidBody(asset).scale = new Vector3D(50, 50, 50);
 				//AWPRigidBody(asset).position = new Vector3D(0,0,-50);
-				AWPRigidBody(asset).rotation = new Vector3D(90,0,0);
+				AWPRigidBody(asset).rotation = new Vector3D(0, 0, 0);
 				//AWPRigidBody(asset).applyTorque(new Vector3D(0, 8, 8));
 				
-				var rows:int = 7;
-				var cols:int = rows + 3;
+				var rows:int = 2;
+				var cols:int = rows;
 				
 				Bounds.getMeshBounds(_floor);
 				var boardwidth:Number = Bounds.width;
 				var boardheight:Number = Bounds.height;
 				var boarddepth:Number = Bounds.depth;
 				var startx:Number = _floor.position.x - boardwidth * 0.5;
-				var starty:Number = _floor.position.y - boardheight * 0.5;
+				var startz:Number = _floor.position.z - boarddepth * 0.5;
 				
-				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, starty, AWPRigidBody(asset));
+				/*
+				var wall:AWPRigidBody;
+				wall = AssetBuilder.cloneRigidBody(AWPRigidBody(asset), AssetBuilder.BOX, AssetBuilder.STATIC);
+				wall.position = new Vector3D(startx, 0, startz);
+				World.instance.addObject(wall);
+				//*/
+				//*
+				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, AWPRigidBody(asset));
 				World.instance.addMaze(maze);
+				//*/
 			}
 		}
 		
