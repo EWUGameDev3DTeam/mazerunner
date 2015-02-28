@@ -1,5 +1,7 @@
 package team3d.screens
 {
+	import away3d.cameras.Camera3D;
+	import away3d.controllers.FirstPersonController;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.PlaneGeometry;
@@ -17,6 +19,8 @@ package team3d.screens
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import team3d.builders.MazeBuilder;
+	import team3d.controllers.FirstPersonCameraController;
+	import team3d.controllers.FlyController;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.objects.World;
@@ -46,11 +50,6 @@ package team3d.screens
 		{
 			super();
 			
-			//World.instance.stage.addEventListener(Event.RESIZE, windowResize);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.P, toggleFullscreen);
-			
-			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			
 			//_view = new View3D();
 			_fullscreen = false;
 		}
@@ -62,7 +61,7 @@ package team3d.screens
 		 */
 		public function Begin():void
 		{
-			//this.addChild(_view);
+			World.instance.CurrentScreen = "Game";
 			this.addChild(World.instance.view);
 			World.instance.Begin();
 			
@@ -88,31 +87,26 @@ package team3d.screens
 			wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
 			wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics
 			
-			var format:TextFormat = new TextFormat();
-			format.size = 30;
-			format.bold = true;
-			
-			var tf:TextField = new TextField();
-			tf.defaultTextFormat = format;
-			tf.autoSize = TextFieldAutoSize.LEFT;
-            tf.mouseEnabled = false;
-            tf.selectable = false;
-			tf.textColor = 0x000000;
-			tf.background = true;
-			tf.backgroundColor = 0xFFFFFF;
-			tf.border = true;
-			tf.borderColor = 0xCC0066;
-			tf.visible = true;
-			tf.alpha = 1;
-			
-			tf.x = tf.y = 125;
-			tf.text = "This is in the game screen";
-			this.addChild(tf);
-			
 			_player = new HumanPlayer(World.instance.view.camera);
 			World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
 			_player.Begin();
+			
+			this.addEventListener(Event.ENTER_FRAME, enterFrame);
+			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			World.instance.view.camera = FirstPersonCameraController(_player.Controller).Camera;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Ends the screen
+		 */
+		public function End():void
+		{
+			World.instance.End();
+			_player.End();
+			_floor = null;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -156,22 +150,28 @@ package team3d.screens
 		
 		/**
 		 * @private
-		 * toggles the full screen settings
+		 * Toggles the camera between first and fly cam
+		 *
+		 * @param	$param1	Describe param1 here.
+		 * @return			Describe the return value here.
 		 */
-		protected function toggleFullscreen():void
+		protected function toggleCamera():void
 		{
-			_fullscreen = !_fullscreen;
-			if (_fullscreen)
+			
+			_player.Controller.End();
+			
+			if (_player.Controller is FirstPersonCameraController)
 			{
-				trace("going full screen");
-				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-				World.instance.stage.mouseLock = true;
+				_player.Controller = HumanPlayer.FLYController;
+				World.instance.view.camera = FlyController(_player.Controller).Camera
 			}
 			else
 			{
-				trace("leaving full screen");
-				World.instance.stage.displayState = StageDisplayState.NORMAL;
+				_player.Controller = HumanPlayer.FPCController;
+				World.instance.view.camera = FirstPersonCameraController(HumanPlayer.FPCController).Camera;
 			}
+			
+			_player.Controller.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -181,6 +181,9 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
+			if (!World.instance.stage.mouseLock)
+				World.instance.stage.mouseLock = true;
+				
 			World.instance.update();
 		}
 		

@@ -11,6 +11,7 @@ package team3d.objects {
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import org.osflash.signals.Signal;
 	import team3d.bases.BasePlayer;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
@@ -27,9 +28,12 @@ package team3d.objects {
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
+		public			var ScreenChange	:Signal;
+		
 		private			var	_stage		:Stage;
 		private			var _view		:View3D;
 		private			var _physics	:AWPDynamicsWorld;
+		private			var _curScreen	:String;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -39,10 +43,28 @@ package team3d.objects {
 				throw new Error("Cannot be initialized");
 			
 			_view = new View3D();
-			
-			var lb:LensBase = new PerspectiveLens(75);
-			lb.far = 20000;
-			_view.camera.lens = lb;
+			ScreenChange = new Signal();
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets or sets the currently shown screen
+		 *
+		 * @param	$screen	The screen being displayed
+		 * @return			The screen being displayed
+		 */
+		public function get CurrentScreen():String
+		{
+			return _curScreen;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set CurrentScreen($screen:String):void
+		{
+			_curScreen = $screen;
+			this.ScreenChange.dispatch();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -56,6 +78,22 @@ package team3d.objects {
 			_physics = AWPDynamicsWorld.getInstance();
 			_physics.initWithDbvtBroadphase();
 			_physics.gravity = new Vector3D(0, 0, -4.6);//move gravity to pull down on z axis
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Ends the world
+		 */
+		public function End():void
+		{
+			_physics.cleanWorld(true);
+			
+			while (_view.scene.getChildAt(0))
+				_view.scene.removeChildAt(0);
+			
+			while (_view.getChildAt(0))
+				_view.removeChildAt(0);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -153,24 +191,6 @@ package team3d.objects {
 		{
 			_view.width = _stage.stageWidth;
 			_view.height = _stage.stageHeight;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Gets the current physics world object
-		 * @return			The Physics object - AWPDynamicsWorld
-		 */
-		public function get physics():AWPDynamicsWorld
-		{
-			return _physics;
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		public function set physics($p:AWPDynamicsWorld):void
-		{
-			_physics = $p;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
