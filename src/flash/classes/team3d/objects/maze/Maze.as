@@ -1,6 +1,7 @@
 package team3d.objects.maze
 {
 	import awayphysics.dynamics.AWPRigidBody;
+	import com.jakobwilson.Asset;
 	import team3d.objects.maze.MazeRoom;
 	
 	/**
@@ -12,8 +13,8 @@ package team3d.objects.maze
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private var _rooms		:Vector.<Vector.<MazeRoom>>;
-		private var _colWall	:Vector.<AWPRigidBody>;
-		private var _rowWall	:Vector.<AWPRigidBody>;
+		private var _colWall	:Vector.<Asset>;
+		private var _rowWall	:Vector.<Asset>;
 		private var _rows		:int;
 		private var _cols		:int;
 		
@@ -27,8 +28,8 @@ package team3d.objects.maze
 			_rows = $rows;
 			_cols = $cols;
 			_rooms = new Vector.<Vector.<MazeRoom>>(_rows * _cols, true);
-			_colWall = new Vector.<AWPRigidBody>(_rows, true);
-			_rowWall = new Vector.<AWPRigidBody>(_cols, true);
+			_colWall = new Vector.<Asset>(_rows, true);
+			_rowWall = new Vector.<Asset>(_cols, true);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -53,14 +54,14 @@ package team3d.objects.maze
 		 * @param	$rowWall	The row border wall
 		 * @return			The row border wall
 		 */
-		public function get RowBorder():Vector.<AWPRigidBody>
+		public function get RowBorder():Vector.<Asset>
 		{
 			return _rowWall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public function set RowBorder($rowWall:Vector.<AWPRigidBody>):void
+		public function set RowBorder($rowWall:Vector.<Asset>):void
 		{
 			_rowWall = $rowWall;
 		}
@@ -73,14 +74,14 @@ package team3d.objects.maze
 		 * @param	$colWall	The column wall border
 		 * @return			The column wall border
 		 */
-		public function get ColumnBorder():Vector.<AWPRigidBody>
+		public function get ColumnBorder():Vector.<Asset>
 		{
 			return _colWall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public function set ColumnBorder($colWall:Vector.<AWPRigidBody>):void
+		public function set ColumnBorder($colWall:Vector.<Asset>):void
 		{
 			_colWall = $colWall;
 		}

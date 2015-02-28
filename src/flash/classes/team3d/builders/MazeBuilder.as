@@ -4,7 +4,8 @@ package team3d.builders
 	import away3d.entities.Mesh;
 	import away3d.tools.utils.Bounds;
 	import awayphysics.dynamics.AWPRigidBody;
-	import com.jakobwilson.AssetBuilder;
+	import com.jakobwilson.Asset;
+	import com.jakobwilson.AssetManager;
 	import flash.display.Sprite;
 	import flash.geom.Vector3D;
 	import team3d.objects.maze.MazeRoom;
@@ -28,7 +29,7 @@ package team3d.builders
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		private var _wallRigidBody		:AWPRigidBody;
+		private var _wall				:Asset;
 		private var _wallsRemoved		:int;
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -53,16 +54,16 @@ package team3d.builders
 		 * 			$starty		The starting y location for the maze
 		 * @return				A vector containing all the rooms for the maze
 		 */
-		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $rigidBody:AWPRigidBody = null):Maze
+		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $wall:Asset = null):Maze
 		{
-			var rb:AWPRigidBody = $rigidBody;
+			var wall:Asset = $wall;
 			// if there was no rb passed in, assign the predefined set one
-			if (rb == null)
-				rb = _wallRigidBody
+			if (wall == null)
+				wall = _wall
 			
 			// if no wall rb is available at all, fail and throw an error
-			if (rb == null)
-				throw new Error("No wall rigid body was found. Maze cannot be generated. Either pass one in or set one via WallRigidBody");
+			if (wall == null)
+				throw new Error("No wall asset was found. Maze cannot be generated. Either pass one in or set one via WallAsset");
 			
 			// create the new 2d vector that will house the maze's rooms.
 			var maze:Maze = new Maze($rows, $cols);
@@ -98,7 +99,7 @@ package team3d.builders
 				maze.SetRow(randRow,rooms);
 			}
 			
-			genMaze(maze, $startx, $startz, rb);
+			genMaze(maze, $startx, $startz, wall);
 			
 			return maze;
 		}
@@ -188,10 +189,10 @@ package team3d.builders
 		 * 			$starty	The starting y for the maze
 		 * @return			A vector containing all the rooms for the maze
 		 */
-		protected function genMaze($maze:Maze, $startx:Number, $startz:Number, $rb:AWPRigidBody):void
+		protected function genMaze($maze:Maze, $startx:Number, $startz:Number, $wall:Asset):void
 		{
 			// get the bounds from the wall
-			Bounds.getMeshBounds(Mesh($rb.skin));
+			Bounds.getMeshBounds(Mesh($wall.model));
 			var walldepth:Number = Bounds.depth;
 			var wallwidth:Number = Bounds.width;
 			var wallheight:Number = Bounds.height;
@@ -199,11 +200,11 @@ package team3d.builders
 			$startx += walldepth * 0.5 + wallwidth * 0.5;
 			$startz += walldepth * 0.5 + wallwidth * 0.5;
 			
-			var spacing:Number = walldepth + wallwidth;
+			var spacing:Number = walldepth;
 			
 			// declare some variables to help with the build process
-			var rowwall:AWPRigidBody;
-			var colwall:AWPRigidBody;
+			var rowwall:Asset;
+			var colwall:Asset;
 			var x:Number;
 			var z:Number;
 			var room:MazeRoom;
@@ -220,21 +221,22 @@ package team3d.builders
 					roomRow = $maze.GetRow(row);
 					if (roomRow[col].HasRowWall) // row wall only
 					{
-						x = $startx + wallwidth * 0.5;
+						x = $startx;
 						z = $startz - walldepth * 0.5;
-						rowwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-						rowwall.rotationY += 90;
-						rowwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
+						rowwall = $wall.clone();
+						rowwall.rotateTo(new Vector3D(0, 90, 0));
+						rowwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
 					}
 					
 					if (roomRow[col].HasColumnWall) // col wall only
 					{
 						
 						x = $startx - walldepth * 0.5;
-						z = $startz + wallwidth * 0.5;
-						colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
-						//colwall.rotationY += 90;
-						colwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
+						z = $startz;
+						colwall = $wall.clone();
+						colwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
+						//colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
+						//colwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
 					}
 					
 					roomRow[col].ColumnWall = colwall;
@@ -248,36 +250,37 @@ package team3d.builders
 			// to get turned around. Therefore I've put it in it's own section to minimize confusion
 			
 			// We need column walls for the number of rows there are
-			var colWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Rows, true);
+			var colWallBorder:Vector.<Asset> = new Vector.<Asset>($maze.Rows, true);
 			// Same for row walls but for the number of columns
-			var rowWallBorder:Vector.<AWPRigidBody> = new Vector.<AWPRigidBody>($maze.Columns, true);
+			var rowWallBorder:Vector.<Asset> = new Vector.<Asset>($maze.Columns, true);
 			// stupid flash and it's non-going-out-of-scopeness-confusion
 			var i:int;
 			// ===== add border walls =====
 			// Using the starting x and y from the columns because even though it's a row wall, it needs to match up
 			// to the starting of the columns.
-			x = $startx + wallwidth * 0.5;
+			x = $startx;
 			z = $startz - walldepth * 0.5;
 			for (i = 0; i < $maze.Columns; i++)
 			{
-				rowWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-				rowWallBorder[i].rotationY += 90;
-				rowWallBorder[i].position = new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing);
+				rowWallBorder[i] = $wall.clone();
+				rowWallBorder[i].rotateTo(new Vector3D(0, 90, 0));
+				rowWallBorder[i].transformTo(new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing));
 			}
-			$maze.RowBorder = rowWallBorder;
 			
 			//*
 			// same concept of using the starting x and y for the rows because they need to match up since this will
 			// be covering the columns
 			x = $startx - walldepth * 0.5;
-			z = $startz + wallwidth * 0.5;
+			z = $startz;
 			for (i = 0; i < $maze.Rows; i++)
 			{
-				colWallBorder[i] = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX, AssetBuilder.STATIC);
-				colWallBorder[i].position = new Vector3D(x + $maze.Columns * spacing, 0, z + i * spacing);
+				colWallBorder[i] = $wall.clone();
+				colWallBorder[i].transformTo(new Vector3D(x + $maze.Columns * spacing, 0, z + i * spacing));
 			}
-			$maze.ColumnBorder = colWallBorder;
 			//*/
+			
+			$maze.RowBorder = rowWallBorder;
+			$maze.ColumnBorder = colWallBorder;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -288,16 +291,16 @@ package team3d.builders
 		 * @param	$rb		The rigidbody that stores the mesh
 		 * @return			The rigidbody that stores the mesh
 		 */
-		public function get WallRigidBody():AWPRigidBody
+		public function get WallAsset():Asset
 		{
-			return _wallRigidBody;
+			return _wall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public function set WallRigidBody($rb:AWPRigidBody):void
+		public function set WallAsset($wall:Asset):void
 		{
-			_wallRigidBody = $rb;
+			_wall = $wall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

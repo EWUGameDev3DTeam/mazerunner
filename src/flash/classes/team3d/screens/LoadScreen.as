@@ -4,6 +4,8 @@ package team3d.screens
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.TweenMax;
+	import com.jakobwilson.Asset;
+	import com.jakobwilson.AssetManager;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -12,7 +14,6 @@ package team3d.screens
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	import flash.utils.Timer;
 	import org.osflash.signals.Signal;
 	import team3d.objects.World;
 	import team3d.ui.Button;
@@ -29,7 +30,6 @@ package team3d.screens
 		
 		public var		DoneSignal	:Signal;
 		private var		_aArrows	:Vector.<Sprite>;
-		private var 	_tProgress	:Timer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -46,30 +46,6 @@ package team3d.screens
 			
 			this.DoneSignal = new Signal();
 			_aArrows = new Vector.<Sprite>(25, true);
-			_tProgress = new Timer(200, _aArrows.length);
-			_tProgress.addEventListener(TimerEvent.TIMER, tick);
-			_tProgress.addEventListener(TimerEvent.TIMER_COMPLETE, timerDone);
-		}
-		
-		private function timerDone(e:TimerEvent):void 
-		{
-			var tf:TextField = TextField(this.getChildByName("loadingText"));
-			TweenMax.fromTo(tf, 0.5, { autoAlpha:1 }, { autoAlpha:0, delay:1 } );
-			for (var i:int = 0; i < _aArrows.length; i++)
-				TweenMax.fromTo(_aArrows[i], 0.5, { autoAlpha:1 }, { autoAlpha:0, delay:1 } );
-			
-			TweenMax.fromTo(this.getChildByName("btnContinue"), 0.5, { autoAlpha:0 }, { autoAlpha:1, delay:1 } );
-		}
-		
-		var lastTick:int;
-		private function tick(e:TimerEvent):void 
-		{
-			var curTick:int = Timer(e.target).currentCount;
-			var dif:int = curTick - lastTick;
-			for (var i:int = 0; i < dif; i++)
-				TweenMax.fromTo(_aArrows[lastTick + i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
-			
-			lastTick = curTick;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -180,16 +156,58 @@ package team3d.screens
 			format.bold = true;
 			format.align = TextFormatAlign.CENTER;
 			btn.textFormat = format;
-			btn.addEventListener(MouseEvent.CLICK, mouseClick);
+			btn.addEventListener(MouseEvent.CLICK, doneClick);
 			this.addChild(btn);
 			
 			TweenMax.fromTo(this, 1, { autoAlpha:0 }, { autoAlpha:1 } );
-			_tProgress.start();
 			
-			
+			loadAssets();
 		}
 		
-		private function mouseClick(e:MouseEvent):void 
+		private function loadAssets()
+		{
+			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.DYNAMIC);
+			AssetManager.instance.load(this.onProgress, this.onComplete);
+		}
+		
+		var prevPerc:Number;
+		private function onProgress($e:Number)
+		{
+			var curPerc:Number = $e;
+			var show:int = int(Math.round(_aArrows.length * (curPerc - prevPerc)));
+			for (var i:int = 0; i < show; i++)
+			{
+				TweenMax.fromTo(_aArrows[show + i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
+			}
+			
+			prevPerc = curPerc;
+		}
+		
+		private function onComplete()
+		{
+			var tf:TextField = TextField(this.getChildByName("loadingText"));
+			TweenMax.fromTo(tf, 0.5, { autoAlpha:1 }, { autoAlpha:0, delay:1 } );
+			for (var i:int = 0; i < _aArrows.length; i++)
+				TweenMax.fromTo(_aArrows[i], 0.5, { autoAlpha:1 }, { autoAlpha:0, delay:1 } );
+			
+			TweenMax.fromTo(this.getChildByName("btnContinue"), 0.5, { autoAlpha:0 }, { autoAlpha:1, delay:1 } );
+		}
+		
+		/*
+		var lastTick:int;
+		private function tick(e:TimerEvent):void 
+		{
+			var curTick:int = Timer(e.target).currentCount;
+			var dif:int = curTick - lastTick;
+			for (var i:int = 0; i < dif; i++)
+				TweenMax.fromTo(_aArrows[lastTick + i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
+			
+			lastTick = curTick;
+		}
+		*/
+		private function doneClick(e:MouseEvent):void 
 		{
 			trace("done");
 			this.DoneSignal.dispatch();

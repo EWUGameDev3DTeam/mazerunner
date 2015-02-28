@@ -1,5 +1,6 @@
 package team3d.objects.maze {
 	import awayphysics.dynamics.AWPRigidBody;
+	import com.jakobwilson.Asset;
 	import team3d.builders.MazeBuilder;
 	
 	/**
@@ -8,8 +9,8 @@ package team3d.objects.maze {
 	 */
 	public class MazeRoom 
 	{
-		private var _rowWall	:AWPRigidBody;
-		private var _colWall	:AWPRigidBody;
+		private var _rowWall	:Asset;
+		private var _colWall	:Asset;
 		private var _set		:int;
 		private var _type		:int;
 		private var _hasRowWall	:Boolean;
@@ -90,14 +91,14 @@ package team3d.objects.maze {
 		 * @param	$rowWall	The rigid body of the row wall
 		 * @return				The rigid body of the row wall
 		 */
-		public function get RowWall():AWPRigidBody
+		public function get RowWall():Asset
 		{
 			return _rowWall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public function set RowWall($rowWall:AWPRigidBody):void
+		public function set RowWall($rowWall:Asset):void
 		{
 			_rowWall = $rowWall;
 		}
@@ -110,14 +111,14 @@ package team3d.objects.maze {
 		 * @param	$colWall	The rigid body of the col wall
 		 * @return				The rigid body of the col wall
 		 */
-		public function get ColumnWall():AWPRigidBody
+		public function get ColumnWall():Asset
 		{
 			return _colWall;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public function set ColumnWall($colWall:AWPRigidBody):void
+		public function set ColumnWall($colWall:Asset):void
 		{
 			_colWall = $colWall;
 		}

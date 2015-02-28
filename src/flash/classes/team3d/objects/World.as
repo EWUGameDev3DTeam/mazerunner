@@ -149,17 +149,18 @@ package team3d.objects {
 				for each(var r in row)
 				{
 					if (r.HasColumnWall)
-						addObject(r.ColumnWall);
+						addObject(r.ColumnWall.rigidBody);
 					
 					if (r.HasRowWall)
-						addObject(r.RowWall);
+						addObject(r.RowWall.rigidBody);
 				}
 			}
+			
 			for each(var rowBorder in $m.RowBorder)
-				addObject(rowBorder);
+				addObject(rowBorder.rigidBody);
 				
 			for each(var colBorder in $m.ColumnBorder)
-				addObject(colBorder);
+				addObject(colBorder.rigidBody);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
