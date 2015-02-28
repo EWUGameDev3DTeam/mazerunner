@@ -220,9 +220,18 @@
 		* 	returns the current object's rigidbody(if Asset.NONE, then null)
 		*	@return AWPRigidBody - the current asset's rigidBody
 		*/
-		public function get rigidBody()
+		public function get rigidBody():AWPRigidBody
 		{
 			return this._rigidBody;
+		}
+		
+		/**
+		* 	returns the current object's mesh
+		*	@return Mesh - the asset's mesh
+		*/
+		public function get model():Mesh
+		{
+			return this._model;
 		}
 	}
 	

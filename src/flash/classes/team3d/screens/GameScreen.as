@@ -33,6 +33,8 @@
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import com.jakobwilson.AssetManager;
 	import com.jakobwilson.AssetManager;
+	import com.jakobwilson.Cannon.Cannon;
+	import com.jakobwilson.Trigger3D;
 
 	
 	
@@ -102,6 +104,8 @@
 			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.DYNAMIC);
+			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.NONE, Asset.STATIC);
+			AssetManager.instance.enqueue("Shot", "Models/CannonBall/CannonBall.awd", Asset.BOX, Asset.DYNAMIC);
 			
 			AssetManager.instance.load(this.onProgress, this.onComplete);
 			
@@ -127,14 +131,14 @@
 						
 			
 			//Make a character controller
-			var shape:AWPCapsuleShape = new AWPCapsuleShape(150, 500);
+			/*var shape:AWPCapsuleShape = new AWPCapsuleShape(150, 500);
 			ghostObject = new AWPGhostObject(shape, _view.camera);
 			ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
 
 			 _character = new AWPKinematicCharacterController(ghostObject, 1);
 			_character.setWalkDirection(new Vector3D(0,1,0));
 			_character.ghostObject.position = new Vector3D(0, 5000, -500);
-			this._world.addCharacter(_character);
+			this._world.addCharacter(_character);*/
 			
 		}
 		
@@ -150,7 +154,18 @@
 			AssetManager.instance.getAsset("Cage").transformTo(new Vector3D(0,5000,0));			//Note: we are translating the original asset since we used getAsset()
 			AssetManager.instance.getAsset("Cage").rigidBody.applyTorque(new Vector3D(0,10,10));//gets the rigidbody from the asset(read only) and applies torque
 			
+			/*Trigger Testing
+			var t:Trigger3D = new Trigger3D(1000);
+			t.TriggeredSignal.add(this.triggerAction);
+			t.begin();
+			t.addActivator(AssetManager.instance.getAsset("Cage"));
+			*/
 			
+			AssetManager.instance.getAsset("Cannon").transformTo(new Vector3D(0,1000,0));
+			//AssetManager.instance.getAsset("Cannon").rotateTo(new Vector3D(0,180,0));
+			var c:Cannon = new Cannon(AssetManager.instance.getAsset("Cannon"), AssetManager.instance.getAsset("Shot"));
+			c.addActivator(AssetManager.instance.getAsset("Cage"));
+			c.addToScene(this._view, this._world);
 			
 			//Creates a simple grid with a floor and walls
 			var cur:Asset;	//An asset reference
@@ -172,10 +187,14 @@
 					cur.transformTo(new Vector3D(j*850 - 2550,0,i*850 - 2125));
 					cur.rotateTo(new Vector3D(0,90,0));								//rotateTo() rotated the asset to a specific rotation
 					cur.addToScene(this._view, this._world);
-					
 				}
 			}
 				
+		}
+		
+		public function triggerAction(a:Asset)
+		{
+			trace("TRIGGERED!");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -220,7 +239,7 @@
 		 */
 		protected function enterFrame($e:Event):void
 		{
-		
+		/*
 			if(KeyboardManager.instance.isKeyDown(KeyCode.UP))
 			{
 				this._character.ghostObject.position = new Vector3D
@@ -245,7 +264,7 @@
 				trace(this._character.ghostObject.rotationY)
 			}
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
-				this._character.jump();
+				this._character.jump();*/
 			_world.step(1/30, 1, 1/30);
 			_view.render();
 		}
