@@ -79,8 +79,8 @@
 			World.instance.stage.align = StageAlign.TOP_LEFT;
 			
 			_debugScreen.Begin();
-			_loadingScreen.Begin();
-			//_titleScreen.Begin();
+			//_loadingScreen.Begin();
+			_titleScreen.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

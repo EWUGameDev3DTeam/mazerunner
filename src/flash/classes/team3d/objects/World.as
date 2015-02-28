@@ -77,7 +77,7 @@ package team3d.objects {
 			//Set up the physics world
 			_physics = AWPDynamicsWorld.getInstance();
 			_physics.initWithDbvtBroadphase();
-			_physics.gravity = new Vector3D(0, 0, -4.6);//move gravity to pull down on z axis
+			_physics.gravity = new Vector3D(0, -4.6, 0);//move gravity to pull down on y axis
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -120,26 +120,19 @@ package team3d.objects {
 		/**
 		 * Adds the given object to the world
 		 *
-		 * @param	$m	The mesh to add to the world
-		 * 			$b	The associated rigid body to add to the world
+		 * @param	$b	The associated rigid body to add to the world
 		 */
-		public function addObject($b:AWPRigidBody = null, $m:Mesh = null):void
+		public function addObject($b:AWPRigidBody):void
 		{
 			// nothing to add
-			if ($b == null && $m == null)
+			if ($b == null)
 				return;
 			
-			// check to see if the mesh was passed in, if not, try and grab it from the rigidbody
-			if ($m == null)
-				$m = Mesh($b.skin);
+			// add the mesh to the world
+			_view.scene.addChild($b.skin);
 			
-			// if the mesh exists, grab the name and add it to the scene
-			if ($m != null)
-				_view.scene.addChild($m);
-			
-			// if the rigidbody exists, add it to the physics world
-			if($b != null)
-				_physics.addRigidBody($b);
+			// add it to the physics world
+			_physics.addRigidBody($b);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

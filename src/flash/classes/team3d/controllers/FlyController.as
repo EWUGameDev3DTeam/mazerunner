@@ -22,14 +22,12 @@ package team3d.controllers
 	public class FlyController extends BaseController
 	{
 		private var _fpc	:FirstPersonController;
-		private var _cam	:Camera3D;
 		
-		public function FlyController($cam:Camera3D, $fpc:FirstPersonController)
+		public function FlyController($fpc:FirstPersonController)
 		{
-			_cam = $cam;
 			_fpc = $fpc;
-			
-			_cam.z = 3000;
+			_fpc.fly = true;
+			_fpc.targetObject.z = 3000;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -62,39 +60,22 @@ package team3d.controllers
 		override public function Move($speed:Number):void
 		{
 			$speed += 20;
-			var zrots:Number = _cam.rotationZ * BaseController.TORADS;
-			var yrots:Number = _cam.rotationY * BaseController.TORADS;
-			var xrots:Number = _cam.rotationX * BaseController.TORADS;
+			
+			var cam = Camera3D(_fpc.targetObject);
+			
 			// move forward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
-			{
-				//trace("moving forward");
-				_cam.x += $speed * Math.sin(zrots);
-				_cam.y -= $speed * Math.cos(zrots);
-				_cam.z += $speed * Math.cos(_fpc.tiltAngle * BaseController.TORADS);
-			}
-			
+				cam.moveForward($speed);
 			// move backward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
-			{
-				//trace("moving backward");
-				_cam.x -= $speed * Math.sin(zrots);
-				_cam.y += $speed * Math.cos(zrots);
-				_cam.z -= $speed * Math.cos(_fpc.tiltAngle * BaseController.TORADS);
-			}
+				cam.moveBackward($speed);
 			
 			// strafe left
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
-			{
-				_cam.y -= $speed * Math.sin(zrots);
-				_cam.x -= $speed * Math.cos(zrots);
-			}
+				cam.moveLeft($speed);
 			// strafe right
 			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
-			{
-				_cam.y += $speed * Math.sin(zrots);
-				_cam.x += $speed * Math.cos(zrots);
-			}
+				cam.moveRight($speed);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -111,12 +92,12 @@ package team3d.controllers
 			// move the camera up or down
 			_fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
-			_cam.rotationZ += $e.movementX * 0.1;
+			_fpc.panAngle += $e.movementX * 0.1;
 		}
 		
 		public function get Camera():Camera3D
 		{
-			return _cam;
+			return Camera3D(_fpc.targetObject);
 		}
 	}
 }
