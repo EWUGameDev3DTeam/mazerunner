@@ -39,8 +39,8 @@ package team3d.ui
 			this.addEventListener(MouseEvent.MOUSE_UP, mouseHover);
 			this.addEventListener(MouseEvent.ROLL_OVER, mouseHover);
 			
-			var imgWidth:int = 400;
-			var imgHeight:int = 200;
+			var imgWidth:int = 300;
+			var imgHeight:int = 150;
 			
 			_text = new TextField();
 			_text.autoSize = TextFieldAutoSize.CENTER;

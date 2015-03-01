@@ -42,8 +42,8 @@ package team3d.objects {
 			if ($lock != SingletonLock)
 				throw new Error("Cannot be initialized");
 			
-			_view = new View3D();
 			ScreenChange = new Signal();
+			_view = new View3D();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -74,9 +74,13 @@ package team3d.objects {
 		 */
 		public function Begin():void
 		{
+			_view = new View3D();
 			//Set up the physics world
-			_physics = AWPDynamicsWorld.getInstance();
-			_physics.initWithDbvtBroadphase();
+			if (_physics == null)
+			{
+				_physics = AWPDynamicsWorld.getInstance();
+				_physics.initWithDbvtBroadphase();
+			}
 			_physics.gravity = new Vector3D(0, -4.6, 0);//move gravity to pull down on y axis
 		}
 		
@@ -89,11 +93,11 @@ package team3d.objects {
 		{
 			_physics.cleanWorld(true);
 			
-			while (_view.scene.getChildAt(0))
+			while (_view.scene.numChildren > 0)
 				_view.scene.removeChildAt(0);
 			
-			while (_view.getChildAt(0))
-				_view.removeChildAt(0);
+			//while (_view.numChildren > 0)
+				//_view.removeChildAt(0);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

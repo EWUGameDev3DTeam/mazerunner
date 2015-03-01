@@ -14,6 +14,7 @@
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import org.osflash.signals.Signal;
+	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
 	
@@ -22,12 +23,8 @@
 	 * 
 	 * @author Nate Chatellier
 	 */
-	public class TitleScreen extends Sprite
+	public class TitleScreen extends BaseScreen
 	{
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		public var	DoneSignal	:Signal;
 		
 		private var _aArrows	:Vector.<Sprite>;
 		
@@ -40,12 +37,9 @@
 		{
 			super();
 			
-			this.mouseEnabled = true;
-			this.mouseChildren = true;
-			this.visible = false;
-			
 			DoneSignal = new Signal(int);
 			_aArrows = new Vector.<Sprite>(3, true);
+			_screenTitle = "Title";
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -53,9 +47,10 @@
 		/**
 		 * Does stuff to start the screen
 		 */
-		public function Begin():void
+		override public function Begin():void
 		{
-			World.instance.CurrentScreen = "Title";
+			super.Begin();
+			
 			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
 			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayTitle", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
 			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningMan", container:this } );
@@ -110,56 +105,78 @@
 			this.addChild(tf);
 			
 			var btnPlay:Button = new Button();
-			btnPlay.x = tf.x;
-			btnPlay.y = tf.y + 125;
-			btnPlay.height = 400;
+			btnPlay.height = 250;
+			btnPlay.width = 400;
 			btnPlay.text("Play");
 			format = new TextFormat();
 			format.size = 60;
 			format.bold = true;
 			format.align = TextFormatAlign.CENTER;
 			btnPlay.textFormat = format;
+			btnPlay.x = tf.x;
+			btnPlay.y = tf.y +tf.height + 25;
 			this.addChild(btnPlay);
 			
 			var btnCredits:Button = new Button();
-			btnCredits.width = 250;
-			btnCredits.height = 175;
-			btnCredits.x = btnPlay.width + 100;
-			btnCredits.y = btnPlay.y + 50;
+			btnCredits.width = 200;
+			btnCredits.height = 100;
 			btnCredits.text("Credits");
 			format = new TextFormat();
 			format.size = 40;
 			format.bold = true;
 			format.align = TextFormatAlign.CENTER;
 			btnCredits.textFormat = format;
+			btnCredits.x = btnPlay.x + btnPlay.width + 100;
+			btnCredits.y = btnPlay.y;
 			this.addChild(btnCredits);
 			
 			var btnSettings:Button = new Button();
-			btnSettings.width = 250;
-			btnSettings.height = 175;
-			btnSettings.x = btnCredits.x;
-			btnSettings.y = btnPlay.y + btnPlay.height - btnSettings.height;
+			btnSettings.width = 200;
+			btnSettings.height = 100;
 			btnSettings.text("Settings");
 			format = new TextFormat();
 			format.size = 40;
 			format.bold = true;
 			format.align = TextFormatAlign.CENTER;
 			btnSettings.textFormat = format;
+			btnSettings.x = btnCredits.x;
+			btnSettings.y = btnPlay.y + btnPlay.height - btnSettings.height;
 			this.addChild(btnSettings);
 			
-			btnPlay.addEventListener(MouseEvent.CLICK, mouseClick);
+			btnPlay.addEventListener(MouseEvent.CLICK, playClicked);
+			btnCredits.addEventListener(MouseEvent.CLICK, creditsClicked);
+			btnSettings.addEventListener(MouseEvent.CLICK, settingsClicked);
 			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		private function mouseClick($e:MouseEvent):void 
+		private function playClicked($e:MouseEvent):void 
 		{
 			if (World.instance.stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE)
 			{
 				World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			}
+			
 			this.DoneSignal.dispatch(0);
+		}
+		
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Shows the credits screen
+		 */
+		private function creditsClicked($e:MouseEvent):void
+		{
+			this.DoneSignal.dispatch(1);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		private function settingsClicked($e:MouseEvent):void
+		{
+			this.DoneSignal.dispatch(2);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -167,8 +184,9 @@
 		/**
 		 * Ends the screen
 		 */
-		public function End():void
+		override public function End():void
 		{
+			super.End();
 			hide();
 		}
 		
@@ -188,10 +206,12 @@
 		/**
 		 * Relinquishes all memory used by this object.
 		 */
-		public function destroy($e:LoaderEvent = null):void
+		override protected function destroy($e:LoaderEvent = null):void
 		{
 			while (this.numChildren > 0)
 				this.removeChildAt(0);
+			
+			super.destroy();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

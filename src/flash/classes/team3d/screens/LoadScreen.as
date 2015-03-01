@@ -15,6 +15,7 @@ package team3d.screens
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import org.osflash.signals.Signal;
+	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
 	
@@ -23,12 +24,11 @@ package team3d.screens
 	 * 
 	 * @author Nate Chatellier
 	 */
-	public class LoadScreen extends Sprite
+	public class LoadScreen extends BaseScreen
 	{
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public var		DoneSignal	:Signal;
 		private var		_aArrows	:Vector.<Sprite>;
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -40,12 +40,9 @@ package team3d.screens
 		{
 			super();
 			
-			this.mouseEnabled = true;
-			this.mouseChildren = true;
-			this.visible = false;
-			
 			this.DoneSignal = new Signal();
 			_aArrows = new Vector.<Sprite>(25, true);
+			_screenTitle = "Loading";
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -53,9 +50,10 @@ package team3d.screens
 		/**
 		 * Does stuff to start the screen
 		 */
-		public function Begin():void
+		override public function Begin():void
 		{
-			World.instance.CurrentScreen = "Loading";
+			super.Begin();
+			
 			var queue:LoaderMax = new LoaderMax( { onProgress:initProg, onComplete:show } );
 			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
 			
@@ -195,18 +193,6 @@ package team3d.screens
 			TweenMax.fromTo(this.getChildByName("btnContinue"), 0.5, { autoAlpha:0 }, { autoAlpha:1, delay:1 } );
 		}
 		
-		/*
-		var lastTick:int;
-		private function tick(e:TimerEvent):void 
-		{
-			var curTick:int = Timer(e.target).currentCount;
-			var dif:int = curTick - lastTick;
-			for (var i:int = 0; i < dif; i++)
-				TweenMax.fromTo(_aArrows[lastTick + i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
-			
-			lastTick = curTick;
-		}
-		*/
 		private function doneClick(e:MouseEvent):void 
 		{
 			trace("done");
@@ -218,8 +204,10 @@ package team3d.screens
 		/**
 		 * Ends the screen
 		 */
-		public function End():void
+		override public function End():void
 		{
+			super.End();
+			
 			hide();
 		}
 		
@@ -242,14 +230,13 @@ package team3d.screens
 		/**
 		 * Relinquishes all memory used by this object.
 		 */
-		public function destroy($e:LoaderEvent = null):void
+		override protected function destroy($e:LoaderEvent = null):void
 		{
 			while (this.numChildren > 0)
 				this.removeChildAt(0);
+			
+			super.destroy();
 		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
 	}
 }
 
