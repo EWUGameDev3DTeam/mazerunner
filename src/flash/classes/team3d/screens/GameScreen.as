@@ -90,8 +90,8 @@
 			//create a cannon
 			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
 			cannon.addActivator(new Asset("dummy", Asset.NONE, Asset.STATIC, new Mesh(new CubeGeometry(2,2,2), new ColorMaterial(0x0000FF))));
-			cannon.transformTo(new Vector3D(0,500,150));
-			cannon.rotateTo(new Vector3D(0,315,0));
+			cannon.transformTo(new Vector3D(0,500,0));
+			cannon.rotateTo(new Vector3D(0,90,0));
 			cannon.addToScene(World.instance.view, World.instance.physics);
 			//End cannon creation
 

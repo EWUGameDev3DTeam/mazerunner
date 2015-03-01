@@ -19,6 +19,7 @@
 		private var _firingTrigger:Trigger3D;
 		private var _view:View3D;
 		private var _world:AWPDynamicsWorld;
+		private const degreesToRad:Number = 0.0174532925;
 		
 		/**
 		* Creates a cannon and sets up its shot 
@@ -42,14 +43,19 @@
 		{
 			if(Math.random() < 0.1)
 			{
-				var shotModel:Asset = this._shot.clone();
 				var positionVector:Vector3D = new Vector3D;
-				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y)*100);
+				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
 				positionVector.y = this._cannon.position.y;
-				positionVector.z = this._cannon.position.z +( Math.cos(this._cannon.rotation.y)*100);
+				positionVector.z = this._cannon.position.z +( Math.cos(this._cannon.rotation.y*this.degreesToRad)*100);
+				
+				trace("Force: " + positionVector.x + ", " + positionVector.y + ", " + positionVector.z);
+				
+				var shotModel:Asset = this._shot.clone();
 				shotModel.transformTo(positionVector);
-				var shotForce:Vector3D = new Vector3D(Math.sin(this._cannon.rotation.y), 0, Math.cos(this._cannon.rotation.y));
+				
+				var shotForce:Vector3D = new Vector3D(Math.sin(this._cannon.rotation.y*this.degreesToRad), 0, Math.cos(this._cannon.rotation.y*this.degreesToRad));
 				shotForce.scaleBy(500);
+				
 				var sht:Shot = new Shot(shotModel,shotForce, this._view, this._world);
 			}
 		}
