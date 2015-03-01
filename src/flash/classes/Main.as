@@ -1,5 +1,6 @@
 package 
 {
+	import away3d.controllers.ControllerBase;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
@@ -17,14 +18,17 @@ package
 	import flash.text.TextFormat;
 	import team3d.bases.BaseScreen;
 	import team3d.interfaces.IScreen;
+	import team3d.screens.ControlsScreen;
 	import team3d.screens.CreditsScreen;
 	import team3d.screens.DebugScreen;
 	import team3d.screens.GameScreen;
 	import team3d.screens.LoadScreen;
+	import team3d.screens.LostScreen;
 	import team3d.screens.PauseScreen;
 	import team3d.screens.SettingsScreen;
 	import team3d.screens.TitleScreen;
 	import team3d.objects.World;
+	import team3d.screens.WonScreen;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -42,6 +46,9 @@ package
 		private var _creditsScreen	:CreditsScreen;
 		private var _settingsScreen	:SettingsScreen;
 		private var _pauseScreen	:PauseScreen;
+		private var _lostScreen		:LostScreen;
+		private var _wonScreen		:WonScreen;
+		private var _controlScreen	:ControlsScreen;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -62,6 +69,9 @@ package
 			_creditsScreen = new CreditsScreen();
 			_settingsScreen = new SettingsScreen();
 			_pauseScreen = new PauseScreen();
+			_lostScreen = new LostScreen();
+			_wonScreen = new WonScreen();
+			_controlScreen = new ControlsScreen();
 			
 			_loadingScreen.DoneSignal.add(endLoading);
 			_titleScreen.DoneSignal.add(endTitle);
@@ -70,6 +80,9 @@ package
 			_gameScreen.DoneSignal.add(endGame);
 			_gameScreen.PausedSignal.add(gamePaused);
 			_pauseScreen.DoneSignal.add(endPause);
+			_lostScreen.DoneSignal.add(endLost);
+			_wonScreen.DoneSignal.add(endWon);
+			_controlScreen.DoneSignal.add(endControls);
 			
 			this.addChild(_gameScreen);
 			this.addChild(_titleScreen);
@@ -77,6 +90,9 @@ package
 			this.addChild(_creditsScreen);
 			this.addChild(_settingsScreen);
 			this.addChild(_pauseScreen);
+			this.addChild(_lostScreen);
+			this.addChild(_wonScreen);
+			this.addChild(_controlScreen);
 			
 			this.addChild(_debugScreen);
 		}
@@ -114,11 +130,11 @@ package
 			_gameScreen.End();
 			if ($won)
 			{
-				// won screen
+				_wonScreen.Begin();
 			}
 			else
 			{
-				// lost screen
+				_lostScreen.Begin();
 			}
 			_prevScreen = _gameScreen;
 		}
@@ -136,7 +152,7 @@ package
 				_settingsScreen.Begin();
 			else if ($dir == 1)
 			{
-				// controls screen
+				_controlScreen.Begin();
 			}
 			else if ($dir == 2)
 			{
@@ -149,6 +165,27 @@ package
 			}
 			
 			_prevScreen = _pauseScreen;
+		}
+		
+		private function endLost():void
+		{
+			_lostScreen.End();
+			_titleScreen.Begin();
+			_prevScreen = _lostScreen;
+		}
+		
+		private function endWon():void
+		{
+			_wonScreen.End();
+			_titleScreen.Begin();
+			_prevScreen = _wonScreen;
+		}
+		
+		private function endControls():void
+		{
+			_controlScreen.End();
+			_prevScreen.Begin();
+			_prevScreen = _controlScreen;
 		}
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -170,6 +207,9 @@ package
 			//_titleScreen.Begin();
 			//_creditsScreen.Begin();
 			//_pauseScreen.Begin();
+			//_lostScreen.Begin();
+			//_wonScreen.Begin();
+			//_controlScreen.Begin();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

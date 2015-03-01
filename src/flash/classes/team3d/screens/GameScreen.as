@@ -96,6 +96,19 @@ package team3d.screens
 			
 			if (World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
 				World.instance.stage.mouseLock = true;
+			
+			KeyboardManager.instance.addKeyUpListener(KeyCode.F, failedGame);
+			KeyboardManager.instance.addKeyUpListener(KeyCode.G, wonGame);
+		}
+		
+		private function failedGame():void
+		{
+			this.DoneSignal.dispatch(false);
+		}
+		
+		private function wonGame():void
+		{
+			this.DoneSignal.dispatch(true);
 		}
 		
 		private function createMaze()
@@ -148,12 +161,15 @@ package team3d.screens
 		override public function End():void
 		{
 			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
-			this.removeChild(World.instance.view);
+			KeyboardManager.instance.removeKeyUpListener(KeyCode.F, failedGame);
+			KeyboardManager.instance.removeKeyUpListener(KeyCode.G, wonGame);
 			_player.End();
 			_floor = null;
 			
 			World.instance.End();
 			super.End();
+			
+			lockMouse(false);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
