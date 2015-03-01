@@ -6,6 +6,7 @@ package
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.plugins.GlowFilterPlugin;
 	import com.greensock.plugins.TweenPlugin;
+	import com.greensock.TweenMax;
 	import com.natejc.input.KeyboardManager;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -102,7 +103,10 @@ package
 			_titleScreen.End();
 			
 			if ($dest == 0)
-				_gameScreen.Begin();
+			{
+				World.instance.stage.mouseLock = true;
+				TweenMax.fromTo(_gameScreen, 1, { autoAlpha:0 }, { autoAlpha:1, onComplete:_gameScreen.Begin } );
+			}
 			else if ($dest == 1)
 				_creditsScreen.Begin();
 			else if ($dest == 2)
@@ -170,14 +174,14 @@ package
 		private function endLost():void
 		{
 			_lostScreen.End();
-			_titleScreen.Begin();
+			_creditsScreen.Begin();
 			_prevScreen = _lostScreen;
 		}
 		
 		private function endWon():void
 		{
 			_wonScreen.End();
-			_titleScreen.Begin();
+			_creditsScreen.Begin();
 			_prevScreen = _wonScreen;
 		}
 		

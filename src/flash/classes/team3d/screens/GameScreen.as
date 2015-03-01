@@ -8,10 +8,12 @@ package team3d.screens
 	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.greensock.events.LoaderEvent;
+	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
+	import flash.display.Shape;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
@@ -34,13 +36,15 @@ package team3d.screens
 	{
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public var PausedSignal		:Signal;
+		public var PausedSignal			:Signal;
 		
-		private var _floor			:Mesh;
+		private var _floor				:Mesh;
 		
-		private var _player			:HumanPlayer;
+		private var _player				:HumanPlayer;
 		
-		private var _paused			:Boolean;
+		private var _paused				:Boolean;
+		
+		private var _controlsEnabled	:Boolean;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -66,10 +70,12 @@ package team3d.screens
 		override public function Begin():void
 		{
 			super.Begin();
-			
 			World.instance.Begin();
 			this.addChild(World.instance.view);
+			
+			_controlsEnabled = false;
 			_paused = false;
+			
 			//*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
 			this._floor.x = 0;
@@ -85,20 +91,32 @@ package team3d.screens
 			_player = new HumanPlayer(World.instance.view.camera);
 			World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
-			_player.Begin();
-			
-			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
-			World.instance.view.camera = FlyController(_player.Controller).Camera;
+			//_player.Begin();
 			
 			createMaze();
 			
-			if (World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
-				World.instance.stage.mouseLock = true;
-			
+			//*			TEMPORARY KEY BINDINGS
+			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.F, failedGame);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.G, wonGame);
+			//			TEMPORARY KEY BINDINGS*/
+			
+			this.addEventListener(Event.ENTER_FRAME, enterFrame);
+			World.instance.view.camera = FlyController(_player.Controller).Camera;
+			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
+			
+			var rectangle:Shape = new Shape;
+			rectangle.graphics.beginFill(0x000000);
+			rectangle.graphics.drawRect(0, 0, this.width, this.height);
+			rectangle.graphics.endFill();
+			this.addChild(rectangle);
+			
+			TweenMax.fromTo(rectangle, 2, { autoAlpha: 1 }, { autoAlpha:0, onComplete:enableControls, delay:1 } );
+		}
+		
+		private function enableControls($e:LoaderEvent = null)
+		{
+			_player.Begin();
 		}
 		
 		private function failedGame():void

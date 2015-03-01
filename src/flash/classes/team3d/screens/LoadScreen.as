@@ -195,7 +195,6 @@ package team3d.screens
 		
 		private function doneClick(e:MouseEvent):void 
 		{
-			trace("done");
 			this.DoneSignal.dispatch();
 		}
 		

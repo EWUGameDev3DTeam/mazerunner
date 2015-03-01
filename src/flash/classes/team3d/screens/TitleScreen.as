@@ -146,12 +146,18 @@
 			btnPlay.addEventListener(MouseEvent.CLICK, playClicked);
 			btnCredits.addEventListener(MouseEvent.CLICK, creditsClicked);
 			btnSettings.addEventListener(MouseEvent.CLICK, settingsClicked);
+			
 			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private function playClicked($e:MouseEvent):void 
+		{
+			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:goFullScreen } );
+		}
+		
+		private function goFullScreen($e:LoaderEvent = null):void
 		{
 			if (World.instance.stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE)
 			{
@@ -198,7 +204,7 @@
 		 */
 		protected function hide():void
 		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
+			this.destroy();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */		
