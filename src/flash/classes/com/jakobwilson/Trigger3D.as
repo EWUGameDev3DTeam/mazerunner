@@ -10,7 +10,7 @@
 	*/
 	public class Trigger3D extends ObjectContainer3D
 	{
-		/**NOTE: 
+		/**NOTE: */
 		private var _trig:Trigger;					/**The Trigger object that this wraps(since trigger must have an onFrame handler, it cannot extend ObjectContainer3D)*/
 		public var TriggeredSignal:Signal;			/**A signal telling when the trigger has been triggered
 		

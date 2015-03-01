@@ -1,4 +1,4 @@
-package team3d.objects {
+﻿package team3d.objects {
 	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.containers.View3D;
@@ -185,6 +185,19 @@ package team3d.objects {
 		{
 			_view.width = _stage.stageWidth;
 			_view.height = _stage.stageHeight;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets the current View3D for the world
+		 *
+		 * @return	The View3D for the world
+		 * @author Jakob Wilson	
+		 */
+		public function get physics():AWPDynamicsWorld
+		{
+			return this._physics;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

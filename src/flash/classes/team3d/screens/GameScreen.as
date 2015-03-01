@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.cameras.Camera3D;
 	import away3d.controllers.FirstPersonController;
@@ -26,6 +26,10 @@ package team3d.screens
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
 	import team3d.objects.World;
+	import com.jakobwilson.Cannon.Shot;
+	import com.jakobwilson.Cannon.Cannon;
+	import away3d.primitives.CubeGeometry;
+	import away3d.tools.helpers.data.MeshDebug;
 
 	
 	/**
@@ -80,16 +84,17 @@ package team3d.screens
 			floorRigidBody.friction = 1;
 			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
 			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
-			// end ugly physics		
-			
 			World.instance.addObject(floorRigidBody);
-			//*/
+			// end ugly physics	
 			
-			//Make a wall
-			//var wallBuilder:AssetBuilder = new AssetBuilder();	//create the assetBuilder
-			//wallBuilder.assetReadySignal.add(this.initWall);	// add the initwall signal
-			//wallBuilder.load("Models/Wall/WallSegment.awd", AssetBuilder.BOX, AssetBuilder.STATIC);	//load the wall with a box collider and Dynamic physics
-			
+			//create a cannon
+			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
+			cannon.addActivator(new Asset("dummy", Asset.NONE, Asset.STATIC, new Mesh(new CubeGeometry(2,2,2), new ColorMaterial(0x0000FF))));
+			cannon.transformTo(new Vector3D(0,500,150));
+			cannon.rotateTo(new Vector3D(0,315,0));
+			cannon.addToScene(World.instance.view, World.instance.physics);
+			//End cannon creation
+
 			_player = new HumanPlayer(World.instance.view.camera);
 			World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
@@ -135,9 +140,8 @@ package team3d.screens
 		/**
 		*	adds the walls to the game
 		*/
-		public function initWall(assetType:int, asset:Object)
-		{
-			/*
+		//public function initWall(assetType:int, asset:Object)
+		/*{
 			if(assetType == AssetBuilder.MESH)
 			{
 				Mesh(asset).scale(50);
@@ -163,10 +167,10 @@ package team3d.screens
 				var startz:Number = _floor.position.z - boarddepth * 0.5;
 				
 				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, AWPRigidBody(asset));
-				World.instance.addMaze(maze);
-			}
-			*/
-		}
+				World.instance.addMaze(maze);*/
+			//}
+		
+		//}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		

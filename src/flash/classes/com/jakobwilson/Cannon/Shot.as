@@ -16,24 +16,25 @@
 	*/
 	public class Shot 
 	{
-		private var _model:Asset;
-		private var _stateTimer:Timer;
-		private var _scale:Number = 0.05;
-		private var _alpha = 1.0;
-		private var _count:int = 0;
-		private var _view:View3D; 
-		private var _world:AWPDynamicsWorld;
+		private var _model:Asset;			/**< the asset we will be shooting*/
+		private var _stateTimer:Timer;		/**< a timer to control the state*/
+		private var _scale:Number = 0.05;	/**< the scale of the shot*/
+		private var _firePower:Vector3D;	/**< the force applied to the shot when it's fired*/
+		private var _view:View3D; 			/**< The view*/
+		private var _world:AWPDynamicsWorld;/**< The physics world*/
 		
-		public function Shot(shot:Asset, view:View3D, world:AWPDynamicsWorld) 
+		/**
+		*	Spawns a new shot
+		*/
+		public function Shot(shot:Asset, v:Vector3D, view:View3D, world:AWPDynamicsWorld) 
 		{
 			this._view = view;
 			this._world = world;
 			this._model = shot;
+			this._firePower = v;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
-			this._model.transformTo(new Vector3D(this._model.position.x, this._model.position.y, this._model.position.z + 100));
+			this._model.transformTo(new Vector3D(this._model.position.x, this._model.position.y, this._model.position.z));
 			this._view.scene.addChild(this._model.model);
-			this._world.addRigidBody(this._model.rigidBody);
-			this._count  = 0;
 			this._stateTimer = new Timer(10);
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.grow);
 			this._stateTimer.start();
@@ -41,23 +42,23 @@
 		
 		private function grow(e:Event)
 		{
-			trace("Growing");
 			this._scale += 0.05;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
+			
 			if(this._scale > 0.99)
 			{
 				this._stateTimer.removeEventListener(TimerEvent.TIMER, this.grow);
 				this._stateTimer.addEventListener(TimerEvent.TIMER, this.shoot);
+				this._world.addRigidBody(this._model.rigidBody);
 			}
 		}
 		
 
 		private function shoot(e:Event)
 		{
-			trace("Shooting");
 			this._model.rigidBody.scale = new Vector3D(1,1,1);
 			this._scale = 1.0;
-			//this._model.rigidBody.applyForce(new Vector3D(0,0,200), new Vector3D());
+			this._model.rigidBody.applyForce(this._firePower, new Vector3D());
 			this._stateTimer.removeEventListener(TimerEvent.TIMER, this.shoot);
 			this._stateTimer.delay = 2000;
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.fade);
