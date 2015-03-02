@@ -1,4 +1,4 @@
-package awayphysics.collision.dispatch {
+﻿package awayphysics.collision.dispatch {
 	import AWPC_Run.addRayInC;
 	import AWPC_Run.createCollisionObjectInC;
 	import AWPC_Run.removeRayInC;

@@ -6,6 +6,7 @@
 	import flash.events.Event;
 	import flash.display.Sprite;
 	import flash.geom.Vector3D;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	
 	/**
 	*	A trigger class that maintains a list of assets that can trigger it(called activators). 
@@ -18,6 +19,7 @@
 		public var TriggeredSignal:Signal = new Signal(Asset);			/** The signal dispatched when an activator gets in range*/
 		public var bIsTriggered = false;								/** A boolean to indicate is the trigger is being activated*/
 		private var _watchList:Vector.<Asset> = new Vector.<Asset>();	/** The list of Activators (of type Asset)*/
+		private var _objectList:Vector.<AWPCollisionObject> = new Vector.<AWPCollisionObject>();	/** The list of Activators (of type GhostObject)*/
 		private var _range = 100;										/** The sensory range of the trigger*/
 		private var _position;											/** The position of the trigger*/
 		private var _checkNum = 0;										/** A number used to manage how often checks are made*/
@@ -86,6 +88,20 @@
 					this.bIsTriggered = true;
 				}
 			}
+			
+			for each(var o:AWPCollisionObject in this._objectList)
+			{
+				//trace("Trigger is checking");
+				xDist = this._position.x - o.position.x;
+				yDist = this._position.y - o.position.y;
+				zDist = this._position.z - o.position.z;
+				distance = Math.sqrt(Math.pow(xDist,2) + Math.pow(Math.sqrt(Math.pow(yDist,2) + Math.pow(zDist,2)),2));
+				if(distance < this._range)
+				{
+					this.TriggeredSignal.dispatch(null);
+					this.bIsTriggered = true;
+				}
+			}
 		}
 		
 		
@@ -98,6 +114,13 @@
 			this._watchList.push(a);
 		}
 		
+		/**
+		*	Adds an activator so it can set off the trigger
+		*/
+		public function addObjectActivator(a:AWPCollisionObject)
+		{
+			this._objectList.push(a);
+		}
 		
 		/**
 		*	Removes an activator so it can't set off the trigger

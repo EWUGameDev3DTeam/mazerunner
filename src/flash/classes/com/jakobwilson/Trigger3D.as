@@ -3,6 +3,7 @@
 	import away3d.core.base.Object3D;
 	import org.osflash.signals.Signal;
 	import away3d.containers.ObjectContainer3D;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 
 	/**
 	*	A trigger that can be applied as a child to a mesh using Mesh.addChild()
@@ -52,6 +53,15 @@
 		public function addActivator(a:Asset)
 		{
 			this._trig.addActivator(a);
+		}
+		
+		/**
+		* Allows you to add an activator(AWPGhostObject) that will set off the trigger when in range
+		*	@param AWPGhostObject a - the asset that can now set off the trigger
+		*/
+		public function addObjectActivator(a:AWPCollisionObject)
+		{
+			this._trig.addObjectActivator(a);
 		}
 		
 		/**

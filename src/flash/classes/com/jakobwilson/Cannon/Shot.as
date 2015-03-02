@@ -33,6 +33,8 @@
 			this._model = shot;
 			this._firePower = v;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
+			this._model.rigidBody.gravity = new Vector3D(0,0.0001,0)
+			this._model.rigidBody.mass = 10000;
 			this._model.transformTo(new Vector3D(this._model.position.x, this._model.position.y, this._model.position.z));
 			this._view.scene.addChild(this._model.model);
 			this._stateTimer = new Timer(10);
@@ -58,6 +60,7 @@
 		{
 			this._model.rigidBody.scale = new Vector3D(1,1,1);
 			this._scale = 1.0;
+			this._firePower.scaleBy(this._model.rigidBody.mass)
 			this._model.rigidBody.applyForce(this._firePower, new Vector3D());
 			this._stateTimer.removeEventListener(TimerEvent.TIMER, this.shoot);
 			this._stateTimer.delay = 2000;
@@ -67,7 +70,6 @@
 		
 		private function fade(e:Event)
 		{
-			//trace("Shrinking: " + this._scale);
 			this._stateTimer.delay = 100;
 			this._scale -= 0.2;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);

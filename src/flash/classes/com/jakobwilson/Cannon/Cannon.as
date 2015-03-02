@@ -8,6 +8,8 @@
 	import awayphysics.dynamics.AWPRigidBody;
 	import flash.geom.Vector3D;
 	import away3d.containers.ObjectContainer3D;
+	import awayphysics.collision.dispatch.AWPGhostObject;
+
 	/**
 	*	A class to wrap a cannon. Handles spawning cannon balls and displaying the cannon
 	*
@@ -24,12 +26,12 @@
 		/**
 		* Creates a cannon and sets up its shot 
 		*/
-		public function Cannon(can:Asset, shot:Asset) 
+		public function Cannon(can:Asset, shot:Asset, activationRange:int = 2000) 
 		{
 			this._cannon = can;
 			this._shot = shot;
 			this._shot.transformTo(this._cannon.position);
-			this._firingTrigger = new Trigger3D(1000, 20);
+			this._firingTrigger = new Trigger3D(activationRange, 20);
 			this._cannon.model.addChild(ObjectContainer3D(this._firingTrigger));
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
@@ -41,14 +43,12 @@
 		*/
 		public function shoot(a:Asset)
 		{
-			if(Math.random() < 0.1)
+			if(Math.random() <= 1)
 			{
 				var positionVector:Vector3D = new Vector3D;
 				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
 				positionVector.y = this._cannon.position.y;
 				positionVector.z = this._cannon.position.z +( Math.cos(this._cannon.rotation.y*this.degreesToRad)*100);
-				
-				trace("Force: " + positionVector.x + ", " + positionVector.y + ", " + positionVector.z);
 				
 				var shotModel:Asset = this._shot.clone();
 				shotModel.transformTo(positionVector);
@@ -76,6 +76,14 @@
 		public function addActivator(a:Asset)
 		{
 			this._firingTrigger.addActivator(a);
+		}
+		
+		/**
+		*	adds a ghostobject activator
+		*/
+		public function addObjectActivator(a:AWPGhostObject)
+		{
+			this._firingTrigger.addObjectActivator(a);
 		}
 		
 		/**

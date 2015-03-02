@@ -30,6 +30,12 @@
 	import com.jakobwilson.Cannon.Cannon;
 	import away3d.primitives.CubeGeometry;
 	import away3d.tools.helpers.data.MeshDebug;
+	import com.greensock.TweenLite;
+	import flash.display.Shape;
+	import org.flintparticles.threeD.renderers.Camera;
+	import team3d.bases.BasePlayer;
+	import team3d.objects.players.KinematicPlayer;
+	
 
 	
 	/**
@@ -45,7 +51,7 @@
 		
 		private var _fullscreen	:Boolean;
 		
-		private var _player		:HumanPlayer;
+		private var _player		:KinematicPlayer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -66,10 +72,20 @@
 		 * 
 		 */
 		public function Begin():void
-		{
+		{			
+			
 			World.instance.CurrentScreen = "Game";
 			this.addChild(World.instance.view);
 			World.instance.Begin();
+			
+			var rectangle:Shape = new Shape;
+			rectangle.graphics.beginFill(0xFF00FF);
+			rectangle.graphics.drawRect(0, 0, this.width,this.height); 
+			rectangle.graphics.endFill();
+			addChild(rectangle);
+			
+			TweenLite.to(rectangle, 2.0, {alpha:0.0});
+			
 			
 			//*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
@@ -87,22 +103,32 @@
 			World.instance.addObject(floorRigidBody);
 			// end ugly physics	
 			
+			
+			//Create player
+			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.5);
+			_player.addToWorld(World.instance.view, World.instance.physics);
+			_player.controller.warp(new Vector3D(0, 10000, 0));
+			_player.Begin();
+			//end player
+			
 			//create a cannon
 			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			cannon.addActivator(new Asset("dummy", Asset.NONE, Asset.STATIC, new Mesh(new CubeGeometry(2,2,2), new ColorMaterial(0x0000FF))));
-			cannon.transformTo(new Vector3D(0,500,0));
-			cannon.rotateTo(new Vector3D(0,90,0));
+			cannon.addObjectActivator(this._player.controller.ghostObject);
+			cannon.transformTo(new Vector3D(70,200,0));
+			cannon.rotateTo(new Vector3D(0,0,0));
 			cannon.addToScene(World.instance.view, World.instance.physics);
 			//End cannon creation
 
-			_player = new HumanPlayer(World.instance.view.camera);
-			World.instance.addObject(_player.rigidbody);
+			//_player = new HumanPlayer(World.instance.view.camera);
+			//World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
-			_player.Begin();
+			//_player.Begin();
+		
+			
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			World.instance.view.camera = FlyController(_player.Controller).Camera;
+			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			
 			createMaze();
 		}
@@ -116,8 +142,8 @@
 			var boardwidth:Number = Bounds.width;
 			var boardheight:Number = Bounds.height;
 			var boarddepth:Number = Bounds.depth;
-			var startx:Number = _floor.position.x - boardwidth * 0.5;
-			var startz:Number = _floor.position.z - boarddepth * 0.5;
+			var startx:Number = _floor.position.x - boardwidth * 0.75;
+			var startz:Number = _floor.position.z - boarddepth * 0.75;
 				
 			var wall:Asset = AssetManager.instance.getAsset("Wall");
 			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall);
@@ -137,42 +163,6 @@
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
-		/**
-		*	adds the walls to the game
-		*/
-		//public function initWall(assetType:int, asset:Object)
-		/*{
-			if(assetType == AssetBuilder.MESH)
-			{
-				Mesh(asset).scale(50);
-				World.instance.view.scene.addChild(Mesh(asset));
-				trace("Added non physics object");
-			}
-			
-			if(assetType == AssetBuilder.RIGIDBODY)
-			{
-				
-				//apply some scaling, move the wall up and rotate it a little to see the physics
-				AWPRigidBody(asset).scale = new Vector3D(50, 50, 50);
-				AWPRigidBody(asset).rotation = new Vector3D(0, 0, 0);
-				
-				var rows:int = 10;
-				var cols:int = 10;
-				
-				Bounds.getMeshBounds(_floor);
-				var boardwidth:Number = Bounds.width;
-				var boardheight:Number = Bounds.height;
-				var boarddepth:Number = Bounds.depth;
-				var startx:Number = _floor.position.x - boardwidth * 0.5;
-				var startz:Number = _floor.position.z - boarddepth * 0.5;
-				
-				var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, AWPRigidBody(asset));
-				World.instance.addMaze(maze);*/
-			//}
-		
-		//}
-		
-		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
 		 * @private
@@ -183,7 +173,7 @@
 		 */
 		protected function toggleCamera():void
 		{
-			
+			/*
 			_player.Controller.End();
 			
 			if (_player.Controller is FirstPersonCameraController)
@@ -197,7 +187,7 @@
 				World.instance.view.camera = FirstPersonCameraController(HumanPlayer.FPCController).Camera;
 			}
 			
-			_player.Controller.Begin();
+			_player.Controller.Begin();*/
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -209,7 +199,6 @@
 		{
 			if (!World.instance.stage.mouseLock)
 				World.instance.stage.mouseLock = true;
-				
 			World.instance.update();
 		}
 		
