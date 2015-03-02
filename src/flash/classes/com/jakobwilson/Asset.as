@@ -216,6 +216,19 @@
 				return this._rigidBody.position;
 		}
 		
+		
+		/**
+		*	Gets the current rotateion as a vector
+		*	@return Vector3D - the current rotation
+		*/
+		public function get rotation():Vector3D
+		{
+			if(this._collisionType == NONE)		//mesh
+				return new Vector3D(this._model.rotationX, this._model.rotationY, this._model.rotationZ);
+			else								//rigidbody
+				return this._rigidBody.rotation;
+		}
+		
 		/**
 		* 	returns the current object's rigidbody(if Asset.NONE, then null)
 		*	@return AWPRigidBody - the current asset's rigidBody

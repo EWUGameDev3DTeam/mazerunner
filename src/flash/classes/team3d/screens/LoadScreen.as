@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
@@ -137,6 +137,8 @@ package team3d.screens
 			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.DYNAMIC);
+			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);
 			AssetManager.instance.load(this.onProgress, this.onComplete);
 		}
 		

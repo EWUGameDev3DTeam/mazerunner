@@ -1,6 +1,6 @@
 package team3d.screens
+﻿package team3d.screens
 {
-	import adobe.utils.CustomActions;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.PlaneGeometry;
@@ -8,23 +8,25 @@ package team3d.screens
 	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.greensock.events.LoaderEvent;
-	import com.greensock.TweenMax;
+	import com.greensock.TweenLite;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
+	import com.jakobwilson.Cannon.Cannon;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Shape;
-	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
-	import team3d.controllers.FirstPersonCameraController;
 	import team3d.controllers.FlyController;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.players.HumanPlayer;
+	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
+	
 
 	
 	/**
@@ -40,11 +42,13 @@ package team3d.screens
 		
 		private var _floor				:Mesh;
 		
-		private var _player				:HumanPlayer;
+		//private var _player				:HumanPlayer;
 		
 		private var _paused				:Boolean;
 		
 		private var _controlsEnabled	:Boolean;
+
+		private var _player				:KinematicPlayer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -78,6 +82,16 @@ package team3d.screens
 			_controlsEnabled = false;
 			_paused = false;
 			
+			/*
+			var rectangle:Shape = new Shape;
+			rectangle.graphics.beginFill(0xFF00FF);
+			rectangle.graphics.drawRect(0, 0, this.width,this.height); 
+			rectangle.graphics.endFill();
+			addChild(rectangle);
+			
+			TweenLite.to(rectangle, 2.0, {alpha:0.0});
+			*/
+			
 			//*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
 			this._floor.x = 0;
@@ -90,8 +104,8 @@ package team3d.screens
 			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
 			World.instance.addObject(floorRigidBody);
 			
-			_player = new HumanPlayer(World.instance.view.camera);
-			World.instance.addObject(_player.rigidbody);
+			//_player = new HumanPlayer(World.instance.view.camera);
+			//World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
 			//_player.Begin();
 			
@@ -104,8 +118,33 @@ package team3d.screens
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			World.instance.view.camera = FlyController(_player.Controller).Camera;
+			
+			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
+			
+			
+			//Create player
+			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.5);
+			_player.addToWorld(World.instance.view, World.instance.physics);
+			_player.controller.warp(new Vector3D(0, 10000, 0));
+			_player.Begin();
+			//end player
+			
+			//create a cannon
+			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
+			cannon.addObjectActivator(this._player.controller.ghostObject);
+			cannon.transformTo(new Vector3D(70,200,0));
+			cannon.rotateTo(new Vector3D(0,0,0));
+			cannon.addToScene(World.instance.view, World.instance.physics);
+			//End cannon creation
+
+			//_player = new HumanPlayer(World.instance.view.camera);
+			//World.instance.addObject(_player.rigidbody);
+			// start the player, this also starts the HumanController associated with it
+			//_player.Begin();
+			
+			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			
 			var rectangle:Shape = new Shape;
 			rectangle.graphics.beginFill(0x000000);
@@ -140,8 +179,8 @@ package team3d.screens
 			var boardwidth:Number = Bounds.width;
 			var boardheight:Number = Bounds.height;
 			var boarddepth:Number = Bounds.depth;
-			var startx:Number = _floor.position.x - boardwidth * 0.5;
-			var startz:Number = _floor.position.z - boarddepth * 0.5;
+			var startx:Number = _floor.position.x - boardwidth * 0.75;
+			var startz:Number = _floor.position.z - boarddepth * 0.75;
 				
 			var wall:Asset = AssetManager.instance.getAsset("Wall");
 			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall);
@@ -199,7 +238,7 @@ package team3d.screens
 		 */
 		protected function toggleCamera():void
 		{
-			
+			/*
 			_player.Controller.End();
 			
 			if (_player.Controller is FirstPersonCameraController)
@@ -213,7 +252,7 @@ package team3d.screens
 				World.instance.view.camera = FirstPersonCameraController(HumanPlayer.FPCController).Camera;
 			}
 			
-			_player.Controller.Begin();
+			_player.Controller.Begin();*/
 		}
 		
 		
