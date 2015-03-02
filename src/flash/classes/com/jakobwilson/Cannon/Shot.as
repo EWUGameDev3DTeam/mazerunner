@@ -84,7 +84,8 @@
 		
 		private function remove()
 		{
-			this._view.scene.removeChild(this._model.model);
+			if(this._view.scene.numChildren > 0)
+				this._view.scene.removeChild(this._model.model);
 			this._world.removeRigidBody(this._model.rigidBody);
 			this._model = null;
 			this._stateTimer.stop();
