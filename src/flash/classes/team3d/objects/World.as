@@ -1,11 +1,5 @@
 ﻿package team3d.objects {
-	import away3d.cameras.lenses.LensBase;
-	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.containers.View3D;
-	import away3d.entities.Mesh;
-	import away3d.materials.ColorMaterial;
-	import away3d.primitives.PlaneGeometry;
-	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.AWPRigidBody;
 	import flash.display.Stage;
@@ -13,9 +7,7 @@
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
-	import team3d.bases.BasePlayer;
 	import team3d.objects.maze.Maze;
-	import team3d.objects.players.HumanPlayer;
 	
 	/**
 	 * ...
@@ -158,6 +150,8 @@
 					
 					if (r.HasRowWall)
 						addObject(r.RowWall.rigidBody);
+					
+					addObject(r.Floor.rigidBody);
 				}
 			}
 			

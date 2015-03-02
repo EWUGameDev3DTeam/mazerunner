@@ -21,5 +21,17 @@ package team3d.bases
 			//if(_controller == null)
 				//_controller = new StationaryController();
 		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set Controller($c:IController):void
+		{
+			_controller = $c;
+		}
+		
+		public function get Controller():IController
+		{
+			return _controller;
+		}
 	}
 }

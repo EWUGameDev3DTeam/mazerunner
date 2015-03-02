@@ -18,11 +18,6 @@ package team3d.builders
 	 */
 	public class MazeBuilder 
 	{
-		public static const	NOWALLS		:int = 0;
-		public static const ROWWALLONLY	:int = 1;
-		public static const COLWALLONLY	:int = 2;
-		public static const BOTHWALLS	:int = 3;
-		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private static var _instance	:MazeBuilder;
@@ -30,6 +25,7 @@ package team3d.builders
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private var _wall				:Asset;
+		private var _floor				:Asset;
 		private var _wallsRemoved		:int;
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -54,16 +50,23 @@ package team3d.builders
 		 * 			$starty		The starting y location for the maze
 		 * @return				A vector containing all the rooms for the maze
 		 */
-		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $wall:Asset = null):Maze
+		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $wall:Asset = null, $floor:Asset = null):Maze
 		{
 			var wall:Asset = $wall;
+			var floor:Asset = $floor;
 			// if there was no rb passed in, assign the predefined set one
 			if (wall == null)
 				wall = _wall
 			
+			if (floor == null)
+				floor = _floor;
+			
 			// if no wall rb is available at all, fail and throw an error
 			if (wall == null)
 				throw new Error("No wall asset was found. Maze cannot be generated. Either pass one in or set one via WallAsset");
+			
+			if (floor == null)
+				throw new Error("No floor asset was found. Maze cannot be generated. Either pass one in or set it via FloorAsset");
 			
 			// create the new 2d vector that will house the maze's rooms.
 			var maze:Maze = new Maze($rows, $cols);
@@ -99,7 +102,7 @@ package team3d.builders
 				maze.SetRow(randRow,rooms);
 			}
 			
-			genMaze(maze, $startx, $startz, wall);
+			genMaze(maze, $startx, $startz, wall, floor);
 			
 			return maze;
 		}
@@ -189,7 +192,7 @@ package team3d.builders
 		 * 			$starty	The starting y for the maze
 		 * @return			A vector containing all the rooms for the maze
 		 */
-		protected function genMaze($maze:Maze, $startx:Number, $startz:Number, $wall:Asset):void
+		protected function genMaze($maze:Maze, $startx:Number, $startz:Number, $wall:Asset, $floor:Asset):void
 		{
 			// get the bounds from the wall
 			Bounds.getMeshBounds(Mesh($wall.model));
@@ -205,8 +208,10 @@ package team3d.builders
 			// declare some variables to help with the build process
 			var rowwall:Asset;
 			var colwall:Asset;
+			var floor:Asset;
 			var x:Number;
 			var z:Number;
+			var y:Number;
 			var room:MazeRoom;
 			var roomRow:Vector.<MazeRoom>;
 			
@@ -218,11 +223,17 @@ package team3d.builders
 				colwall = null;
 				for (var col:int = 0; col < $maze.Columns; col++)
 				{
+					x = $startx;
+					z = $startz;
+					// set the floor before anything else has a chance to mess with the x and y
+					floor = $floor.clone();
+					floor.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
+					
 					roomRow = $maze.GetRow(row);
 					if (roomRow[col].HasRowWall) // row wall only
 					{
 						x = $startx;
-						z = $startz - walldepth * 0.5;
+						z -= walldepth * 0.5;
 						rowwall = $wall.clone();
 						rowwall.rotateTo(new Vector3D(0, 90, 0));
 						rowwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
@@ -231,16 +242,15 @@ package team3d.builders
 					if (roomRow[col].HasColumnWall) // col wall only
 					{
 						
-						x = $startx - walldepth * 0.5;
+						x -= walldepth * 0.5;
 						z = $startz;
 						colwall = $wall.clone();
 						colwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
-						//colwall = AssetBuilder.cloneRigidBody($rb, AssetBuilder.BOX , AssetBuilder.STATIC);
-						//colwall.position = new Vector3D(x + col * spacing, 0, z + row * spacing);
 					}
 					
 					roomRow[col].ColumnWall = colwall;
 					roomRow[col].RowWall = rowwall;
+					roomRow[col].Floor = floor;
 					
 					$maze.SetRow(row, roomRow);
 				}
@@ -301,6 +311,27 @@ package team3d.builders
 		public function set WallAsset($wall:Asset):void
 		{
 			_wall = $wall;
+		}
+		
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets or sets the floor asset the maze gen algorithm will use if one is not given to it during the build call
+		 *
+		 * @param	$floor	The floor asset to be used
+		 * @return			The floor asset to be used
+		 */
+		public function get FloorAsset():Asset
+		{
+			return _floor;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set FloorAsset($floor:Asset):void
+		{
+			_floor = $floor;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

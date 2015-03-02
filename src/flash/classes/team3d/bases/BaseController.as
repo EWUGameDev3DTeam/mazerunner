@@ -1,5 +1,6 @@
 package team3d.bases
 {
+	import away3d.cameras.Camera3D;
 	import away3d.controllers.ControllerBase;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -15,6 +16,8 @@ package team3d.bases
 	{
 		public static const TORADS		:Number = Math.PI / 180.0;
 		/* ---------------------------------------------------------------------------------------- */
+		
+		protected var _baseController	:ControllerBase;
 		
 		/**
 		 * Constructs the BaseController object.
@@ -57,6 +60,11 @@ package team3d.bases
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
+		
+		public function get Camera():Camera3D
+		{
+			return Camera3D(_baseController.targetObject);
+		}
 		
 	}
 }
