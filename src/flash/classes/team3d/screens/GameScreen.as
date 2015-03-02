@@ -72,6 +72,8 @@ package team3d.screens
 			super.Begin();
 			World.instance.Begin();
 			this.addChild(World.instance.view);
+			this.visible = true;
+			this.alpha = 0;
 			
 			_controlsEnabled = false;
 			_paused = false;
@@ -111,7 +113,7 @@ package team3d.screens
 			rectangle.graphics.endFill();
 			this.addChild(rectangle);
 			
-			TweenMax.fromTo(rectangle, 2, { autoAlpha: 1 }, { autoAlpha:0, onComplete:enableControls, delay:1 } );
+			//TweenMax.fromTo(rectangle, 2, { autoAlpha: 1 }, { autoAlpha:0, onComplete:enableControls, delay:1 } );
 		}
 		
 		private function enableControls($e:LoaderEvent = null)

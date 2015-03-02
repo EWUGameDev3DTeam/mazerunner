@@ -175,6 +175,7 @@ package team3d.objects {
 		 */
 		public function update():void
 		{
+			lockMouse();
 			_physics.step(1/30, 1, 1/30);
 			_view.render();
 		}
@@ -237,6 +238,8 @@ package team3d.objects {
 		public function lockMouse():Boolean
 		{
 			if (isNormal)
+				return false;
+			else if (_stage.mouseLock)
 				return false;
 			
 			_stage.mouseLock = true;

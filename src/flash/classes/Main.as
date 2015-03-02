@@ -70,11 +70,10 @@ package
 		
 		private function endTitle($dest:int):void 
 		{
-			trace("here: " + $dest);
 			_titleScreen.End();
 			
 			if ($dest == BaseScreen.GAME)
-				_gameScreen.Begin();
+				TweenMax.fromTo(_gameScreen, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:_gameScreen.Begin(), delay:1 } );
 			else if ($dest == BaseScreen.CREDITS)
 				_creditsScreen.Begin();
 			else if ($dest == BaseScreen.SETTINGS)
