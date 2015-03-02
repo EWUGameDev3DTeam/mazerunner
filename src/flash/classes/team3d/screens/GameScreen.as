@@ -1,5 +1,4 @@
 package team3d.screens
-﻿package team3d.screens
 {
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
@@ -8,7 +7,6 @@ package team3d.screens
 	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.greensock.events.LoaderEvent;
-	import com.greensock.TweenLite;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
 	import com.jakobwilson.Cannon.Cannon;
@@ -17,13 +15,10 @@ package team3d.screens
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
-	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
-	import team3d.controllers.FlyController;
 	import team3d.objects.maze.Maze;
-	import team3d.objects.players.HumanPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
 	
@@ -42,7 +37,7 @@ package team3d.screens
 		
 		private var _floor				:Mesh;
 		
-		//private var _player				:HumanPlayer;
+		//private var _player			:HumanPlayer;
 		
 		private var _paused				:Boolean;
 		
@@ -137,7 +132,7 @@ package team3d.screens
 			cannon.rotateTo(new Vector3D(0,0,0));
 			cannon.addToScene(World.instance.view, World.instance.physics);
 			//End cannon creation
-
+			
 			//_player = new HumanPlayer(World.instance.view.camera);
 			//World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
