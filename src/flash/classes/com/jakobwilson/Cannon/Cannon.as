@@ -43,7 +43,7 @@
 		*/
 		public function shoot(a:Asset)
 		{
-			if(Math.random() <= 1)
+			if(Math.random() <= 0.1)
 			{
 				var positionVector:Vector3D = new Vector3D;
 				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
