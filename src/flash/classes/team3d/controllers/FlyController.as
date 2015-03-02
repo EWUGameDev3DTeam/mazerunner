@@ -1,6 +1,8 @@
 package team3d.controllers
 {
 	import away3d.cameras.Camera3D;
+	import away3d.cameras.lenses.LensBase;
+	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.containers.View3D;
 	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
@@ -21,19 +23,20 @@ package team3d.controllers
 	 */
 	public class FlyController extends BaseController
 	{
-		private var _fpc	:FirstPersonController;
-		
-		public function FlyController($fpc:FirstPersonController)
+		public function FlyController()
 		{
-			_fpc = $fpc;
-			_fpc.fly = true;
-			_fpc.targetObject.z = 3000;
+			var lb:LensBase = new PerspectiveLens(75);
+			lb.far = 20000;
+			var fpc:FirstPersonController = new FirstPersonController(new Camera3D(lb), 0, 90, -90, 90, 0)
+			_baseController = fpc;
+			fpc.fly = true;
+			fpc.targetObject.z = 3000;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
-		 * 
+		 *
 		 */
 		override public function Begin():void
 		{
@@ -43,7 +46,7 @@ package team3d.controllers
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
-		 * 
+		 *
 		 */
 		override public function End():void
 		{
@@ -59,9 +62,9 @@ package team3d.controllers
 		 */
 		override public function Move($speed:Number):void
 		{
-			$speed += 20;
-			
-			var cam = Camera3D(_fpc.targetObject);
+			var cam = Camera3D(_baseController.targetObject);
+			if (KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
+				$speed *= 0.5;
 			
 			// move forward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
@@ -82,22 +85,18 @@ package team3d.controllers
 		
 		/**
 		 * @private
-		 * 
+		 *
 		 *
 		 * @param	$param1	Describe param1 here.
 		 * @return			Describe the return value here.
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
+			var fpc:FirstPersonController = FirstPersonController(_baseController);
 			// move the camera up or down
-			_fpc.tiltAngle += $e.movementY * 0.07;
+			fpc.tiltAngle += $e.movementY * 0.07;
 			// move the camera left or right
-			_fpc.panAngle += $e.movementX * 0.1;
-		}
-		
-		public function get Camera():Camera3D
-		{
-			return Camera3D(_fpc.targetObject);
+			fpc.panAngle += $e.movementX * 0.1;
 		}
 	}
 }

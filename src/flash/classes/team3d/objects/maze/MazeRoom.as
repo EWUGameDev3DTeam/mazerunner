@@ -11,15 +11,14 @@ package team3d.objects.maze {
 	{
 		private var _rowWall	:Asset;
 		private var _colWall	:Asset;
+		private var _floor		:Asset;
 		private var _set		:int;
-		private var _type		:int;
 		private var _hasRowWall	:Boolean;
 		private var _hasColWall	:Boolean;
 		
 		public function MazeRoom($set:int)
 		{
 			_set = $set;
-			_type = MazeBuilder.BOTHWALLS;
 			_hasColWall = _hasRowWall = true;
 		}
 		
@@ -124,6 +123,27 @@ package team3d.objects.maze {
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
+		
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Gets or sets the rooms floor
+		 *
+		 * @param	$floor	The floor asset of the room
+		 * @return			The floor asset of the room
+		 */
+		public function get Floor():Asset
+		{
+			return _floor;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set Floor($floor:Asset):void
+		{
+			_floor = $floor;
+		}
 	}
 	
 }

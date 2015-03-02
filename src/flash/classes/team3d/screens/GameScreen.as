@@ -19,6 +19,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
 	import team3d.objects.maze.Maze;
+	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
 	
@@ -35,15 +36,15 @@ package team3d.screens
 		
 		public var PausedSignal			:Signal;
 		
-		private var _floor				:Mesh;
-		
-		//private var _player			:HumanPlayer;
+		//private var _floor				:Mesh;
 		
 		private var _paused				:Boolean;
 		
 		private var _controlsEnabled	:Boolean;
 
 		private var _player				:KinematicPlayer;
+		
+		private var _flyPlayer			:FlyPlayer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -55,7 +56,7 @@ package team3d.screens
 			super();
 			
 			_screenTitle = "Game";
-			
+			_flyPlayer = new FlyPlayer();
 			
 			DoneSignal = new Signal(Boolean);
 			PausedSignal = new Signal();
@@ -87,7 +88,7 @@ package team3d.screens
 			TweenLite.to(rectangle, 2.0, {alpha:0.0});
 			*/
 			
-			//*
+			/*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
 			this._floor.x = 0;
 			this._floor.y = -50;
@@ -98,12 +99,7 @@ package team3d.screens
 			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
 			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
 			World.instance.addObject(floorRigidBody);
-			
-			//_player = new HumanPlayer(World.instance.view.camera);
-			//World.instance.addObject(_player.rigidbody);
-			// start the player, this also starts the HumanController associated with it
-			//_player.Begin();
-			
+			//*/
 			createMaze();
 			
 			//*			TEMPORARY KEY BINDINGS
@@ -146,13 +142,7 @@ package team3d.screens
 			rectangle.graphics.drawRect(0, 0, this.width, this.height);
 			rectangle.graphics.endFill();
 			this.addChild(rectangle);
-			
-			//TweenMax.fromTo(rectangle, 2, { autoAlpha: 1 }, { autoAlpha:0, onComplete:enableControls, delay:1 } );
-		}
-		
-		private function enableControls($e:LoaderEvent = null)
-		{
-			_player.Begin();
+			toggleCamera();
 		}
 		
 		private function failedGame():void
@@ -167,18 +157,16 @@ package team3d.screens
 		
 		private function createMaze()
 		{
+			var wall:Asset = AssetManager.instance.getAsset("Wall");
+			var floor:Asset = AssetManager.instance.getAsset("Floor");
+			
 			var rows:int = 10;
 			var cols:int = 10;
-				
-			Bounds.getMeshBounds(_floor);
-			var boardwidth:Number = Bounds.width;
-			var boardheight:Number = Bounds.height;
-			var boarddepth:Number = Bounds.depth;
-			var startx:Number = _floor.position.x - boardwidth * 0.75;
-			var startz:Number = _floor.position.z - boarddepth * 0.75;
-				
-			var wall:Asset = AssetManager.instance.getAsset("Wall");
-			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall);
+			var startx:Number = -425;
+			var startz:Number = -30;
+			
+			
+			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
 		}
 		
@@ -212,7 +200,7 @@ package team3d.screens
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.F, failedGame);
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.G, wonGame);
 			_player.End();
-			_floor = null;
+			//_floor = null;
 			
 			World.instance.End();
 			super.End();
@@ -233,21 +221,18 @@ package team3d.screens
 		 */
 		protected function toggleCamera():void
 		{
-			/*
-			_player.Controller.End();
-			
-			if (_player.Controller is FirstPersonCameraController)
+			if (World.instance.view.camera == _player.Camera)
 			{
-				_player.Controller = HumanPlayer.FLYController;
-				World.instance.view.camera = FlyController(_player.Controller).Camera
+				_player.End();
+				_flyPlayer.Begin();
+				World.instance.view.camera = _flyPlayer.Controller.Camera;
 			}
 			else
 			{
-				_player.Controller = HumanPlayer.FPCController;
-				World.instance.view.camera = FirstPersonCameraController(HumanPlayer.FPCController).Camera;
+				_flyPlayer.End();
+				_player.Begin();
+				World.instance.view.camera = _player.Camera;
 			}
-			
-			_player.Controller.Begin();*/
 		}
 		
 		
