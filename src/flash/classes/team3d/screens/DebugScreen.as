@@ -65,7 +65,7 @@ package team3d.screens
 		public static function Text($s:String, $append:Boolean = false):void
 		{
 			if($append)
-				_text.appendText($s);
+				_text.appendText("\n" + $s);
 			else
 				_text.text = $s;
 			
@@ -74,20 +74,6 @@ package team3d.screens
 			else if(!_text.visible)
 				_text.visible = true;
 		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		public function destroy():void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
 	}
 }
 

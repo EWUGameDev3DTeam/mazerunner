@@ -37,54 +37,37 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Controls";
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
-		{
-			super.Begin();
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayCredits", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
-			var keys:ImageLoader = new ImageLoader("images/Controls/KeysDone.png", { name:"movekeys", container:this } );
-			var mouseMove:ImageLoader = new ImageLoader("images/Controls/Move.png", { name:"mouseMove", container:this } );
-			var shift:ImageLoader = new ImageLoader("images/Controls/ShiftKey.png", { name:"shiftMove", container:this } );
 			
-			queue.append(overlay);
-			queue.append(keys);
-			queue.append(mouseMove);
-			queue.append(shift);
-			queue.load();
+			initComps();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
+		private function initComps():void
 		{
+			var overlay:Sprite = LoaderMax.getContent("overlayControls");
+			overlay.width = World.instance.stage.stageWidth;
+			overlay.height = World.instance.stage.stageHeight;
+			this.addChild(overlay);
+			
 			var keys:Sprite = LoaderMax.getContent("movekeys");
 			keys.scaleX = 0.4;
 			keys.scaleY = 0.4;
 			keys.x = 175;
 			keys.y = 50;
+			this.addChild(keys);
 			
 			var mouseMove:Sprite = LoaderMax.getContent("mouseMove");
 			mouseMove.scaleX = 0.5;
 			mouseMove.scaleY = 0.5;
 			mouseMove.x = this.width - mouseMove.width - 125;
 			mouseMove.y = 100;
+			this.addChild(mouseMove);
 			
 			var shiftMove:Sprite = LoaderMax.getContent("shiftMove");
 			shiftMove.scaleX = 0.4;
 			shiftMove.scaleY = 0.4;
 			shiftMove.x = 30;
 			shiftMove.y = keys.y + keys.height * 0.4 + 10;
+			this.addChild(shiftMove);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 35;
@@ -136,7 +119,17 @@ package team3d.screens
 			this.addChild(btnContinue);
 			
 			btnContinue.addEventListener(MouseEvent.CLICK, doneClick);
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -155,31 +148,7 @@ package team3d.screens
 		{
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
 	}
 }

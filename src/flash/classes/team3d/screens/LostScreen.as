@@ -37,53 +37,38 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Lost";
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
-		{
-			super.Begin();
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayLost", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
-			var grave:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave0", container:this } );
-			var grave1:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave1", container:this } );
-			var grave2:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave2", container:this } );
-			var cross:ImageLoader = new ImageLoader("images/GUI/Cross.png", { name:"cross", container:this } );
 			
-			queue.append(overlay);
-			queue.append(grave);
-			queue.append(grave1);
-			queue.append(grave2);
-			queue.append(cross);
-			queue.load();
+			initComp();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
+		private function initComp():void
 		{
+			var overlay:Sprite = LoaderMax.getContent("overlayLost");
+			overlay.width = World.instance.stage.stageWidth;
+			overlay.height = World.instance.stage.stageHeight;
+			this.addChild(overlay);
+			
 			var man:Sprite = LoaderMax.getContent("grave0");
 			man.x = this.width * 0.5 - man.width * 1.5;
 			man.y = 125;
+			this.addChild(man);
+			
 			man = LoaderMax.getContent("grave1");
 			man.x = this.width * 0.5 - man.width;
 			man.y = 120;
+			this.addChild(man);
+			
 			man = LoaderMax.getContent("grave2");
 			man.x = this.width * 0.5 + man.width;
 			man.y = 125;
 			man.scaleX = -1;
+			this.addChild(man);
+			
 			var cross:Sprite = LoaderMax.getContent("cross");
 			cross.scaleX = cross.scaleY = 0.75;
 			cross.x = this.width * 0.5 - cross.width * 0.5;
 			cross.y = 150;
+			this.addChild(cross);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 45;
@@ -118,7 +103,18 @@ package team3d.screens
 			this.addChild(btnContinue);
 			
 			btnContinue.addEventListener(MouseEvent.CLICK, doneClick);
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
+			
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -137,31 +133,7 @@ package team3d.screens
 		{
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
 	}
 }

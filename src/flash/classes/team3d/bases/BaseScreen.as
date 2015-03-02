@@ -12,11 +12,21 @@ package team3d.bases
 	 */
 	public class BaseScreen extends Sprite implements IScreen
 	{
+		public static const TITLE:int = 0;
+		public static const CREDITS:int = 1;
+		public static const SETTINGS:int = 2;
+		public static const GAME:int = 3;
+		public static const PAUSE:int = 4;
+		public static const WON:int = 5;
+		public static const LOST:int = 6;
+		public static const CONTROLS:int = 7;
+		
 		public var	DoneSignal	:Signal;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		protected var _screenTitle	:String;
+		protected var _fadeTime		:Number;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -24,6 +34,7 @@ package team3d.bases
 		{
 			super();
 			_screenTitle = "BaseScreen";
+			_fadeTime = 0.5;
 			this.mouseEnabled = true;
 			this.mouseChildren = true;
 			this.visible = false;
@@ -38,17 +49,5 @@ package team3d.bases
 		{
 			
 		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-		}
 	}
-	
 }

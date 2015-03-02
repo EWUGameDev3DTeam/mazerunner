@@ -9,6 +9,7 @@ package team3d.objects {
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.AWPRigidBody;
 	import flash.display.Stage;
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
@@ -96,8 +97,8 @@ package team3d.objects {
 			while (_view.scene.numChildren > 0)
 				_view.scene.removeChildAt(0);
 			
-			//while (_view.numChildren > 0)
-				//_view.removeChildAt(0);
+			_view.stage3DProxy.clear();
+			_view.stage3DProxy.dispose();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -201,6 +202,59 @@ package team3d.objects {
 		public function get view():View3D
 		{
 			return _view;
+		}
+		
+		public function get displayState():String
+		{
+			return _stage.displayState;
+		}
+		
+		public function get isFullScreen():Boolean
+		{
+			return _stage.displayState == StageDisplayState.FULL_SCREEN;
+		}
+		
+		public function get isFullScreenInteractive():Boolean
+		{
+			return _stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE;
+		}
+		
+		public function get isNormal():Boolean
+		{
+			return _stage.displayState == StageDisplayState.NORMAL;
+		}
+		
+		public function get isMouseLocked():Boolean
+		{
+			return _stage.mouseLock;
+		}
+		
+		/**
+		 * Locks the mouse
+		 *
+		 * @return			False if mouse unlocking is not possible or failed. True if succeeded.
+		 */
+		public function lockMouse():Boolean
+		{
+			if (isNormal)
+				return false;
+			
+			_stage.mouseLock = true;
+			return true;
+		}
+		
+		/**
+		 * Unlocks the mouse
+		 *
+		 * @return			False if mouse unlocking is not possible or failed. True if succeeded.
+		 */
+		public function unlockMouse():Boolean
+		{
+			if (isNormal)
+				return false;
+			
+			_stage.mouseLock = false;
+			return true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

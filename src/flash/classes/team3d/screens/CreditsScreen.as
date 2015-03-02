@@ -37,36 +37,21 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Credits";
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
-		{
-			super.Begin();
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayCredits", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
-			var computerman:ImageLoader = new ImageLoader("images/GUI/Man_Computer.png", { name: "manComputer", container:this } );
 			
-			queue.append(overlay);
-			queue.append(computerman);
-			queue.load();
+			initComps();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
+		private function initComps():void
 		{
+			var overlay:Sprite = LoaderMax.getContent("overlayCredits");
+			overlay.width = World.instance.stage.stageWidth;
+			overlay.height = World.instance.stage.stageHeight;
+			this.addChild(overlay);
+			
 			var man:Sprite = LoaderMax.getContent("manComputer");
 			man.x = 50;
 			man.y = 125;
+			this.addChild(man);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 80;
@@ -121,7 +106,17 @@ package team3d.screens
 			this.addChild(btnContinue);
 			
 			btnContinue.addEventListener(MouseEvent.CLICK, doneClick);
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -140,31 +135,7 @@ package team3d.screens
 		{
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
 	}
 }

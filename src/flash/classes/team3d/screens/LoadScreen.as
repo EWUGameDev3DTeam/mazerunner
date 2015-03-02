@@ -43,52 +43,14 @@ package team3d.screens
 			this.DoneSignal = new Signal();
 			_aArrows = new Vector.<Sprite>(25, true);
 			_screenTitle = "Loading";
+			
+			initComps();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
+		private function initComps()
 		{
-			super.Begin();
-			
-			var queue:LoaderMax = new LoaderMax( { onProgress:initProg, onComplete:show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
-			
-			queue.append(overlay);
-			
-			for (var i:int = 0; i < _aArrows.length; i++)
-				queue.append(new ImageLoader("images/GUI/Arrow.png", { name:("arrow" + i), width:50, height:60, alpha:0 } ));
-			
-			queue.load();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Displays the initial progress to the trace (maybe screen?)
-		 *
-		 * @param	$param1	Describe param1 here.
-		 * @return			Describe the return value here.
-		 */
-		protected function initProg($e:LoaderEvent = null):void
-		{
-			trace($e.target.progress);
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
-		{
-			
 			var background:Sprite = Sprite(LoaderMax.getContent("overlayLoad"));
+			this.addChild(background);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 30;
@@ -106,8 +68,6 @@ package team3d.screens
 			tf.text = "Loading...";
 			tf.x = 50;
 			tf.y = 425;
-			
-			this.addChild(background);
 			this.addChild(tf);
 			
 			format = new TextFormat();
@@ -131,13 +91,13 @@ package team3d.screens
 			tf.y = 100;
 			this.addChild(tf);
 			
-			_aArrows[0] = LoaderMax.getContent("arrow0");
+			_aArrows[0] = LoaderMax.getContent("loadingArrow0");
 			_aArrows[0].x = 50;
 			_aArrows[0].y = 475;
 			this.addChild(_aArrows[0]);
 			for (var i:int = 1; i < _aArrows.length; i++)
 			{
-				_aArrows[i] = LoaderMax.getContent("arrow" + i);
+				_aArrows[i] = LoaderMax.getContent("loadingArrow" + i);
 				_aArrows[i].x = _aArrows[i - 1].x + _aArrows[i].width * 0.5 + 5;
 				_aArrows[i].y = _aArrows[i - 1].y;
 				this.addChild(_aArrows[i]);
@@ -156,8 +116,18 @@ package team3d.screens
 			btn.textFormat = format;
 			btn.addEventListener(MouseEvent.CLICK, doneClick);
 			this.addChild(btn);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
 			
-			TweenMax.fromTo(this, 1, { autoAlpha:0 }, { autoAlpha:1 } );
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:0 }, { autoAlpha:1 } );
 			
 			loadAssets();
 		}
@@ -207,34 +177,7 @@ package team3d.screens
 		{
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 *
-		 * @param	$param1	Describe param1 here.
-		 * @return			Describe the return value here.
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha: 1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-			
-			super.destroy();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 1 }, { autoAlpha:0 } );
 		}
 	}
 }

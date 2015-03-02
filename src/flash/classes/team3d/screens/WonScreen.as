@@ -38,62 +38,49 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Won";
+			
+			initComps();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
+		private function initComps():void
 		{
-			super.Begin();
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayCredits", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
-			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningMan", container:this } );
+			var overlay:Sprite = LoaderMax.getContent("overlayWon");
+			overlay.width = World.instance.stage.stageWidth;
+			overlay.height = World.instance.stage.stageHeight;
+			this.addChild(overlay);
 			
-			for (var i:int = 0; i < 4; i++)
-				queue.append(new ImageLoader("images/GUI/Arrow.png", { name:"arrow" + i, container:this } ));
-			
-			queue.append(overlay);
-			queue.append(runningMan);
-			queue.load();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
-		{
-			var man:Sprite = LoaderMax.getContent("runningMan");
+			var man:Sprite = LoaderMax.getContent("runningManWon");
 			man.x = this.width * 0.5 - man.width * 0.5;
 			man.y = 150;
+			this.addChild(man);
 			
-			var arrow:Sprite = LoaderMax.getContent("arrow0");
+			var arrow:Sprite = LoaderMax.getContent("wonArrow0");
 			arrow.height = man.height - 80;
 			arrow.scaleX = 0.7;
 			arrow.x = 50;
 			arrow.y = man.y + (man.height - arrow.height) * 0.5;
-			var arrow1:Sprite = LoaderMax.getContent("arrow1");
+			this.addChild(arrow);
+			
+			var arrow1:Sprite = LoaderMax.getContent("wonArrow1");
 			arrow1.height = arrow.height;
 			arrow1.width = arrow.width;
 			arrow1.x = arrow.x + arrow.width * 0.5 + 20;
 			arrow1.y = arrow.y;
+			this.addChild(arrow1);
 			
-			arrow = LoaderMax.getContent("arrow2");
+			arrow = LoaderMax.getContent("wonArrow2");
 			arrow.height = arrow1.height;
 			arrow.width = arrow1.width;
 			arrow.x = this.width - arrow.width - 20;
 			arrow.y = arrow1.y;
+			this.addChild(arrow);
 			
-			arrow1 = LoaderMax.getContent("arrow3");
+			arrow1 = LoaderMax.getContent("wonArrow3");
 			arrow1.height = arrow.height;
 			arrow1.width = arrow.width;
 			arrow1.x = arrow.x - arrow.width * 0.5 - 20;
 			arrow1.y = arrow.y;
+			this.addChild(arrow1);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 80;
@@ -114,7 +101,7 @@ package team3d.screens
 			this.addChild(tf);
 			
 			tf = new TextField();
-			tf.name = "creditsText";
+			tf.name = "wonText";
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			tf.mouseEnabled = false;
 			tf.selectable = false;
@@ -147,7 +134,17 @@ package team3d.screens
 			this.addChild(btnContinue);
 			
 			btnContinue.addEventListener(MouseEvent.CLICK, doneClick);
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -166,31 +163,7 @@ package team3d.screens
 		{
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
 	}
 }

@@ -63,53 +63,21 @@ package
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, added);
 			
-			_titleScreen = new TitleScreen();
-			_gameScreen = new GameScreen();
-			_loadingScreen = new LoadScreen();
 			_debugScreen = new DebugScreen();
-			_creditsScreen = new CreditsScreen();
-			_settingsScreen = new SettingsScreen();
-			_pauseScreen = new PauseScreen();
-			_lostScreen = new LostScreen();
-			_wonScreen = new WonScreen();
-			_controlScreen = new ControlsScreen();
-			
-			_loadingScreen.DoneSignal.add(endLoading);
-			_titleScreen.DoneSignal.add(endTitle);
-			_creditsScreen.DoneSignal.add(endCredits);
-			_settingsScreen.DoneSignal.add(endSettings);
-			_gameScreen.DoneSignal.add(endGame);
-			_gameScreen.PausedSignal.add(gamePaused);
-			_pauseScreen.DoneSignal.add(endPause);
-			_lostScreen.DoneSignal.add(endLost);
-			_wonScreen.DoneSignal.add(endWon);
-			_controlScreen.DoneSignal.add(endControls);
-			
-			this.addChild(_gameScreen);
-			this.addChild(_titleScreen);
-			this.addChild(_loadingScreen);
-			this.addChild(_creditsScreen);
-			this.addChild(_settingsScreen);
-			this.addChild(_pauseScreen);
-			this.addChild(_lostScreen);
-			this.addChild(_wonScreen);
-			this.addChild(_controlScreen);
-			
+			_debugScreen.Begin();
 			this.addChild(_debugScreen);
 		}
 		
 		private function endTitle($dest:int):void 
 		{
+			trace("here: " + $dest);
 			_titleScreen.End();
 			
-			if ($dest == 0)
-			{
-				World.instance.stage.mouseLock = true;
-				TweenMax.fromTo(_gameScreen, 1, { autoAlpha:0 }, { autoAlpha:1, onComplete:_gameScreen.Begin } );
-			}
-			else if ($dest == 1)
+			if ($dest == BaseScreen.GAME)
+				_gameScreen.Begin();
+			else if ($dest == BaseScreen.CREDITS)
 				_creditsScreen.Begin();
-			else if ($dest == 2)
+			else if ($dest == BaseScreen.SETTINGS)
 				_settingsScreen.Begin();
 			
 			_prevScreen = _titleScreen;
@@ -152,18 +120,18 @@ package
 		private function endPause($dir:int):void
 		{
 			_pauseScreen.End();
-			if ($dir == 0)
+			if ($dir == BaseScreen.SETTINGS)
 				_settingsScreen.Begin();
-			else if ($dir == 1)
+			else if ($dir == BaseScreen.CONTROLS)
 			{
 				_controlScreen.Begin();
 			}
-			else if ($dir == 2)
+			else if ($dir == BaseScreen.TITLE)
 			{
 				_gameScreen.End();
 				_titleScreen.Begin();
 			}
-			else if ($dir == 3)
+			else if ($dir == BaseScreen.GAME)
 			{
 				_gameScreen.Unpause();
 			}
@@ -203,12 +171,146 @@ package
 			
             World.instance.stage.scaleMode = StageScaleMode.NO_SCALE;
 			World.instance.stage.align = StageAlign.TOP_LEFT;
-			
 			TweenPlugin.activate([GlowFilterPlugin]);
-			_debugScreen.Begin();
+			
+			var queue:LoaderMax = new LoaderMax( { onProgress:progress, onComplete:compeleted } );
+			loadLoading(queue);
+			loadTitle(queue);
+			loadCredits(queue);
+			loadSettings(queue);
+			loadPause(queue);
+			loadControls(queue);
+			loadWon(queue);
+			loadLost(queue);
+			queue.load();
+		}
+		
+		private function loadLoading($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
+			$q.append(overlay);
+			
+			for (var i:int = 0; i < 25; i++)
+				$q.append(new ImageLoader("images/GUI/Arrow.png", { name:("loadingArrow" + i), width:50, height:60, alpha:0 } ));
+		}
+		
+		private function loadTitle($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayTitle", scaleMode:"stretch" } );
+			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManTitle" } );
+			
+			$q.append(overlay);
+			$q.append(runningMan);
+			
+			for (var i:int = 0; i < 3; i++)
+				$q.append(new ImageLoader("images/GUI/Arrow.png", { name: ("titleArrow" + i), width:146, height:175 } ));
+		}
+		
+		private function loadCredits($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayCredits", scaleMode:"stretch" } );
+			var computerman:ImageLoader = new ImageLoader("images/GUI/Man_Computer.png", { name: "manComputer" } );
+			
+			$q.append(overlay);
+			$q.append(computerman);
+		}
+		private function loadSettings($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlaySettings", scaleMode:"stretch" } );
+			
+			$q.append(overlay);
+		}
+		
+		private function loadPause($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayPause" } );
+			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManPause" } );
+			
+			$q.append(overlay);
+			$q.append(runningMan);
+		}
+		
+		private function loadControls($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayControls", scaleMode:"stretch" } );
+			var keys:ImageLoader = new ImageLoader("images/Controls/KeysDone.png", { name:"movekeys" } );
+			var mouseMove:ImageLoader = new ImageLoader("images/Controls/Move.png", { name:"mouseMove" } );
+			var shift:ImageLoader = new ImageLoader("images/Controls/ShiftKey.png", { name:"shiftMove" } );
+			
+			$q.append(overlay);
+			$q.append(keys);
+			$q.append(mouseMove);
+			$q.append(shift);
+		}
+		
+		private function loadWon($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayWon", scaleMode:"stretch" } );
+			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManWon" } );
+			for (var i:int = 0; i < 4; i++)
+				$q.append(new ImageLoader("images/GUI/Arrow.png", { name:"wonArrow" + i } ));
+			
+			$q.append(overlay);
+			$q.append(runningMan);
+		}
+		
+		private function loadLost($q:LoaderMax):void
+		{
+			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayLost", scaleMode:"stretch" } );
+			var grave:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave0" } );
+			var grave1:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave1" } );
+			var grave2:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave2" } );
+			var cross:ImageLoader = new ImageLoader("images/GUI/Cross.png", { name:"cross" } );
+			
+			$q.append(overlay);
+			$q.append(grave);
+			$q.append(grave1);
+			$q.append(grave2);
+			$q.append(cross);
+		}
+		
+		private function progress($e:LoaderEvent):void
+		{
+			DebugScreen.Text(Math.round($e.target.progress * 100) + "%");
+		}
+		
+		private function compeleted($e:LoaderEvent):void
+		{
+			_loadingScreen = new LoadScreen();
+			_titleScreen = new TitleScreen();
+			_creditsScreen = new CreditsScreen();
+			_settingsScreen = new SettingsScreen();
+			_gameScreen = new GameScreen();
+			_pauseScreen = new PauseScreen();
+			_controlScreen = new ControlsScreen();
+			_wonScreen = new WonScreen();
+			_lostScreen = new LostScreen();
+			
+			_loadingScreen.DoneSignal.add(endLoading);
+			_titleScreen.DoneSignal.add(endTitle);
+			_creditsScreen.DoneSignal.add(endCredits);
+			_settingsScreen.DoneSignal.add(endSettings);
+			_gameScreen.DoneSignal.add(endGame);
+			_gameScreen.PausedSignal.add(gamePaused);
+			_pauseScreen.DoneSignal.add(endPause);
+			_controlScreen.DoneSignal.add(endControls);
+			_wonScreen.DoneSignal.add(endWon);
+			_lostScreen.DoneSignal.add(endLost);
+			
+			this.addChildAt(_loadingScreen, 0);
+			this.addChildAt(_titleScreen, 0);
+			this.addChildAt(_creditsScreen, 0);
+			this.addChildAt(_settingsScreen, 0);
+			this.addChildAt(_gameScreen, 0);
+			this.addChildAt(_pauseScreen, 0);
+			this.addChildAt(_controlScreen, 0);
+			this.addChildAt(_wonScreen, 0);
+			this.addChildAt(_lostScreen, 0);
+			
+			trace("loading done");
 			_loadingScreen.Begin();
-			//_settingsScreen.Begin();
 			//_titleScreen.Begin();
+			//_settingsScreen.Begin();
 			//_creditsScreen.Begin();
 			//_pauseScreen.Begin();
 			//_lostScreen.Begin();

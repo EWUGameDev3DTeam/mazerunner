@@ -148,13 +148,14 @@ package team3d.screens
 		
 		public function Unpause()
 		{
-			lockMouse(true);
 			_paused = false;
+			//World.instance.lockMouse();
 		}
 		
 		public function Pause()
 		{
 			_paused = true;
+			//World.instance.unlockMouse();
 		}
 		
 		protected function pauseGame():void
@@ -162,13 +163,6 @@ package team3d.screens
 			if (_paused) return;
 			
 			this.PausedSignal.dispatch();
-			lockMouse(false);
-		}
-		
-		private function lockMouse($state:Boolean):void
-		{
-			if(World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
-				World.instance.stage.mouseLock = $state;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -187,7 +181,9 @@ package team3d.screens
 			World.instance.End();
 			super.End();
 			
-			lockMouse(false);
+			World.instance.unlockMouse();
+			
+			this.removeChild(World.instance.view);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -226,9 +222,13 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
+			DebugScreen.Text("pause: " + _paused);
+			DebugScreen.Text("displayState: " + World.instance.displayState, true);
+			DebugScreen.Text("mouseLock: " + World.instance.isMouseLocked, true);
+			
 			if (_paused) return;
 			
-			if (World.instance.stage.displayState == StageDisplayState.NORMAL)
+			if (World.instance.isNormal || !World.instance.isMouseLocked)
 			{
 				pauseGame();
 				return;
@@ -236,20 +236,5 @@ package team3d.screens
 			
 			World.instance.update();
 		}
-		
-
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
-		}
-		
 	}
 }

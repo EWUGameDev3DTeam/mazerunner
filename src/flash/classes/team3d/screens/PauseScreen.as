@@ -29,6 +29,13 @@ package team3d.screens
 	 */
 	public class PauseScreen extends BaseScreen
 	{
+		private var _btnSettings	:Button;
+		private var _btnControls	:Button;
+		private var _btnQuit		:Button;
+		private var _btnContinue	:Button;
+		private var _btnFullscreen	:Button;
+		
+		private var _loaded			:Boolean;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -41,6 +48,90 @@ package team3d.screens
 			
 			DoneSignal = new Signal(int);
 			_screenTitle = "Pause";
+			_fadeTime = 0.2;
+			
+			initComps();
+		}
+		
+		private function initComps()
+		{
+			var offset:Number = 0.8;
+			var overlay:Sprite = LoaderMax.getContent("overlayPause");
+			overlay.width = World.instance.stage.stageWidth * offset;
+			overlay.height = World.instance.stage.stageHeight * offset;
+			overlay.x = (World.instance.stage.stageWidth - overlay.width) * 0.5;
+			overlay.y = (World.instance.stage.stageHeight - overlay.height) * 0.5;
+			this.addChild(overlay);
+			
+			var man:Sprite = LoaderMax.getContent("runningManTitle");
+			man.width += 50;
+			man.height += 75;
+			man.x = overlay.x + 50;
+			man.y = overlay.y + 75;
+			this.addChild(man);
+			
+			var btnwidth:Number = 200;
+			var btnheight:Number = 75;
+			var format:TextFormat = new TextFormat();
+			format.size = 40;
+			format.bold = true;
+			format.align = TextFormatAlign.CENTER;
+			
+			_btnSettings = new Button();
+			_btnSettings.name = "btnSettings";
+			_btnSettings.text("Settings");
+			_btnSettings.width = btnwidth;
+			_btnSettings.height = btnheight;
+			_btnSettings.textFormat = format;
+			_btnSettings.x = man.x + man.width + 25;
+			_btnSettings.y = man.y + 20;
+			this.addChild(_btnSettings);
+			
+			_btnControls = new Button();
+			_btnControls.name = "btnControls";
+			_btnControls.text("Controls");
+			_btnControls.width = btnwidth;
+			_btnControls.height = btnheight;
+			_btnControls.textFormat = format;
+			_btnControls.x = _btnSettings.x;
+			_btnControls.y = _btnSettings.y + _btnSettings.height + 20;
+			this.addChild(_btnControls);
+			
+			_btnQuit = new Button();
+			_btnQuit.name = "btnQuit";
+			_btnQuit.text("Quit");
+			_btnQuit.width = btnwidth;
+			_btnQuit.height = btnheight;
+			_btnQuit.textFormat = format;
+			_btnQuit.x = _btnControls.x;
+			_btnQuit.y = _btnControls.y + _btnControls.height + 20;
+			this.addChild(_btnQuit);
+			
+			_btnContinue = new Button();
+			_btnContinue.name = "btnContinue";
+			_btnContinue.text("Continue");
+			_btnContinue.width = btnwidth;
+			_btnContinue.height = btnheight;
+			_btnContinue.textFormat = format;
+			_btnContinue.x = _btnQuit.x + _btnQuit.width + 20;
+			_btnContinue.y = _btnQuit.y + _btnQuit.height + 20;
+			this.addChild(_btnContinue);
+			
+			_btnFullscreen = new Button();
+			_btnFullscreen.name = "btnFullScreen";
+			_btnFullscreen.text("Full Screen");
+			_btnFullscreen.width = btnwidth;
+			_btnFullscreen.height = btnheight;
+			_btnFullscreen.textFormat = format;
+			_btnFullscreen.x = _btnQuit.x;
+			_btnFullscreen.y = _btnQuit.y + _btnQuit.height + 20;
+			this.addChild(_btnFullscreen);
+			
+			_btnFullscreen.addEventListener(MouseEvent.CLICK, fullscreenClicked);
+			_btnSettings.addEventListener(MouseEvent.CLICK, settingsClicked);
+			_btnControls.addEventListener(MouseEvent.CLICK, controlsClicked);
+			_btnQuit.addEventListener(MouseEvent.CLICK, quitClicked);
+			_btnContinue.addEventListener(MouseEvent.CLICK, continueClicked);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -51,122 +142,43 @@ package team3d.screens
 		override public function Begin():void
 		{
 			super.Begin();
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayPause", container:this } );
-			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningMan", container:this } );
+			World.instance.stage.addEventListener(FullScreenEvent.FULL_SCREEN, showFullscreenBtn);
 			
-			queue.append(overlay);
-			queue.append(runningMan);
-			queue.load();
+			_btnFullscreen.visible = true;
+			_btnFullscreen.alpha = 1;
+			if (World.instance.isFullScreenInteractive)
+				_btnFullscreen.visible = false;
 			
-			World.instance.stage.addEventListener(FullScreenEvent.FULL_SCREEN, fullscreen);
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
-		{
-			var offset:Number = 0.8;
-			var overlay:Sprite = LoaderMax.getContent("overlayPause");
-			overlay.width = this.stage.stageWidth * offset;
-			overlay.height = this.stage.stageHeight * offset;
-			overlay.x = (this.stage.stageWidth - overlay.width) * 0.5;
-			overlay.y = (this.stage.stageHeight - overlay.height) * 0.5;
+			World.instance.unlockMouse();
 			
-			var man:Sprite = LoaderMax.getContent("runningMan");
-			man.width += 50;
-			man.height += 75;
-			man.x = overlay.x + 50;
-			man.y = overlay.y + 75;
-			
-			var btnwidth:Number = 200;
-			var btnheight:Number = 75;
-			var format:TextFormat = new TextFormat();
-			format.size = 40;
-			format.bold = true;
-			format.align = TextFormatAlign.CENTER;
-			
-			var btnSettings:Button = new Button();
-			btnSettings.text("Settings");
-			btnSettings.width = btnwidth;
-			btnSettings.height = btnheight;
-			btnSettings.textFormat = format;
-			btnSettings.x = man.x + man.width + 25;
-			btnSettings.y = man.y + 20;
-			this.addChild(btnSettings);
-			
-			var btnControls:Button = new Button();
-			btnControls.text("Controls");
-			btnControls.width = btnwidth;
-			btnControls.height = btnheight;
-			btnControls.textFormat = format;
-			btnControls.x = btnSettings.x;
-			btnControls.y = btnSettings.y + btnSettings.height + 20;
-			this.addChild(btnControls);
-			
-			var btnQuit:Button = new Button();
-			btnQuit.text("Quit");
-			btnQuit.width = btnwidth;
-			btnQuit.height = btnheight;
-			btnQuit.textFormat = format;
-			btnQuit.x = btnControls.x;
-			btnQuit.y = btnControls.y + btnControls.height + 20;
-			this.addChild(btnQuit);
-			
-			var btnContinue:Button = new Button();
-			btnContinue.text("Continue");
-			btnContinue.width = btnwidth;
-			btnContinue.height = btnheight;
-			btnContinue.textFormat = format;
-			btnContinue.x = btnQuit.x + btnQuit.width + 20;
-			btnContinue.y = btnQuit.y + btnQuit.height + 20;
-			this.addChild(btnContinue);
-			
-			var btnFullscreen:Button = new Button();
-			btnFullscreen.name = "btnFullScreen";
-			btnFullscreen.text("Full Screen");
-			btnFullscreen.width = btnwidth;
-			btnFullscreen.height = btnheight;
-			btnFullscreen.textFormat = format;
-			btnFullscreen.x = btnQuit.x;
-			btnFullscreen.y = btnQuit.y + btnQuit.height + 20;
-			if (World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
-				btnFullscreen.visible = false;
-			this.addChild(btnFullscreen);
-			
-			btnFullscreen.addEventListener(MouseEvent.CLICK, fullscreenClicked);
-			btnSettings.addEventListener(MouseEvent.CLICK, settingsClicked);
-			btnControls.addEventListener(MouseEvent.CLICK, controlsClicked);
-			btnQuit.addEventListener(MouseEvent.CLICK, quitClicked);
-			btnContinue.addEventListener(MouseEvent.CLICK, continueClicked);
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+			//TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
+			this.visible = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private function settingsClicked($e:MouseEvent):void 
 		{
-			this.DoneSignal.dispatch(0);
+			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 		}
 		
 		private function controlsClicked($e:MouseEvent):void
 		{
-			this.DoneSignal.dispatch(1);
+			this.DoneSignal.dispatch(BaseScreen.CONTROLS);
 		}
 		
 		private function quitClicked($e:MouseEvent):void
 		{
-			this.DoneSignal.dispatch(2);
+			this.DoneSignal.dispatch(BaseScreen.TITLE);
 		}
 		
 		private function continueClicked($e:MouseEvent):void
 		{
-			if(World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
-				this.DoneSignal.dispatch(3);
+			if(World.instance.isFullScreenInteractive)
+			{
+				World.instance.lockMouse();
+				this.DoneSignal.dispatch(BaseScreen.GAME);
+			}
 			else
 			{
 				TweenMax.to(this.getChildByName("btnFullScreen"), 0.2, { glowFilter: { alpha:1, color:0x91e600, blurX:30, blurY:30, strength:2, quality:2 }, yoyo:true, repeat:3} );
@@ -179,13 +191,13 @@ package team3d.screens
 		}
 		
 		
-		private function fullscreen(e:FullScreenEvent):void 
+		private function showFullscreenBtn(e:FullScreenEvent = null):void 
 		{
-			var btn:Button = Button(this.getChildByName("btnFullScreen"));
-			if (World.instance.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
-				TweenMax.fromTo(btn, 0.5, { autoAlpha:1 }, { autoAlpha:0 } );
+			_btnFullscreen.visible = true;
+			if (World.instance.isFullScreenInteractive)
+				TweenMax.fromTo(_btnFullscreen, 0.5, { autoAlpha:1 }, { autoAlpha:0 } );
 			else
-				TweenMax.fromTo(btn, 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
+				TweenMax.fromTo(_btnFullscreen, 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -195,37 +207,11 @@ package team3d.screens
 		 */
 		override public function End():void
 		{
-			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, fullscreen);
+			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, showFullscreenBtn);
 			super.End();
 			
-			hide();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			//TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
+			//TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 			this.visible = false;
-			this.alpha = 0;
-			destroy();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
 		}
 	}
 }

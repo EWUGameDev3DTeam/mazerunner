@@ -15,7 +15,7 @@
 			var flashvars = {};
 			var params = {};
 			params.quality = "high";
-			params.bgcolor = "#cc0066";
+			params.bgcolor = "#000000";
 			params.play = "true";
 			params.loop = "true";
 			params.wmode = "gpu";
@@ -25,11 +25,12 @@
 			params.salign = "";
 			params.allowscriptaccess = "sameDomain";
 			params.allowFullScreenInteractive = "true";
+            flashvars.browser = "true";
 			var attributes = {};
 			attributes.id = "Team3D";
 			attributes.name = "Team3D";
 			attributes.align = "top";
-			swfobject.createCSS("html", "height:100%; background-color: #cc0066;");
+			swfobject.createCSS("html", "height:100%; background-color: #000000;");
 			swfobject.createCSS("body", "margin:0; padding:0; overflow:hidden; height:100%;");
 			swfobject.embedSWF(
 				"Team3D.swf", "flashContent",

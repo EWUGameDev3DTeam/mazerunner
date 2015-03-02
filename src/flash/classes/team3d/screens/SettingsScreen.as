@@ -39,32 +39,16 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Settings";
+			
+			initComps();
 		}
 		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * Does stuff to start the screen
-		 */
-		override public function Begin():void
+		private function initComps()
 		{
-			super.Begin();
-			
-			var queue:LoaderMax = new LoaderMax( { onComplete: show } );
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlaySettings", container:this, width:this.stage.stageWidth, height:this.stage.stageHeight, scaleMode:"stretch" } );
-			
-			queue.append(overlay);
-			queue.load();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Shows the screen
-		 */
-		private function show($e:LoaderEvent = null):void
-		{
+			var overlay:Sprite = LoaderMax.getContent("overlaySettings");
+			overlay.width = World.instance.stage.stageWidth;
+			overlay.height = World.instance.stage.stageHeight;
+			this.addChild(overlay);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 80;
@@ -176,8 +160,17 @@ package team3d.screens
 			invertY.x = mouseXsensitivity.x + mouseXsensitivity.width * 0.5 - invertY.width * 0.5;
 			invertY.y = mouseXsensitivity.y + spacing;
 			this.addChild(invertY);
-			
-			TweenMax.fromTo(this, 1, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Does stuff to start the screen
+		 */
+		override public function Begin():void
+		{
+			super.Begin();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -202,34 +195,7 @@ package team3d.screens
 		override public function End():void
 		{
 			super.End();
-			hide();
+			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		/**
-		 * @private
-		 * Hides the screen
-		 */
-		protected function hide():void
-		{
-			TweenMax.fromTo(this, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:destroy } );
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */		
-		
-		/**
-		 * Relinquishes all memory used by this object.
-		 */
-		override protected function destroy($e:LoaderEvent = null):void
-		{
-			while (this.numChildren > 0)
-				this.removeChildAt(0);
-				
-			super.destroy();
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
 	}
 }
