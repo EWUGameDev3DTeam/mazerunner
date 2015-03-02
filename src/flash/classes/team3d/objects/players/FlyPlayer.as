@@ -53,6 +53,7 @@ package team3d.objects.players
 		 */
 		override public function End():void
 		{
+			super.End();
 			_controller.End();
 		}
 		

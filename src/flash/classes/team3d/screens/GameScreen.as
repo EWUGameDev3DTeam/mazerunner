@@ -200,6 +200,7 @@ package team3d.screens
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.F, failedGame);
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.G, wonGame);
 			_player.End();
+			_flyPlayer.End();
 			//_floor = null;
 			
 			World.instance.End();
