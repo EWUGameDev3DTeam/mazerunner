@@ -115,7 +115,7 @@ package team3d.screens
 			
 			
 			//Create player
-			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.5);
+			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
 			_player.addToWorld(World.instance.view, World.instance.physics);
 			_player.controller.warp(new Vector3D(0, 10000, 0));
 			_player.Begin();
@@ -142,7 +142,7 @@ package team3d.screens
 			rectangle.graphics.drawRect(0, 0, this.width, this.height);
 			rectangle.graphics.endFill();
 			this.addChild(rectangle);
-			toggleCamera();
+			//toggleCamera();
 		}
 		
 		private function failedGame():void
