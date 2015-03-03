@@ -139,6 +139,7 @@
 			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.DYNAMIC);
 			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);
+			AssetManager.instance.enqueue("Sky", "Models/Sky/NightSky.awd", Asset.SKYBOX);
 			AssetManager.instance.load(this.onProgress, this.onComplete);
 		}
 		

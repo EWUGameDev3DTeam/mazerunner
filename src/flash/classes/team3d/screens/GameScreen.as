@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
@@ -23,7 +23,6 @@ package team3d.screens
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
 	
-
 	
 	/**
 	 * 
@@ -71,13 +70,13 @@ package team3d.screens
 		{
 			super.Begin();
 			World.instance.Begin();
+			World.instance.physics.collisionCallbackOn = true;
 			this.addChild(World.instance.view);
 			this.visible = true;
 			this.alpha = 0;
 			
 			_controlsEnabled = false;
-			_paused = false;
-			
+			_paused = false;			
 			/*
 			var rectangle:Shape = new Shape;
 			rectangle.graphics.beginFill(0xFF00FF);
@@ -113,6 +112,9 @@ package team3d.screens
 			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
+			//Create the skybox
+			AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
+			//end skybox
 			
 			//Create player
 			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.5);
