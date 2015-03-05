@@ -244,10 +244,6 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
-			DebugScreen.Text("pause: " + _paused);
-			DebugScreen.Text("displayState: " + World.instance.displayState, true);
-			DebugScreen.Text("mouseLock: " + World.instance.isMouseLocked, true);
-			
 			if (_paused) return;
 			
 			if (World.instance.isNormal || !World.instance.isMouseLocked)

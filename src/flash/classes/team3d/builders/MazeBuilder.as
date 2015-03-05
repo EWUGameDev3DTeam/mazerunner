@@ -79,7 +79,7 @@ package team3d.builders
 			var sets:int = $rows * $cols;
 			_wallsRemoved = 0;
 			
-			//if(1==2)
+			if(1==2)
 			while (sets - _wallsRemoved > 1)
 			{
 				randCol = Utils.instance.Random(0, $cols - 1);
@@ -272,9 +272,12 @@ package team3d.builders
 			z = $startz - walldepth * 0.5;
 			for (i = 0; i < $maze.Columns; i++)
 			{
-				rowWallBorder[i] = $wall.clone();
-				rowWallBorder[i].rotateTo(new Vector3D(0, 90, 0));
-				rowWallBorder[i].transformTo(new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing));
+				if (i != int(Math.floor($maze.Columns * 0.5)) - 1) // add all the borders except the exit
+				{
+					rowWallBorder[i] = $wall.clone();
+					rowWallBorder[i].rotateTo(new Vector3D(0, 90, 0));
+					rowWallBorder[i].transformTo(new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing));
+				}
 			}
 			
 			//*
@@ -289,8 +292,18 @@ package team3d.builders
 			}
 			//*/
 			
+			colWallBorder[int(Math.floor($maze.Rows * 0.5))]
+			
 			$maze.RowBorder = rowWallBorder;
 			$maze.ColumnBorder = colWallBorder;
+			
+			// remove the entrace wall
+			roomRow = $maze.GetRow(0);
+			var roomNum:int = int(Math.floor(roomRow.length * 0.5));
+			room = roomRow[roomNum];
+			room.HasRowWall = false;
+			roomRow[roomNum] = room;
+			$maze.SetRow(0, roomRow);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
