@@ -18,6 +18,7 @@
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -167,6 +168,7 @@
 		
 		private function doneClick(e:MouseEvent):void 
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		

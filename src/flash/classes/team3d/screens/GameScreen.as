@@ -15,6 +15,7 @@ package team3d.screens
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.net.SharedObject;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;

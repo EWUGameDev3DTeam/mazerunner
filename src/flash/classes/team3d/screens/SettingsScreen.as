@@ -7,10 +7,13 @@ package team3d.screens
 	import com.greensock.TweenMax;
 	import fl.controls.CheckBox;
 	import fl.controls.Slider;
+	import fl.events.ComponentEvent;
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.net.SharedObject;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -19,6 +22,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -27,6 +31,11 @@ package team3d.screens
 	 */
 	public class SettingsScreen extends BaseScreen
 	{
+		private var _audioSlider:Slider = new Slider();
+		private var _mouseYsensitivity:Slider = new Slider();
+		private var _mouseXsensitivity:Slider = new Slider();
+		private var _invertY:CheckBox = new CheckBox();
+		public var so	:SharedObject = SharedObject.getLocal("dataTeam3D");;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -116,50 +125,79 @@ package team3d.screens
 			btnSave.addEventListener(MouseEvent.CLICK, saveClicked);
 			
 			var spacing:int = 65;
-			var audioSlider:Slider = new Slider();
-			audioSlider.width = 400;
-			audioSlider.maximum = 100;
-			audioSlider.minimum = 0;
-			audioSlider.tickInterval = 0;
-			audioSlider.getChildAt(0).height = 10;
-			audioSlider.getChildAt(1).width = 20;
-			audioSlider.getChildAt(1).height = 20;
-			audioSlider.getChildAt(1).y -= 3;
-			audioSlider.x = this.width - audioSlider.width - 100;
-			audioSlider.y = tf.y + 35;
-			this.addChild(audioSlider);
 			
-			var mouseYsensitivity:Slider = new Slider();
-			mouseYsensitivity.width = 400;
-			mouseYsensitivity.maximum = 100;
-			mouseYsensitivity.minimum = 0;
-			mouseYsensitivity.tickInterval = 0;
-			mouseYsensitivity.getChildAt(0).height = 10;
-			mouseYsensitivity.getChildAt(1).width = 20;
-			mouseYsensitivity.getChildAt(1).height = 20;
-			mouseYsensitivity.getChildAt(1).y -= 3;
-			mouseYsensitivity.x = audioSlider.x;
-			mouseYsensitivity.y = audioSlider.y + spacing;
-			this.addChild(mouseYsensitivity);
+			_audioSlider.width = 400;
+			_audioSlider.maximum = 100;
+			_audioSlider.minimum = 0;
+			_audioSlider.tickInterval = 0;
+			_audioSlider.getChildAt(0).height = 10;
+			_audioSlider.getChildAt(1).width = 20;
+			_audioSlider.getChildAt(1).height = 20;
+			_audioSlider.getChildAt(1).y -= 3;
+			_audioSlider.x = this.width - _audioSlider.width - 100;
+			_audioSlider.y = tf.y + 35;
+			this.addChild(_audioSlider);
 			
-			var mouseXsensitivity:Slider = new Slider();
-			mouseXsensitivity.width = 400;
-			mouseXsensitivity.maximum = 100;
-			mouseXsensitivity.minimum = 0;
-			mouseXsensitivity.tickInterval = 0;
-			mouseXsensitivity.getChildAt(0).height = 10;
-			mouseXsensitivity.getChildAt(1).width = 20;
-			mouseXsensitivity.getChildAt(1).height = 20;
-			mouseXsensitivity.getChildAt(1).y -= 3;
-			mouseXsensitivity.x = mouseYsensitivity.x;
-			mouseXsensitivity.y = mouseYsensitivity.y + spacing;
-			this.addChild(mouseXsensitivity);
+			if(this.so.data.audio == undefined){
+				this._audioSlider.value = 100;
+				this.so.data.audio = this._audioSlider.value;
+			}
+			else
+				this._audioSlider.value = so.data.audio;
 			
-			var invertY:CheckBox = new CheckBox();
-			invertY.label = "";
-			invertY.x = mouseXsensitivity.x + mouseXsensitivity.width * 0.5 - invertY.width * 0.5;
-			invertY.y = mouseXsensitivity.y + spacing;
-			this.addChild(invertY);
+			SoundAS.masterVolume = this._audioSlider.value * .01;
+			
+			_mouseYsensitivity.width = 400;
+			_mouseYsensitivity.maximum = 100;
+			_mouseYsensitivity.minimum = 25;
+			_mouseYsensitivity.tickInterval = 0;
+			_mouseYsensitivity.getChildAt(0).height = 10;
+			_mouseYsensitivity.getChildAt(1).width = 20;
+			_mouseYsensitivity.getChildAt(1).height = 20;
+			_mouseYsensitivity.getChildAt(1).y -= 3;
+			_mouseYsensitivity.x = _audioSlider.x;
+			_mouseYsensitivity.y = _audioSlider.y + spacing;
+			this.addChild(_mouseYsensitivity);
+			
+			if (this.so.data.mouseY == undefined){
+				this._mouseYsensitivity.value = 62.5;
+				this.so.data.mouseY = this._mouseYsensitivity.value;
+			}
+			else
+				this._mouseYsensitivity.value = so.data.mouseY;
+			
+			
+			_mouseXsensitivity.width = 400;
+			_mouseXsensitivity.maximum = 100;
+			_mouseXsensitivity.minimum = 25;
+			_mouseXsensitivity.tickInterval = 0;
+			_mouseXsensitivity.getChildAt(0).height = 10;
+			_mouseXsensitivity.getChildAt(1).width = 20;
+			_mouseXsensitivity.getChildAt(1).height = 20;
+			_mouseXsensitivity.getChildAt(1).y -= 3;
+			_mouseXsensitivity.x = _mouseYsensitivity.x;
+			_mouseXsensitivity.y = _mouseYsensitivity.y + spacing;
+			this.addChild(_mouseXsensitivity);
+			
+			if (so.data.mouseX == undefined){
+				this._mouseXsensitivity.value = 62.5;
+				this.so.data.mouseX = this._mouseXsensitivity.value;
+			}
+			else
+				this._mouseXsensitivity.value = so.data.mouseX;
+			
+			
+			_invertY.label = "";
+			_invertY.x = _mouseXsensitivity.x + _mouseXsensitivity.width * 0.5 - _invertY.width * 0.5;
+			_invertY.y = _mouseXsensitivity.y + spacing;
+			this.addChild(_invertY);
+			
+			if (this.so.data.invertY == undefined){
+				this._invertY.selected = false;
+				this.so.data.invertY = this._invertY.selected;
+			}
+			else
+				this._invertY.selected = so.data.invertY;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -170,6 +208,10 @@ package team3d.screens
 		override public function Begin():void
 		{
 			super.Begin();
+			
+			this.addEventListener(Event.ENTER_FRAME, newFrame);
+			this._audioSlider.addEventListener(MouseEvent.MOUSE_UP, changeAudio);
+			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
@@ -177,6 +219,7 @@ package team3d.screens
 		
 		private function cancelClicked($e:MouseEvent):void 
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		
@@ -184,7 +227,40 @@ package team3d.screens
 		
 		private function saveClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		private function changeAudio($event:Event)
+		{
+			this.so.data.audio = this._audioSlider.value;
+				SoundAS.masterVolume = this._audioSlider.value * .01;
+				SoundAS.playFx("SoundLevelChange");
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		private function newFrame($event:Event):void 
+		{
+			/*
+			if (this.so.data.audio != this._audioSlider.value)
+			{
+				this.so.data.audio = this._audioSlider.value;
+				SoundAS.masterVolume = this._audioSlider.value * .01;
+				SoundAS.playFx("SoundLevelChange");
+			}	
+			*/	
+			
+			if (this.so.data.mouseY != this._mouseYsensitivity.value)
+				this.so.data.mouseY = this._mouseYsensitivity.value;
+				
+			if (this.so.data.mouseX != this._mouseXsensitivity.value)
+				this.so.data.mouseX = this._mouseXsensitivity.value;
+				
+			if (this.so.data.invertY != this._invertY.selected)
+				this.so.data.invertY = this._invertY.selected;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -195,6 +271,9 @@ package team3d.screens
 		override public function End():void
 		{
 			super.End();
+			
+			this.removeEventListener(Event.ENTER_FRAME, newFrame);
+			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
 	}
