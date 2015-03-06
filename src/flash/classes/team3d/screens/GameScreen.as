@@ -20,6 +20,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
 	import team3d.objects.maze.Maze;
+	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
@@ -47,6 +48,8 @@ package team3d.screens
 		
 		private var _flyPlayer			:FlyPlayer;
 		
+		public static const origin		:Vector3D = new Vector3D();
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -61,6 +64,9 @@ package team3d.screens
 			
 			DoneSignal = new Signal(Boolean);
 			PausedSignal = new Signal();
+			
+			var so:SharedObject = SharedObject.getLocal("dataTeam3D");
+			so.data.gameScreen = this;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -89,6 +95,13 @@ package team3d.screens
 			TweenLite.to(rectangle, 2.0, {alpha:0.0});
 			*/
 			
+			//Create player
+			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
+			_player.addToWorld(World.instance.view, World.instance.physics);
+			_player.controller.warp(new Vector3D(0, 10000, 0));
+			_player.Begin();
+			//end player
+			
 			/*
 			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
 			this._floor.x = 0;
@@ -114,20 +127,9 @@ package team3d.screens
 			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
-			
-			//Create player
-			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
-			_player.addToWorld(World.instance.view, World.instance.physics);
-			_player.controller.warp(new Vector3D(0, 10000, 0));
-			_player.Begin();
-			//end player
-			
 			//create a cannon
-			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			cannon.addObjectActivator(this._player.controller.ghostObject);
-			cannon.transformTo(new Vector3D(70,200,0));
-			cannon.rotateTo(new Vector3D(0,0,0));
-			cannon.addToScene(World.instance.view, World.instance.physics);
+			this.createCannon(new Vector3D(-250, 200, 0), origin);
+			this.createCannon(new Vector3D(250, 200, 0), origin);
 			//End cannon creation
 			
 			//_player = new HumanPlayer(World.instance.view.camera);
@@ -144,6 +146,16 @@ package team3d.screens
 			rectangle.graphics.endFill();
 			this.addChild(rectangle);
 			//toggleCamera();
+		}
+		
+		public function createCannon($transform:Vector3D, $rotation:Vector3D)
+		{
+			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
+			cannon.addObjectActivator(this._player.controller.ghostObject);
+			cannon.transformTo($transform);
+			cannon.rotateTo($rotation);
+			cannon.addToScene(World.instance.view, World.instance.physics);
+			trace("create cannon");
 		}
 		
 		private function failedGame():void
@@ -169,6 +181,37 @@ package team3d.screens
 			
 			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
+			
+			for (var i:Number = 0; i < maze.Rooms.length; i++)
+			{	
+				var rooms = maze.Rooms[i];
+				
+				if (rooms != null)
+				{
+					for(var j:Number = 0; j < rooms.length; j++)
+					{
+						var room:MazeRoom = rooms[j];
+						var transform:Vector3D;
+						var rotation:Vector3D;
+						
+						var num:Number = Math.random();
+						var chance:Number = Math.random() * 4;
+						
+						if (num < .5 && room.ColumnWall != null)
+						{
+							transform = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
+							
+							this.createCannon(transform, new Vector3D(0, 90));
+						}
+						else if (room.RowWall != null)
+						{
+							transform = room.RowWall.position.add(new Vector3D(0, 200, 50));
+							
+							this.createCannon(transform, origin);
+						}
+					}
+				}
+			}
 		}
 		
 		public function Unpause()
