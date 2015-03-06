@@ -4,6 +4,8 @@
 	import org.osflash.signals.Signal;
 	import away3d.containers.ObjectContainer3D;
 	import awayphysics.collision.dispatch.AWPCollisionObject;
+	import flash.geom.Vector3D;
+
 
 	/**
 	*	A trigger that can be applied as a child to a mesh using Mesh.addChild()
@@ -79,6 +81,12 @@
 		public function clearActivators()
 		{
 			this._trig.clearActivators();
+		}
+		
+		override public function set position(v:Vector3D):void
+		{
+			//this.position = v;
+			this._trig.position = v;
 		}
 
 	}

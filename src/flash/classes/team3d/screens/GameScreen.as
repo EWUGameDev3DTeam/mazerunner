@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
