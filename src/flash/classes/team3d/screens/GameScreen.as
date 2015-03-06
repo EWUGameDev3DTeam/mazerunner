@@ -1,4 +1,4 @@
-﻿package team3d.screens
+package team3d.screens
 {
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
@@ -128,8 +128,8 @@
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
 			//create a cannon
-			this.createCannon(new Vector3D(-250, 200, 0), origin);
-			this.createCannon(new Vector3D(250, 200, 0), origin);
+			//this.createCannon(new Vector3D(-250, 200, 0), origin);
+			//this.createCannon(new Vector3D(250, 200, 0), origin);
 			//End cannon creation
 			
 			//_player = new HumanPlayer(World.instance.view.camera);
@@ -191,23 +191,32 @@
 					for(var j:Number = 0; j < rooms.length; j++)
 					{
 						var room:MazeRoom = rooms[j];
-						var transform:Vector3D;
-						var rotation:Vector3D;
+						var transform1:Vector3D;
+						var transform2:Vector3D;
+						var transform3:Vector3D;
 						
-						var num:Number = Math.random();
-						var chance:Number = Math.random() * 4;
+						var side:Number = Math.random();
+						var chance:Number = Math.random();
 						
-						if (num < .5 && room.ColumnWall != null)
+						if (side < .5 && room.ColumnWall != null && chance < .5)
 						{
-							transform = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
+							transform1 = room.ColumnWall.position.add(new Vector3D(50, 200, 200));
+							transform2 = room.ColumnWall.position.add(new Vector3D(50, 200, -200));
+							transform3 = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
 							
-							this.createCannon(transform, new Vector3D(0, 90));
+							this.createCannon(transform1, new Vector3D(0, 90));
+							this.createCannon(transform2, new Vector3D(0, 90));
+							this.createCannon(transform3, new Vector3D(0, 90));
 						}
-						else if (room.RowWall != null)
+						else if (room.RowWall != null && chance < .5)
 						{
-							transform = room.RowWall.position.add(new Vector3D(0, 200, 50));
+							transform1 = room.RowWall.position.add(new Vector3D(200, 200, 50));
+							transform2 = room.RowWall.position.add(new Vector3D( -200, 200, 50));
+							transform3 = room.RowWall.position.add(new Vector3D(0, 200, 50));
 							
-							this.createCannon(transform, origin);
+							this.createCannon(transform1, origin);
+							this.createCannon(transform2, origin);
+							this.createCannon(transform3, origin);
 						}
 					}
 				}
