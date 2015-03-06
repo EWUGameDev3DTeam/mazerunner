@@ -22,6 +22,10 @@
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
+	import org.flintparticles.threeD.renderers.Camera;
+	import away3d.cameras.Camera3D;
+	import away3d.cameras.lenses.LensBase;
+	import away3d.cameras.lenses.PerspectiveLens;
 	
 	
 	/**
@@ -44,6 +48,8 @@
 		private var _player				:KinematicPlayer;
 		
 		private var _flyPlayer			:FlyPlayer;
+		/** set to true for debug output*/
+		private var _debug = false;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -113,9 +119,17 @@
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
 			//Create the skybox
-			AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
+			
+			if(this._debug)
+				AssetManager.instance.getAsset("DebugSky").addToScene(World.instance.view, World.instance.physics);
+			else
+				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
 			
+			//set up the world camera
+			var lb:LensBase = new PerspectiveLens(75);
+			lb.far = 20000;
+			World.instance.view.camera = new Camera3D(lb);
 			//Create player
 			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.5);
 			_player.addToWorld(World.instance.view, World.instance.physics);
