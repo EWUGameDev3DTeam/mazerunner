@@ -209,14 +209,13 @@ package
 			this.addChildAt(_titleScreen, 0);
 			this.addChildAt(_creditsScreen, 0);
 			this.addChildAt(_settingsScreen, 0);
-			this.addChildAt(_gameScreen, 0);
 			this.addChildAt(_pauseScreen, 0);
+			this.addChildAt(_gameScreen, 0);
 			this.addChildAt(_controlScreen, 0);
 			this.addChildAt(_wonScreen, 0);
 			this.addChildAt(_lostScreen, 0);
 			this.addChildAt(_tutorialScreen, 0);
 			
-			trace("loading done");
 			_loadingScreen.Begin();
 			//_titleScreen.Begin();
 			//_settingsScreen.Begin();
@@ -246,6 +245,8 @@ package
 				_creditsScreen.Begin();
 			else if ($dest == BaseScreen.SETTINGS)
 				_settingsScreen.Begin();
+			else if ($dest == BaseScreen.GAME)
+				_gameScreen.Begin();
 			
 			_prevScreen = _titleScreen;
 		}
@@ -282,6 +283,7 @@ package
 		{
 			_gameScreen.Pause();
 			_pauseScreen.Begin();
+			_prevScreen = _gameScreen;
 		}
 		
 		private function endPause($dir:int):void

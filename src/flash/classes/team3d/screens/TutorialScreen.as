@@ -1,6 +1,7 @@
 package team3d.screens
 {
 	import adobe.utils.CustomActions;
+	import away3d.cameras.Camera3D;
 	import away3d.core.math.Vector3DUtils;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
@@ -9,6 +10,7 @@ package team3d.screens
 	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.greensock.events.LoaderEvent;
+	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
 	import com.jakobwilson.Cannon.Cannon;
@@ -49,6 +51,10 @@ package team3d.screens
 		
 		private var _elevatorDown		:Trigger3D;
 		
+		private var _goingDown			:Boolean;
+		
+		private var _cage				:Asset;
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -64,14 +70,15 @@ package team3d.screens
 			DoneSignal = new Signal();
 			PausedSignal = new Signal();
 			
-			_elevatorDown = new Trigger3D(1000, 20);
+			_elevatorDown = new Trigger3D(400);
 			_elevatorDown.TriggeredSignal.add(goDown);
 		}
 		
 		private function goDown($a:Asset):void
 		{
-			trace("blah");
-			DebugScreen.Text("near player");
+			if (_goingDown) return;
+			_goingDown = true;
+			TweenMax.fromTo(this.getChildByName("rectangleFade"), 2, { autoAlpha:0 }, { autoAlpha:1, onComplete:DoneSignal.dispatch } );
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -84,9 +91,8 @@ package team3d.screens
 			super.Begin();
 			World.instance.Begin();
 			this.addChild(World.instance.view);
-			this.visible = true;
-			this.alpha = 0;
 			
+			_goingDown = false;
 			_controlsEnabled = false;
 			_paused = false;
 			
@@ -95,29 +101,31 @@ package team3d.screens
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			
-			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
-			
 			//Create player
-			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
+			//if (_player == null)
+			var cam:Camera3D = new Camera3D();
+			_player = new KinematicPlayer(cam, 300, 100, 0.4);
 			_player.addToWorld(World.instance.view, World.instance.physics);
-			_player.controller.warp(new Vector3D(0, 10000, 0));
+			_player.controller.warp(new Vector3D(0, 500, 0));
 			_player.Begin();
+			
+			World.instance.view.camera = cam;
 			//end player
 			
 			// elevator movement
 			_elevatorDown.addObjectActivator(_player.controller.ghostObject);
+			createTutorial();
+			//toggleCamera();
 			
 			var rectangle:Shape = new Shape;
+			rectangle.name = "rectangleFade";
 			rectangle.graphics.beginFill(0x000000);
 			rectangle.graphics.drawRect(0, 0, this.width, this.height);
 			rectangle.graphics.endFill();
+			rectangle.visible = false;
 			this.addChild(rectangle);
-			
-			createTutorial();
-			//toggleCamera();
 		}
 		
 		private function createTutorial():void
@@ -151,11 +159,12 @@ package team3d.screens
 			World.instance.addObject(monster);
 			
 			// create the cage
-			var cage:Asset = AssetManager.instance.getCopy("Cage");
-			cage.transformTo(new Vector3D(startx, 0, startz));
-			World.instance.addObject(cage);
-			_elevatorDown.position = cage.model.position;
-			cage.model.addChild(_elevatorDown);
+			_cage = AssetManager.instance.getCopy("Cage");
+			_cage.transformTo(new Vector3D(startx, 0, startz));
+			World.instance.addObject(_cage);
+			
+			_elevatorDown.position = _cage.model.position;
+			_cage.model.addChild(_elevatorDown);
 			_elevatorDown.begin();
 		}
 		
@@ -240,16 +249,21 @@ package team3d.screens
 		 */
 		override public function End():void
 		{
+			//*			TEMPORARY KEY BINDINGS
+			KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
+			//			TEMPORARY KEY BINDINGS*/
 			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
+			KeyboardManager.instance.removeKeyUpListener(KeyCode.P, pauseGame);
+			
 			_player.End();
 			_flyPlayer.End();
+			_elevatorDown.end();
+			
+			this.removeChild(World.instance.view);
+			this.removeChild(this.getChildByName("rectangleFade"));
 			
 			World.instance.End();
 			super.End();
-			
-			World.instance.unlockMouse();
-			
-			this.removeChild(World.instance.view);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -290,6 +304,11 @@ package team3d.screens
 			{
 				pauseGame();
 				return;
+			}
+			
+			if (_goingDown)
+			{
+				_cage.rigidBody.y -= 10;
 			}
 			
 			World.instance.update();

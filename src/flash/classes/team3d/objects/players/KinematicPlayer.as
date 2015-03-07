@@ -46,7 +46,7 @@
 			_cam = $cam;
 			_fpc = new FirstPersonController($cam);
 			_fpc.targetObject.z = height * 0.8;
-			_fpc.fly = true;
+			//_fpc.fly = true;
 			this._speed = $speed;
 			
 			
@@ -55,6 +55,8 @@
 			this._ghostObject = new AWPGhostObject(shape, Camera3D(_fpc.targetObject));
 			this._ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
+			_character.jumpSpeed = 12;
+			_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0,0,0));
 		}
 		
@@ -77,7 +79,7 @@
 		override public function End():void
 		{
 			World.instance.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
+			this.removeEventListener(Event.ENTER_FRAME, this.onFrame);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -103,25 +105,28 @@
 				vf = _character.ghostObject.front;
 				vf.scaleBy($speed);
 			}
-			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy(-$speed);
 			}
+			
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
 			{
 				vs = _character.ghostObject.right;
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
 			}
-			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
 				vs = _character.ghostObject.right;
 				vs.scaleBy($speed*0.5);
 				vf.scaleBy(0.7);
 			}
+			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
 				_character.jump();
+			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
 			{
 				vs.scaleBy(0.5);

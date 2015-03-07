@@ -44,11 +44,12 @@ package team3d.bases
 		public function Begin():void
 		{
 			World.instance.CurrentScreen = _screenTitle;
+			this.visible = true;
 		}
 		
 		public function End():void
 		{
-			
+			this.visible = false;
 		}
 	}
 }
