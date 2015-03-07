@@ -23,6 +23,7 @@
 	import awayphysics.data.AWPCollisionFlags;
 	import flash.events.Event;
 	import awayphysics.events.AWPEvent;
+	import team3d.events.MovementOverrideEvent;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -37,6 +38,7 @@
 		private var _speed:Number = 1;
 		private var _pan:Number = 0.0;
 		private var _tilt:Number = 90.0;
+		private var _overrideVector:Vector3D = new Vector3D();
 		
 		/**
 		*	Creates a kinematic character controller 
@@ -67,6 +69,7 @@
 		{
 			World.instance.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			this.addEventListener(Event.ENTER_FRAME,this.onFrame);
+			this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -78,6 +81,8 @@
 		{
 			World.instance.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
+			this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
+
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -94,6 +99,11 @@
 		 */
 		public function Move($speed:Number):void
 		{
+			if(this._overrideVector.length > 0.1)
+				this._overrideVector.scaleBy(0.95);		//dampen
+			else
+				this._overrideVector = new Vector3D();
+			
 			//$speed = 1;
 			var vf:Vector3D = new Vector3D();
 			var vs:Vector3D = new Vector3D();
@@ -130,7 +140,7 @@
 			vs.y = 0;
 			vf.y = 0;
 
-			_character.setWalkDirection(vf.add(vs));
+			_character.setWalkDirection(vf.add(vs).add(this._overrideVector));
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -177,5 +187,15 @@
 		{
 			return this._character;
 		}
+		
+		/**
+		*	Overrides the players movement by applying a vector 
+		*/
+		public function overrideMovement($e:MovementOverrideEvent)
+		{
+			
+			this._overrideVector = $e.force;
+		}
+		
 	}
 }

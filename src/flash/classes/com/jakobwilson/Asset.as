@@ -25,6 +25,7 @@
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import away3d.tools.helpers.data.MeshDebug;
+	import away3d.animators.IAnimator;
 	
 	
 	
@@ -152,11 +153,15 @@
 				this.createRigidBody();
 				this.assetReadySignal.dispatch(this);
 			}
-			if(e.asset.assetType == AssetType.SKYBOX)
+			else if(e.asset.assetType == AssetType.SKYBOX)
 			{
 				this._skybox = SkyBox(e.asset);
 				this.assetReadySignal.dispatch(this);
 			}
+			//else if(e.asset.assetType == AssetType.ANIMATOR)
+		//	{
+		//		this._model.animator = IAnimator(e.asset);
+			//}
 		
 		}
 		/**
@@ -263,5 +268,4 @@
 			return this._model;
 		}
 	}
-	
 }

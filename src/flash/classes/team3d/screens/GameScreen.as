@@ -26,6 +26,9 @@
 	import away3d.cameras.Camera3D;
 	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
+	import away3d.animators.SkeletonAnimator;
+		import away3d.entities.Mesh;
+
 	
 	
 	/**
@@ -82,7 +85,12 @@
 			this.alpha = 0;
 			
 			_controlsEnabled = false;
-			_paused = false;			
+			_paused = false;	
+			
+			World.instance.view.scene.addChild(AssetManager.instance.getAsset("Monster").model);
+			//AssetManager.instance.getAsset("Monster").model.animator.start();
+			//AssetManager.instance.getAsset("Monster").model.animator.play("Walking", null, 0);
+			trace(AssetManager.instance.getAsset("Monster").model.animator);
 			/*
 			var rectangle:Shape = new Shape;
 			rectangle.graphics.beginFill(0xFF00FF);

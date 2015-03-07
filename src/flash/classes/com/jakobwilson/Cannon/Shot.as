@@ -12,6 +12,8 @@
 	import flash.display.DisplayObject;
 	import awayphysics.events.AWPEvent;
 	import awayphysics.data.AWPCollisionFlags;
+	import com.greensock.TweenMax;
+	import team3d.events.MovementOverrideEvent;
 	
 	/**
 	* A single cannon shot has three states: Growing(for inside the cannon), shooting, and fading. 
@@ -37,14 +39,12 @@
 			this._model = shot;
 			this._firePower = v;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
-			this._model.rigidBody.gravity = new Vector3D(0,0.0001,0)
-			this._model.rigidBody.mass = 10000;
 			this._model.transformTo(new Vector3D(this._model.position.x, this._model.position.y, this._model.position.z));
 			this._view.scene.addChild(this._model.model);
 			this._stateTimer = new Timer(10);
 			
 			//Knockback event handling
-			this._model.rigidBody.collisionFlags |= AWPCollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK; 
+			//this._model.rigidBody.collisionFlags |= AWPCollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK; 
 			this._model.rigidBody.addEventListener(AWPEvent.COLLISION_ADDED,this.knockBack);
 			
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.grow);
@@ -111,18 +111,16 @@
 		{
 			this._canKnockBack = true;
 			if($e.type == AWPEvent.COLLISION_ADDED && ($e.collisionObject.collisionFlags & AWPCollisionFlags.CF_CHARACTER_OBJECT) > 0)
-			{
-				//$e.collisionObject.addEventListener(AWPEvent.RAY_CAST, checkKnockBack);
-				$e.collisionObject.position = $e.collisionObject.position.add(new Vector3D(this._model.rigidBody.linearVelocity.x * 50, 0, this._model.rigidBody.linearVelocity.z * 50));
+			{				
+				//var Target:Vector3D = $e.collisionObject.position.add(new Vector3D(this._model.rigidBody.linearVelocity.x, 0, this._model.rigidBody.linearVelocity.z));
+				//var Target:Vector3D = new Vector3D(this._model.rigidBody.linearVelocity.x, 0, this._model.rigidBody.linearVelocity.z);
+				var Target:Vector3D = $e.collisionObject.position.subtract(this._model.position);
+				Target.normalize();
+				Target.scaleBy(this._model.rigidBody.linearVelocity.length);
+				Target.y = 0;
+				Target.scaleBy(0.1);
+				$e.collisionObject.dispatchEvent(new MovementOverrideEvent(Target));
 			}
-		}
-		
-		private function checkKnockBack($e:AWPEvent)
-		{
-			//var v:Vector = $e.collisionObject.worldTransform.transform.transformVector(event.manifoldPoint.localPointB);
-			//calculate if character can knock back
-			
-			
 		}
 	}
 	
