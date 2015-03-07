@@ -20,6 +20,7 @@ package team3d.bases
 		public static const WON:int = 5;
 		public static const LOST:int = 6;
 		public static const CONTROLS:int = 7;
+		public static const TUTORIAL:int = 8;
 		
 		public var	DoneSignal	:Signal;
 		

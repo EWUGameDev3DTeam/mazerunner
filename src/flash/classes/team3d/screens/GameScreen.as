@@ -36,8 +36,6 @@ package team3d.screens
 		
 		public var PausedSignal			:Signal;
 		
-		//private var _floor				:Mesh;
-		
 		private var _paused				:Boolean;
 		
 		private var _controlsEnabled	:Boolean;
@@ -78,27 +76,6 @@ package team3d.screens
 			_controlsEnabled = false;
 			_paused = false;
 			
-			/*
-			var rectangle:Shape = new Shape;
-			rectangle.graphics.beginFill(0xFF00FF);
-			rectangle.graphics.drawRect(0, 0, this.width,this.height); 
-			rectangle.graphics.endFill();
-			addChild(rectangle);
-			
-			TweenLite.to(rectangle, 2.0, {alpha:0.0});
-			*/
-			
-			/*
-			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
-			this._floor.x = 0;
-			this._floor.y = -50;
-			this._floor.z = 0;
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 1, 10000);
-			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
-			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
-			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
-			World.instance.addObject(floorRigidBody);
 			//*/
 			createMaze();
 			
@@ -110,7 +87,6 @@ package team3d.screens
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
 			
-			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
 			
@@ -128,14 +104,6 @@ package team3d.screens
 			cannon.rotateTo(new Vector3D(0,0,0));
 			cannon.addToScene(World.instance.view, World.instance.physics);
 			//End cannon creation
-			
-			//_player = new HumanPlayer(World.instance.view.camera);
-			//World.instance.addObject(_player.rigidbody);
-			// start the player, this also starts the HumanController associated with it
-			//_player.Begin();
-			
-			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			
 			var rectangle:Shape = new Shape;
 			rectangle.graphics.beginFill(0x000000);

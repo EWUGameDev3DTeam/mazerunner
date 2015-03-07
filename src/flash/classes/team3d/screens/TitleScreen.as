@@ -171,7 +171,7 @@
 		private function goFullScreen($e:FullScreenEvent = null):void
 		{
 			DebugScreen.Text("finishing up");
-			this.DoneSignal.dispatch(BaseScreen.GAME);
+			this.DoneSignal.dispatch(BaseScreen.TUTORIAL);
 			World.instance.stage.mouseLock = true;
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, registerAccepted);
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN_INTERACTIVE_ACCEPTED, goFullScreen);
