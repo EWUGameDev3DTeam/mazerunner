@@ -2,17 +2,10 @@ package team3d.screens
 {
 	import away3d.cameras.Camera3D;
 	import away3d.cameras.lenses.PerspectiveLens;
-	import away3d.entities.Mesh;
-	import away3d.materials.ColorMaterial;
-	import away3d.primitives.PlaneGeometry;
 	import away3d.tools.utils.Bounds;
-	import awayphysics.collision.shapes.AWPBoxShape;
-	import awayphysics.dynamics.AWPRigidBody;
-	import com.greensock.events.LoaderEvent;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
-	import com.jakobwilson.Cannon.Cannon;
 	import com.jakobwilson.Trigger3D;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
@@ -62,6 +55,8 @@ package team3d.screens
 		private var _exitOpening		:Boolean;
 		private var _exitWall			:Asset;
 		
+		private var _winTrigger			:Trigger3D;
+		
 		private var _wallHeight			:Number;
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -78,12 +73,8 @@ package team3d.screens
 			DoneSignal = new Signal(Boolean);
 			PausedSignal = new Signal();
 			
-			_entranceOpen = new Trigger3D(2000);
-			_entranceOpen.TriggeredSignal.add(openEntrance);
-			_entranceClose = new Trigger3D(800);
-			_entranceClose.TriggeredSignal.add(closeEntrance);
-			
-			_exitClose = new Trigger3D(1000);
+			_winTrigger = new Trigger3D(800);
+			_winTrigger.TriggeredSignal.add(wonGame);
 		}
 		
 		private function openEntrance($a:Asset):void
@@ -101,6 +92,19 @@ package team3d.screens
 			}
 		}
 		
+		private function closeExit($a:Asset):void
+		{
+			if (!_exitClosing)
+				_winTrigger.begin();
+			
+			_exitClosing = true;
+			
+			if (_exitOpening)
+			{
+				_exitOpening = false;
+			}
+		}
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -113,8 +117,8 @@ package team3d.screens
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
-			var rows:int = 10;
-			var cols:int = 10;
+			var rows:int = 5;
+			var cols:int = 5;
 			
 			_cageMoving = true;
 			_controlsEnabled = false;
@@ -128,7 +132,7 @@ package team3d.screens
 			var maze:Maze = createMaze(rows, cols);
 			createPlayer();
 			createEntrance(rows, cols);
-			createExit(rows, cols);
+			createExit(maze);
 			wireTriggers(maze);
 			
 			//*			TEMPORARY KEY BINDINGS
@@ -166,24 +170,34 @@ package team3d.screens
 		{
 			var pos:int = int(Math.floor($maze.Columns * 0.5));
 			_entranceWall = $maze.GetRoom(0, pos).RowWall;
-			_exitWall = $maze.RowBorder[pos - 1];
+			//_exitWall = $maze.RowBorder[pos];
 			
 			Bounds.getMeshBounds(_entranceWall.model);
 			_wallHeight = Bounds.height;
 			
+			_entranceOpen = new Trigger3D(2000);
+			_entranceOpen.TriggeredSignal.add(openEntrance);
 			_entranceOpen.position = _entranceWall.model.position;
-			_entranceWall.model.addChild(_entranceOpen);
 			_entranceOpen.addObjectActivator(_player.controller.ghostObject);
 			_entranceOpen.begin();
 			
-			var entranceCloseWall:Asset = $maze.GetRoom(1, pos).RowWall;
-			_entranceClose.position = entranceCloseWall.model.position;
-			entranceCloseWall.model.addChild(_entranceClose);
+			_entranceClose = new Trigger3D(800);
+			_entranceClose.TriggeredSignal.add(closeEntrance);
+			_entranceClose.position = new Vector3D(_entranceWall.position.x, _entranceWall.position.y, _entranceWall.position.z + 800);
 			_entranceClose.addObjectActivator(_player.controller.ghostObject);
 			_entranceClose.begin();
+			
+			_exitClose = new Trigger3D(800);
+			_exitClose.TriggeredSignal.add(closeExit);
+			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 2000);
+			_exitClose.addObjectActivator(_player.controller.ghostObject);
+			_exitClose.begin();
+			
+			_winTrigger.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 6000);
+			_winTrigger.addObjectActivator(_player.controller.ghostObject);
 		}
 		
-		private function createExit($rows:int, $cols:int):void
+		private function createExit($maze:Maze):void
 		{
 			var floor:Asset = AssetManager.instance.getAsset("Floor");
 			Bounds.getMeshBounds(floor.model);
@@ -193,11 +207,13 @@ package team3d.screens
 			Bounds.getMeshBounds(wall.model);
 			var wallWidth:Number = Bounds.width;
 			
-			var xloc:Number = floorLength * int(Math.ceil($cols * 0.5) - 1);
+			var exitRoom:int = Math.random() * $maze.Columns;
+			var xloc:Number = floorLength * exitRoom;
+			_exitWall = $maze.RowBorder[exitRoom];//$maze.GetRoom($maze.Rows - 1, exitRoom).ColumnWall;
 			var zloc:Number;
 			for (var i:int = 0; i < 10; i++)
 			{
-				zloc = floorLength * ($rows + i) + floorLength * 0.5;
+				zloc = floorLength * ($maze.Rows + i) + floorLength * 0.5;
 				floor = AssetManager.instance.getCopy("Floor");
 				floor.transformTo(new Vector3D(xloc, 0, zloc));
 				World.instance.addObject(floor);
@@ -248,8 +264,9 @@ package team3d.screens
 			this.DoneSignal.dispatch(false);
 		}
 		
-		private function wonGame():void
+		private function wonGame($a:Asset):void
 		{
+			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
 		}
 		
@@ -267,17 +284,8 @@ package team3d.screens
 			return maze;
 		}
 		
-		public function Unpause()
-		{
-			_paused = false;
-			//World.instance.lockMouse();
-		}
-		
-		public function Pause()
-		{
-			_paused = true;
-			//World.instance.unlockMouse();
-		}
+		public function Unpause(){_paused = false;}
+		public function Pause(){_paused = true;}
 		
 		protected function pauseGame():void
 		{
@@ -305,7 +313,10 @@ package team3d.screens
 			
 			_player.End();
 			_flyPlayer.End();
-			//_floor = null;
+			
+			_entranceClose.end();
+			_entranceOpen.end();
+			_exitClose.end();
 			
 			World.instance.End();
 			super.End();
@@ -367,7 +378,6 @@ package team3d.screens
 				}
 			}
 			
-			DebugScreen.Text("y: " + _entranceWall.position.y);
 			if (_entranceOpening)
 			{
 				_entranceWall.transformTo(new Vector3D(_entranceWall.position.x, _entranceWall.position.y - 1, _entranceWall.position.z));
@@ -389,8 +399,8 @@ package team3d.screens
 			
 			if (_exitClosing)
 			{
-				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y -1, _exitWall.position.z));
-				if (_exitWall.position.y <= 0)
+				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y + 1, _exitWall.position.z));
+				if (_exitWall.position.y >= 0)
 				{
 					_exitClosing = false;
 					_exitClose.end();
@@ -398,10 +408,15 @@ package team3d.screens
 			}
 			else if (_exitOpening)
 			{
-				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y + 1, _exitWall.position.z));
-				if (_exitWall.position.y >= _wallHeight)
+				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y - 1, _exitWall.position.z));
+				if (_exitWall.position.y + _wallHeight <= 0)
 					_exitOpening = false;
 			}
+			
+			//DebugScreen.Text("entrance closing: " + _entranceClosing);
+			//DebugScreen.Text("entrance opening: " + _entranceOpening, true);
+			//DebugScreen.Text("exit closing: " + _exitClosing, true);
+			//DebugScreen.Text("exit opening: " + _exitOpening, true);
 			
 			World.instance.update();
 		}

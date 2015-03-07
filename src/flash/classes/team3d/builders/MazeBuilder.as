@@ -79,7 +79,7 @@ package team3d.builders
 			var sets:int = $rows * $cols;
 			_wallsRemoved = 0;
 			
-			if(1==2)
+			//if(1==2)
 			while (sets - _wallsRemoved > 1)
 			{
 				randCol = Utils.instance.Random(0, $cols - 1);

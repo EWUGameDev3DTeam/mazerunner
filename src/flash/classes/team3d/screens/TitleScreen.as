@@ -173,7 +173,7 @@
 			World.instance.stage.mouseLock = true;
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, registerAccepted);
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN_INTERACTIVE_ACCEPTED, goFullScreen);
-			this.DoneSignal.dispatch(BaseScreen.TUTORIAL);
+			this.DoneSignal.dispatch(BaseScreen.GAME);
 		}
 		
 		
