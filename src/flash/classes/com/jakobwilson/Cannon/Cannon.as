@@ -32,9 +32,10 @@
 			this._cannon = can;
 			this._shot = shot;
 			this._shot.transformTo(this._cannon.position);
-			this._firingTrigger = new Trigger3D(activationRange, 20);
-			this._firingTrigger.position = this._cannon.position;
+			this._firingTrigger = new Trigger3D(activationRange, 60);
+			this._firingTrigger.position = new Vector3D(0,0,4000);
 			this._cannon.model.addChild(ObjectContainer3D(this._firingTrigger));
+			
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
 			
@@ -45,7 +46,6 @@
 		*/
 		public function shoot(a:Asset)
 		{
-			return;
 			if(this._nFire == 2)
 			{
 				var positionVector:Vector3D = new Vector3D;
@@ -111,6 +111,8 @@
 		{
 			this._cannon.rotateTo(v);
 		}
+		
+
 
 	}
 	

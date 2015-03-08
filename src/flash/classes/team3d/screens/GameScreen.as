@@ -1,7 +1,11 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.cameras.Camera3D;
+	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
+	import away3d.containers.ObjectContainer3D;
+	import away3d.entities.Mesh;
+	import away3d.primitives.CubeGeometry;
 	import away3d.tools.utils.Bounds;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
@@ -17,6 +21,7 @@ package team3d.screens
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
@@ -26,6 +31,8 @@ package team3d.screens
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
 	import team3d.utils.CountDownTimer;
+	import team3d.utils.pathfinding.NavGraph;
+	import team3d.utils.pathfinding.PathNode;
 	
 	/**
 	 *
@@ -38,14 +45,18 @@ package team3d.screens
 		
 		public var PausedSignal			:Signal;
 		
-		//private var _floor				:Mesh;
 		private var _paused				:Boolean;
-		
 		private var _controlsEnabled	:Boolean;
 		
 		private var _player				:KinematicPlayer;
-		
 		private var _flyPlayer			:FlyPlayer;
+		
+		private var _graph				:NavGraph;
+		
+		private var _cube				:Mesh;		//for debug, remove before release
+		private var _path				:ObjectContainer3D;
+		/** set to true for debug output*/
+		private var _debug = true;
 		
 		public static const origin		:Vector3D = new Vector3D();
 		private var _cage				:Asset;
@@ -153,6 +164,7 @@ package team3d.screens
 		{
 			super.Begin();
 			World.instance.Begin();
+			World.instance.physics.collisionCallbackOn = true;
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
@@ -171,16 +183,6 @@ package team3d.screens
 			_exitOpening = true;
 			_won = false;
 			
-			/*
-			var rectangle:Shape = new Shape;
-			rectangle.graphics.beginFill(0xFF00FF);
-			rectangle.graphics.drawRect(0, 0, this.width,this.height); 
-			rectangle.graphics.endFill();
-			addChild(rectangle);
-			
-			TweenLite.to(rectangle, 2.0, {alpha:0.0});
-			*/
-			
 			//Create player
 			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
 			_player.addToWorld(World.instance.view, World.instance.physics);
@@ -188,18 +190,6 @@ package team3d.screens
 			_player.Begin();
 			//end player
 			
-			/*
-			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
-			this._floor.x = 0;
-			this._floor.y = -50;
-			this._floor.z = 0;
-			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 1, 10000);
-			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
-			floorRigidBody.friction = 1;
-			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
-			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
-			World.instance.addObject(floorRigidBody);
-			//*/
 			var maze:Maze = createMaze(rows, cols);
 			createPlayer();
 			createEntrance(maze);
@@ -217,18 +207,27 @@ package team3d.screens
 			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
-			//create a cannon
-			//this.createCannon(new Vector3D(-250, 200, 0), origin);
-			//this.createCannon(new Vector3D(250, 200, 0), origin);
-			//End cannon creation
+			//Create the skybox
+			if(this._debug)
+				AssetManager.instance.getAsset("DebugSky").addToScene(World.instance.view, World.instance.physics);
+			else
+				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
+			//end skybox
 			
-			//_player = new HumanPlayer(World.instance.view.camera);
-			//World.instance.addObject(_player.rigidbody);
-			// start the player, this also starts the HumanController associated with it
-			//_player.Begin();
+		
+			//create navGraph
+			//this._graph = new NavGraph();
+			//this._graph.genFromMaze(this._maze.Rooms, new Vector3D(0, 100, 425));
 			
-			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			//World.instance.view.camera = FlyController(_player.Controller).Camera;
+			//if(this._debug)
+			//	World.instance.view.scene.addChild(this._graph.getWaypointMesh());
+			//end navgraph
+			
+			//Player position test
+			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
+			//this._cube.position = this._graph.getNearestWayPoint(_player.controller.ghostObject.position).position;
+			//World.instance.view.scene.addChild(this._cube);
+			//end player positon test
 			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";

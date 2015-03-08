@@ -132,6 +132,15 @@
 		}
 		
 		/**
+		*	Removes an Object activator so it can't set off the trigger
+		*/
+		public function removeObjectActivator(a:AWPCollisionObject)
+		{
+			this._watchList.splice(this._objectList.indexOf(a),1);
+		}
+		
+		
+		/**
 		*	clears all activators so none of them will set off the trigger
 		*/
 		public function clearActivators()

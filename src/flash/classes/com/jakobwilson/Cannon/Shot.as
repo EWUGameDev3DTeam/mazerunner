@@ -10,6 +10,10 @@
 	import away3d.materials.TextureMaterial;
 	import flash.geom.Vector3D;
 	import flash.display.DisplayObject;
+	import awayphysics.events.AWPEvent;
+	import awayphysics.data.AWPCollisionFlags;
+	import com.greensock.TweenMax;
+	import team3d.events.MovementOverrideEvent;
 	
 	/**
 	* A single cannon shot has three states: Growing(for inside the cannon), shooting, and fading. 
@@ -23,6 +27,8 @@
 		private var _view:View3D; 			/**< The view*/
 		private var _world:AWPDynamicsWorld;/**< The physics world*/
 		
+		private var _canKnockBack:Boolean = true;
+		
 		/**
 		*	Spawns a new shot
 		*/
@@ -33,11 +39,14 @@
 			this._model = shot;
 			this._firePower = v;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
-			this._model.rigidBody.gravity = new Vector3D(0,0.0001,0)
-			this._model.rigidBody.mass = 10000;
 			this._model.transformTo(new Vector3D(this._model.position.x, this._model.position.y, this._model.position.z));
 			this._view.scene.addChild(this._model.model);
 			this._stateTimer = new Timer(10);
+			
+			//Knockback event handling
+			//this._model.rigidBody.collisionFlags |= AWPCollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK; 
+			this._model.rigidBody.addEventListener(AWPEvent.COLLISION_ADDED,this.knockBack);
+			
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.grow);
 			this._stateTimer.start();
 		}
@@ -86,6 +95,8 @@
 		{
 			if(this._view.scene.numChildren > 0)
 				this._view.scene.removeChild(this._model.model);
+			
+			this._model.rigidBody.removeEventListener(AWPEvent.COLLISION_ADDED,this.knockBack);
 			this._world.removeRigidBody(this._model.rigidBody);
 			this._model = null;
 			this._stateTimer.stop();
@@ -95,6 +106,24 @@
 
 		
 		
+		/**
+		*	In Progress: Checks collision and if it was a cannonball, it uses the cannonball's position to create a vector to knock the player back
+		*/
+		private function knockBack($e: AWPEvent):void
+		{
+			this._canKnockBack = true;
+			if($e.type == AWPEvent.COLLISION_ADDED && ($e.collisionObject.collisionFlags & AWPCollisionFlags.CF_CHARACTER_OBJECT) > 0)
+			{				
+				//var Target:Vector3D = $e.collisionObject.position.add(new Vector3D(this._model.rigidBody.linearVelocity.x, 0, this._model.rigidBody.linearVelocity.z));
+				//var Target:Vector3D = new Vector3D(this._model.rigidBody.linearVelocity.x, 0, this._model.rigidBody.linearVelocity.z);
+				var Target:Vector3D = $e.collisionObject.position.subtract(this._model.position);
+				Target.normalize();
+				Target.scaleBy(this._model.rigidBody.linearVelocity.length);
+				Target.y = 0;
+				Target.scaleBy(0.1);
+				$e.collisionObject.dispatchEvent(new MovementOverrideEvent(Target));
+			}
+		}
 	}
 	
 }

@@ -12,6 +12,7 @@
 	import away3d.materials.ColorMaterial;
 	import away3d.library.assets.AssetType
 	import away3d.tools.utils.Bounds;
+	import away3d.primitives.SkyBox;
 	
 	import org.osflash.signals.Signal;
 	
@@ -24,6 +25,8 @@
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import away3d.tools.helpers.data.MeshDebug;
+	import away3d.animators.IAnimator;
+	
 	
 	
 	
@@ -31,7 +34,7 @@
 	*	A class to represent a single game asset. It handles all of the distinctions between rigidbodies and meshes so the user doesn't have to.
 	*	@author Jakob Wilson
 	*/
-	public class Asset 
+	public class Asset
 	{
 		/*---------------------------------------CONSTANTS-------------------------------------------------*/
 		//static and dynamic constants
@@ -46,12 +49,16 @@
 		public static const CYLINDER = 4;
 		public static const CONE = 5;
 		
+		public static const SKYBOX = 6;
+		
 		/*---------------------------------------VARIABLES-----------------------------------------------*/		
 		
 		private var _name:String;									/**< The name of the asset */
 		
 		private var _modelLoader:Loader3D;							/**< The loader for loading the mesh */
 		private var _model:Mesh;									/**< The mesh for this asset */		
+		
+		private var _skybox:SkyBox;
 		
 		private var _collisionType:int;								/**< The collision type of the asset - Can be any of the collison type constants(Ex. Asset.BOX)*/
 		private var _physicsType:int;								/**< The physics type(STATIC or DYNAMIC)*/
@@ -146,15 +153,23 @@
 				this.createRigidBody();
 				this.assetReadySignal.dispatch(this);
 			}
+			else if(e.asset.assetType == AssetType.SKYBOX)
+			{
+				this._skybox = SkyBox(e.asset);
+				this.assetReadySignal.dispatch(this);
+			}
+			//else if(e.asset.assetType == AssetType.ANIMATOR)
+		//	{
+		//		this._model.animator = IAnimator(e.asset);
+			//}
+		
 		}
-		
-		
 		/**
 		*	Adds a rigidbody to the current mesh
 		*/
 		public function createRigidBody()
 		{
-			if(this._collisionType == NONE)// no collider
+			if(this._collisionType == NONE ||  this._collisionType == SKYBOX )// no collider
 				return;
 			
 			Bounds.getMeshBounds(this._model);//get _model bounds
@@ -188,10 +203,16 @@
 		*/
 		public function addToScene($view:View3D, $world:AWPDynamicsWorld = null)
 		{
-			$view.scene.addChild(this._model);
+			if(this._collisionType != SKYBOX)
+				$view.scene.addChild(this._model);
 			
-			if(($world != null) && (this._collisionType != NONE))
+			if(this._collisionType == SKYBOX)
+				$view.scene.addChild(this._skybox);			
+			
+			if(($world != null) && (this._collisionType != NONE) && (this._collisionType != SKYBOX))
 				$world.addRigidBody(this._rigidBody);
+			
+			
 		}
 		
 		/*-----------------------------------GETTERS/SETTERS--------------------------------------*/
@@ -247,5 +268,4 @@
 			return this._model;
 		}
 	}
-	
 }

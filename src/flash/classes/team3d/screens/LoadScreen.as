@@ -61,8 +61,8 @@
 			tf.name = "loadingText";
 			tf.defaultTextFormat = format;
 			tf.autoSize = TextFieldAutoSize.LEFT;
-            tf.mouseEnabled = false;
-            tf.selectable = false;
+			tf.mouseEnabled = false;
+			tf.selectable = false;
 			tf.textColor = 0x000000;
 			tf.visible = true;
 			tf.alpha = 1;
@@ -137,6 +137,8 @@
 		{
 			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Sky", "Models/Sky/NightSky.awd", Asset.SKYBOX);
+			AssetManager.instance.enqueue("DebugSky", "Models/Sky/AxisSky.awd", Asset.SKYBOX);//remove for release
 			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);

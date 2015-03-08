@@ -6,7 +6,6 @@
 	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import flash.geom.Vector3D;
 
-
 	/**
 	*	A trigger that can be applied as a child to a mesh using Mesh.addChild()
 	*	A wrapper class for the trigger so it can be applied as a child to assets
@@ -72,6 +71,15 @@
 		public function removeActivator(a:Asset)
 		{
 			this._trig.addActivator(a);
+		}
+		
+		/**
+		* 	Allows you to remove an activator(AWPCollisionObject) so it will no longer set off the trigger
+		*	@param Asset a - the AWPCollisionObject that can now set off the trigger
+		*/
+		public function removeObjectActivator(a:AWPCollisionObject)
+		{
+			this._trig.removeObjectActivator(a);
 		}
 		
 		/**

@@ -1,8 +1,9 @@
-package team3d.objects.maze
+﻿package team3d.objects.maze
 {
 	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.Asset;
 	import team3d.objects.maze.MazeRoom;
+	import flash.geom.Vector3D;
 	
 	/**
 	 * ...
@@ -166,5 +167,45 @@ package team3d.objects.maze
 		{
 			_rooms = $rooms;
 		}
+		
+		
+		
+		
+		/**---------------JAKES ADDITIONS-----------------------*/
+		
+		/**
+		*
+		*/
+		/*
+		public function getPath(start:Vector3D, end:Vector3D):Vector.<Vector3D>
+		{
+			//dijkstra's!!!
+			var path:Vector.<Vector3D> = new Vector.<Vector3D>;
+			
+			var checked:Vector.<boolean[][]> = new Vector.<MazeRoom>;
+			
+			
+			
+		}
+		
+		public function getClosestTile(v:Vector3D):Vector3D
+		{
+			var wallLength:int = 850;
+			var closest:Vector3D = new Vector3D(0,0,0);
+			var cur:Vector3D;
+			for(i:int = 0; i < _rooms.length;i++)
+			{
+				for(x:int = 0; j < _rooms[j].length;j++)
+				{
+					cur = new Vector3D(x*wallLength, 0, y*wallLength);
+					
+					if(cur.subtract(v).length < closest.subtract(v).length)
+						closest = cur;
+				}
+			}
+			return closest;
+		}
+		
+		*/
 	}
 }
