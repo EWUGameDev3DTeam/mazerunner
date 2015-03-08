@@ -131,7 +131,7 @@ package team3d.screens
 			//*/
 			var maze:Maze = createMaze(rows, cols);
 			createPlayer();
-			createEntrance(rows, cols);
+			createEntrance(maze);
 			createExit(maze);
 			wireTriggers(maze);
 			
@@ -208,43 +208,55 @@ package team3d.screens
 			var wallWidth:Number = Bounds.width;
 			
 			var exitRoom:int = Math.random() * $maze.Columns;
-			var xloc:Number = floorLength * exitRoom;
-			_exitWall = $maze.RowBorder[exitRoom];//$maze.GetRoom($maze.Rows - 1, exitRoom).ColumnWall;
+			_exitWall = $maze.RowBorder[exitRoom];
+			var xloc:Number = _exitWall.position.x;// floorLength * exitRoom;
+			
 			var zloc:Number;
+			var halfWidth:Number = wallWidth * 0.5;
+			var halfLength:Number = floorLength * 0.5;
 			for (var i:int = 0; i < 10; i++)
 			{
-				zloc = floorLength * ($maze.Rows + i) + floorLength * 0.5;
+				zloc = floorLength * ($maze.Rows + i) + halfLength;
 				floor = AssetManager.instance.getCopy("Floor");
-				floor.transformTo(new Vector3D(xloc, 0, zloc));
+				floor.transformTo(new Vector3D(xloc, 0, zloc + halfWidth));
 				World.instance.addObject(floor);
 				
 				wall = AssetManager.instance.getCopy("Wall");
-				wall.transformTo(new Vector3D(xloc - floorLength * 0.5 + wallWidth * 0.5, 0, zloc));
+				wall.transformTo(new Vector3D(xloc - halfLength, 0, zloc + halfWidth));
 				World.instance.addObject(wall);
 				
 				wall = AssetManager.instance.getCopy("Wall");
-				wall.transformTo(new Vector3D(xloc + floorLength * 0.5 + wallWidth * 0.5, 0, zloc));
+				wall.transformTo(new Vector3D(xloc + halfLength, 0, zloc + halfWidth));
 				World.instance.addObject(wall);
 			}
 			
 			wall = AssetManager.instance.getCopy("Wall");
-			wall.transformTo(new Vector3D(xloc + wallWidth * 0.5, 0, zloc + floorLength * 0.5));
+			wall.transformTo(new Vector3D(xloc + halfWidth, 0, zloc + halfLength));
 			wall.rotateTo(new Vector3D(0, 90, 0));
 			World.instance.addObject(wall);
 		}
 		
-		private function createEntrance($rows:int, $cols:int):void
+		private function createEntrance($maze:Maze):void
 		{
-			Bounds.getMeshBounds(AssetManager.instance.getAsset("Wall").model);
+			var roomnum:int = int(Math.floor($maze.Columns * 0.5));
+			DebugScreen.Text("room: " + roomnum);
+			var wall:Asset = $maze.GetRoom(0, roomnum).RowWall;
+			Bounds.getMeshBounds(wall.model);
 			var wallLength:Number = Bounds.depth;
 			
 			_cage = AssetManager.instance.getCopy("Cage");
 			Bounds.getMeshBounds(_cage.model);
 			var cageLength:Number = Bounds.depth;
-			_cage.transformTo(new Vector3D(wallLength * int(Math.floor($cols * 0.5)), 4000, -250));
+			
+			Bounds.getMeshBounds(_cage.model);
+			var x:Number = wall.position.x + (wallLength * 0.5);
+			var z:Number = wall.position.z - (Bounds.depth * 0.5) - 50;
+			DebugScreen.Text("x: " + x);
+			DebugScreen.Text("z: " + z, true);
+			_cage.transformTo(new Vector3D(x, 4000, z));
 			World.instance.addObject(_cage);
 			
-			_player.controller.warp(new Vector3D(_cage.position.x, _cage.position.y + 500, -250));
+			_player.controller.warp(new Vector3D(_cage.position.x, _cage.position.y + 500, _cage.position.z));
 		}
 		
 		private function createPlayer():void
@@ -275,8 +287,8 @@ package team3d.screens
 			var wall:Asset = AssetManager.instance.getAsset("Wall");
 			var floor:Asset = AssetManager.instance.getAsset("Floor");
 			
-			var startx:Number = -425;
-			var startz:Number = -30;
+			var startx:Number = 0;
+			var startz:Number = 0;
 			
 			
 			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
