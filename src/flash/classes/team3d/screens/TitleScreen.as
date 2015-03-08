@@ -19,6 +19,7 @@
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -170,11 +171,10 @@
 		
 		private function goFullScreen($e:FullScreenEvent = null):void
 		{
-			DebugScreen.Text("finishing up");
-			this.DoneSignal.dispatch(BaseScreen.GAME);
 			World.instance.stage.mouseLock = true;
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, registerAccepted);
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN_INTERACTIVE_ACCEPTED, goFullScreen);
+			this.DoneSignal.dispatch(BaseScreen.TUTORIAL);
 		}
 		
 		
@@ -185,6 +185,7 @@
 		 */
 		private function creditsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.CREDITS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
@@ -193,6 +194,7 @@
 		
 		private function settingsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}

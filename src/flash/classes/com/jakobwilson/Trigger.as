@@ -7,6 +7,7 @@
 	import flash.display.Sprite;
 	import flash.geom.Vector3D;
 	import awayphysics.collision.dispatch.AWPCollisionObject;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	*	A trigger class that maintains a list of assets that can trigger it(called activators). 

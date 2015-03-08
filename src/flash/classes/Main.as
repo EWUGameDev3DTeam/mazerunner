@@ -1,24 +1,18 @@
 package 
 {
-	import away3d.controllers.ControllerBase;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.plugins.GlowFilterPlugin;
 	import com.greensock.plugins.TweenPlugin;
-	import com.greensock.TweenMax;
 	import com.natejc.input.KeyboardManager;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
-	import flash.display.StageDisplayState;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.events.FullScreenEvent;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
 	import team3d.bases.BaseScreen;
 	import team3d.interfaces.IScreen;
+	import team3d.objects.World;
 	import team3d.screens.ControlsScreen;
 	import team3d.screens.CreditsScreen;
 	import team3d.screens.DebugScreen;
@@ -28,8 +22,9 @@ package
 	import team3d.screens.PauseScreen;
 	import team3d.screens.SettingsScreen;
 	import team3d.screens.TitleScreen;
-	import team3d.objects.World;
+	import team3d.screens.TutorialScreen;
 	import team3d.screens.WonScreen;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -39,7 +34,7 @@ package
 	[SWF(width = 900, height = 600, frameRate = 60)]
 	public class Main extends Sprite
 	{
-		private var _prevScreen		:IScreen;
+		private var _prevScreens	:Vector.<IScreen>;
 		private var	_titleScreen	:TitleScreen;
 		private var _gameScreen		:GameScreen;
 		private var _loadingScreen	:LoadScreen;
@@ -50,6 +45,7 @@ package
 		private var _lostScreen		:LostScreen;
 		private var _wonScreen		:WonScreen;
 		private var _controlScreen	:ControlsScreen;
+		private var _tutorialScreen	:TutorialScreen;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -63,101 +59,15 @@ package
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, added);
 			
+			_prevScreens = new Vector.<IScreen>();
 			_debugScreen = new DebugScreen();
 			_debugScreen.Begin();
 			this.addChild(_debugScreen);
-		}
-		
-		private function endTitle($dest:int):void 
-		{
-			_titleScreen.End();
 			
-			if ($dest == BaseScreen.GAME)
-				TweenMax.fromTo(_gameScreen, 1, { autoAlpha:1 }, { autoAlpha:0, onComplete:_gameScreen.Begin(), delay:1 } );
-			else if ($dest == BaseScreen.CREDITS)
-				_creditsScreen.Begin();
-			else if ($dest == BaseScreen.SETTINGS)
-				_settingsScreen.Begin();
-			
-			_prevScreen = _titleScreen;
+			SoundAS.loadSound("./audio/sfx/Button.mp3", "Button");
+			SoundAS.loadSound("./audio/sfx/SoundLevelChange.mp3", "SoundLevelChange");
 		}
 		
-		private function endCredits():void
-		{
-			_creditsScreen.End();
-			_titleScreen.Begin();
-			_prevScreen = _creditsScreen;
-		}
-		
-		private function endSettings():void
-		{
-			_settingsScreen.End();
-			_prevScreen.Begin();
-			_prevScreen = _settingsScreen;
-		}
-		
-		private function endGame($won:Boolean):void
-		{
-			_gameScreen.End();
-			if ($won)
-			{
-				_wonScreen.Begin();
-			}
-			else
-			{
-				_lostScreen.Begin();
-			}
-			_prevScreen = _gameScreen;
-		}
-		
-		private function gamePaused():void
-		{
-			_gameScreen.Pause();
-			_pauseScreen.Begin();
-		}
-		
-		private function endPause($dir:int):void
-		{
-			_pauseScreen.End();
-			if ($dir == BaseScreen.SETTINGS)
-				_settingsScreen.Begin();
-			else if ($dir == BaseScreen.CONTROLS)
-			{
-				_controlScreen.Begin();
-			}
-			else if ($dir == BaseScreen.TITLE)
-			{
-				_gameScreen.End();
-				_titleScreen.Begin();
-			}
-			else if ($dir == BaseScreen.GAME)
-			{
-				_gameScreen.Unpause();
-			}
-			
-			_prevScreen = _pauseScreen;
-		}
-		
-		private function endLost():void
-		{
-			_lostScreen.End();
-			_creditsScreen.Begin();
-			_prevScreen = _lostScreen;
-		}
-		
-		private function endWon():void
-		{
-			_wonScreen.End();
-			_creditsScreen.Begin();
-			_prevScreen = _wonScreen;
-		}
-		
-		private function endControls():void
-		{
-			_controlScreen.End();
-			_prevScreen.Begin();
-			_prevScreen = _controlScreen;
-		}
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -284,6 +194,7 @@ package
 			_controlScreen = new ControlsScreen();
 			_wonScreen = new WonScreen();
 			_lostScreen = new LostScreen();
+			_tutorialScreen = new TutorialScreen();
 			
 			_loadingScreen.DoneSignal.add(endLoading);
 			_titleScreen.DoneSignal.add(endTitle);
@@ -295,18 +206,23 @@ package
 			_controlScreen.DoneSignal.add(endControls);
 			_wonScreen.DoneSignal.add(endWon);
 			_lostScreen.DoneSignal.add(endLost);
+			_tutorialScreen.DoneSignal.add(endTutorial);
+			_tutorialScreen.PausedSignal.add(tutorialPaused);
 			
 			this.addChildAt(_loadingScreen, 0);
 			this.addChildAt(_titleScreen, 0);
 			this.addChildAt(_creditsScreen, 0);
 			this.addChildAt(_settingsScreen, 0);
-			this.addChildAt(_gameScreen, 0);
 			this.addChildAt(_pauseScreen, 0);
 			this.addChildAt(_controlScreen, 0);
 			this.addChildAt(_wonScreen, 0);
 			this.addChildAt(_lostScreen, 0);
 			
-			trace("loading done");
+			// to prevent invisible screen stacking, add any 3d worlds at the bottom of the list
+			// adding them at 0 like this guarantees all other screens are above them.
+			this.addChildAt(_gameScreen, 0);
+			this.addChildAt(_tutorialScreen, 0);
+			
 			_loadingScreen.Begin();
 			//_titleScreen.Begin();
 			//_settingsScreen.Begin();
@@ -323,7 +239,128 @@ package
 		{
 			_loadingScreen.End();
 			_titleScreen.Begin();
-			_prevScreen = _loadingScreen;
+			
+			_prevScreens.push(_loadingScreen)
+		}
+		
+		private function endTitle($dest:int):void 
+		{
+			// empty the previous pages each time title ends
+			while (_prevScreens.length > 0)
+				_prevScreens.pop();
+			
+			_titleScreen.End();
+			
+			if ($dest == BaseScreen.TUTORIAL)
+				_tutorialScreen.Begin();
+			else if ($dest == BaseScreen.CREDITS)
+				_creditsScreen.Begin();
+			else if ($dest == BaseScreen.SETTINGS)
+				_settingsScreen.Begin();
+			else if ($dest == BaseScreen.GAME)
+				_gameScreen.Begin();
+			
+			_prevScreens.push(_titleScreen);
+		}
+		
+		private function endCredits():void
+		{
+			_creditsScreen.End();
+			_titleScreen.Begin();
+			_prevScreens.push(_creditsScreen);
+		}
+		
+		private function endSettings():void
+		{
+			_settingsScreen.End();
+			_prevScreens.pop().Begin();
+		}
+		
+		private function endGame($won:Boolean):void
+		{
+			_gameScreen.End();
+			if ($won)
+			{
+				_wonScreen.Begin();
+			}
+			else
+			{
+				_lostScreen.Begin();
+			}
+			_prevScreens.push(_gameScreen);
+		}
+		
+		private function gamePaused():void
+		{
+			_gameScreen.Pause();
+			_pauseScreen.Begin();
+			_prevScreens.push(_gameScreen);
+		}
+		
+		private function endPause($dir:int):void
+		{
+			var screen:IScreen;
+			_pauseScreen.End();
+			
+			if ($dir == BaseScreen.SETTINGS)
+				_settingsScreen.Begin();
+			else if ($dir == BaseScreen.CONTROLS)
+			{
+				_controlScreen.Begin();
+			}
+			else if ($dir == BaseScreen.TITLE)
+			{
+				_prevScreens.pop().End();
+				_titleScreen.Begin();
+			}
+			else if ($dir == BaseScreen.GAME)
+			{
+				screen = _prevScreens.pop();
+				if (screen == _gameScreen)
+				{
+					_gameScreen.Unpause();
+				}
+				else
+				{
+					_tutorialScreen.Unpause();
+				}
+			}
+			
+			_prevScreens.push(_pauseScreen);
+		}
+		
+		private function endLost():void
+		{
+			_lostScreen.End();
+			_creditsScreen.Begin();
+			_prevScreens.push(_lostScreen);
+		}
+		
+		private function endWon():void
+		{
+			_wonScreen.End();
+			_creditsScreen.Begin();
+			_prevScreens.push(_wonScreen);
+		}
+		
+		private function endControls():void
+		{
+			_controlScreen.End();
+			_prevScreens.pop().Begin();
+		}
+		
+		private function endTutorial():void
+		{
+			_tutorialScreen.End();
+			_gameScreen.Begin();
+			_prevScreens.push(_tutorialScreen);
+		}
+		
+		private function tutorialPaused():void
+		{
+			_tutorialScreen.Pause();
+			_pauseScreen.Begin();
+			_prevScreens.push(_tutorialScreen);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

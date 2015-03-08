@@ -11,6 +11,7 @@ package team3d.screens
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
+	import flash.events.Event;
 	import flash.events.FullScreenEvent;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
@@ -21,6 +22,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -55,12 +57,12 @@ package team3d.screens
 		
 		private function initComps()
 		{
-			var offset:Number = 0.8;
+			//var offset:Number = 0.8;
 			var overlay:Sprite = LoaderMax.getContent("overlayPause");
-			overlay.width = World.instance.stage.stageWidth * offset;
-			overlay.height = World.instance.stage.stageHeight * offset;
-			overlay.x = (World.instance.stage.stageWidth - overlay.width) * 0.5;
-			overlay.y = (World.instance.stage.stageHeight - overlay.height) * 0.5;
+			overlay.width = World.instance.stage.stageWidth;// * offset;
+			overlay.height = World.instance.stage.stageHeight;// * offset;
+			//overlay.x = (World.instance.stage.stageWidth - overlay.width) * 0.5;
+			//overlay.y = (World.instance.stage.stageHeight - overlay.height) * 0.5;
 			this.addChild(overlay);
 			
 			var man:Sprite = LoaderMax.getContent("runningManTitle");
@@ -150,25 +152,25 @@ package team3d.screens
 				_btnFullscreen.visible = false;
 			
 			World.instance.unlockMouse();
-			
-			//TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
-			this.visible = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private function settingsClicked($e:MouseEvent):void 
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 		}
 		
 		private function controlsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.CONTROLS);
 		}
 		
 		private function quitClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.TITLE);
 		}
 		
@@ -176,6 +178,7 @@ package team3d.screens
 		{
 			if(World.instance.isFullScreenInteractive)
 			{
+				SoundAS.playFx("Button");
 				World.instance.lockMouse();
 				this.DoneSignal.dispatch(BaseScreen.GAME);
 			}
@@ -187,6 +190,7 @@ package team3d.screens
 		
 		private function fullscreenClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 		}
 		
@@ -209,9 +213,12 @@ package team3d.screens
 		{
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, showFullscreenBtn);
 			super.End();
-			
-			//TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
-			this.visible = false;
+		}
+		
+		//override protected function resize($e:Event = null):void 
+		{
+			//super.resize($e);
+			// do nothing, VERY intentional
 		}
 	}
 }

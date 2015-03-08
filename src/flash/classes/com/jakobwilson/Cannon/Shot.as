@@ -103,6 +103,8 @@
 			this._stateTimer = null;
 		}
 		
+
+		
 		
 		/**
 		*	In Progress: Checks collision and if it was a cannonball, it uses the cannonball's position to create a vector to knock the player back

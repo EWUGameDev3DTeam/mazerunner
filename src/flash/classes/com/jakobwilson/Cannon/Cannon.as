@@ -22,6 +22,7 @@
 		private var _view:View3D;
 		private var _world:AWPDynamicsWorld;
 		private const degreesToRad:Number = 0.0174532925;
+		private var _nFire:Number = 0;
 		
 		/**
 		* Creates a cannon and sets up its shot 
@@ -45,7 +46,7 @@
 		*/
 		public function shoot(a:Asset)
 		{
-			if(Math.random() <= 1)//change for random shooting chance
+			if(this._nFire == 2)
 			{
 				var positionVector:Vector3D = new Vector3D;
 				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
@@ -59,7 +60,11 @@
 				shotForce.scaleBy(500);
 				
 				var sht:Shot = new Shot(shotModel,shotForce, this._view, this._world);
+			
+				this._nFire = 0;
 			}
+			else
+				this._nFire++;
 		}
 		
 		/**
@@ -99,6 +104,7 @@
 		public function transformTo(v:Vector3D)
 		{
 			this._cannon.transformTo(v);
+			this._firingTrigger.position = v;
 		}
 		
 		public function rotateTo(v:Vector3D)

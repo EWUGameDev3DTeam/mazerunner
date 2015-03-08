@@ -45,7 +45,6 @@
 			this._trig.end();
 		}
 		
-		
 		/*-----------------------------------ACTIVATOR MANAGEMENT--------------------------------------------*/
 		/**
 		* Allows you to add an activator(Asset) that will set off the trigger when in range
@@ -90,7 +89,6 @@
 		{
 			this._trig.clearActivators();
 		}
-		
 		
 		override public function set position(v:Vector3D):void
 		{

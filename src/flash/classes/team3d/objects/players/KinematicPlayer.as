@@ -11,6 +11,7 @@
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
+	import flash.net.SharedObject;
 	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
 	import team3d.objects.World;
@@ -32,15 +33,15 @@
 	 */
 	public class KinematicPlayer extends BasePlayer
 	{
-		private var _ghostObject:AWPGhostObject;
-		private var _character:AWPKinematicCharacterController;
-		private var _fpc	:FirstPersonController;
-		private var _cam 	:Camera3D;
-		private var _speed:Number = 1;
-		private var _pan:Number = 0.0;
-		private var _tilt:Number = 90.0;
-		private var _overrideVector:Vector3D = new Vector3D();
-	
+		private var _ghostObject	:AWPGhostObject;
+		private var _character		:AWPKinematicCharacterController;
+		private var _fpc			:FirstPersonController;
+		private var _cam 			:Camera3D;
+		private var _speed			:Number = 1;
+		private var _pan			:Number = 0.0;
+		private var _tilt			:Number = 90.0;
+		private var _overrideVector	:Vector3D = new Vector3D();
+		public var so				:SharedObject = SharedObject.getLocal("dataTeam3D");
 		
 		/**
 		*	Creates a kinematic character controller 
@@ -51,7 +52,7 @@
 			_cam = $cam;
 			_fpc = new FirstPersonController($cam);
 			_fpc.targetObject.z = height * 0.8;
-			_fpc.fly = true;
+			//_fpc.fly = true;
 			this._speed = $speed;
 			
 			
@@ -60,6 +61,8 @@
 			this._ghostObject = new AWPGhostObject(shape, Camera3D(_fpc.targetObject));
 			this._ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
+			_character.jumpSpeed = 12;
+			_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0,0,0));
 		}
 		
@@ -85,7 +88,6 @@
 			World.instance.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
 			this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
-
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -116,25 +118,28 @@
 				vf = _character.ghostObject.front;
 				vf.scaleBy($speed);
 			}
-			if (KeyboardManager.instance.isKeyDown(KeyCode.S))
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy(-$speed);
 			}
+			
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
 			{
 				vs = _character.ghostObject.right;
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
 			}
-			if (KeyboardManager.instance.isKeyDown(KeyCode.D))
+			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
 				vs = _character.ghostObject.right;
 				vs.scaleBy($speed*0.5);
 				vf.scaleBy(0.7);
 			}
+			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
 				_character.jump();
+			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
 			{
 				vs.scaleBy(0.5);
@@ -154,9 +159,9 @@
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
-			this._pan += $e.movementX * 0.1;
-			this._tilt += $e.movementY * 0.07;
-
+			this._pan += $e.movementX * (0.002 * this.so.data.mouseX);
+			this._tilt += $e.movementY * (0.002 * this.so.data.mouseY * ((this.so.data.invertY)? -1 : 1));
+			
 
 			if(this._tilt > 45)
 				this._tilt = 45;	
