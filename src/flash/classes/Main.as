@@ -1,12 +1,10 @@
 package 
 {
-	import adobe.utils.CustomActions;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.plugins.GlowFilterPlugin;
 	import com.greensock.plugins.TweenPlugin;
-	import com.greensock.TweenMax;
 	import com.natejc.input.KeyboardManager;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;

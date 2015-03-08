@@ -281,6 +281,28 @@
 			return _stage;
 		}
 		
+		/**
+		 * Adds an event listener to the stage
+		 *
+		 * @param	$event		The event to listen for
+		 * 			$listener	The callback function
+		 */
+		public function addEventListener($event:String, $listener:Function):void
+		{
+			_stage.addEventListener($event, $listener);
+		}
+		
+		/**
+		 * Removes an event listener from the stage
+		 *
+		 * @param	$event		The event to remove
+		 * 			$listener	The callback function associated with the event
+		 */
+		public function removeEventListener($event:String, $listener:Function):void
+		{
+			_stage.removeEventListener($event, $listener);
+		}
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		public static function get instance():World

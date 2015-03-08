@@ -1,10 +1,13 @@
 package team3d.bases
 {
 	import com.greensock.events.LoaderEvent;
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import org.osflash.signals.Signal;
 	import team3d.interfaces.IScreen;
 	import team3d.objects.World;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...
@@ -43,12 +46,41 @@ package team3d.bases
 		
 		public function Begin():void
 		{
+			World.instance.addEventListener(Event.RESIZE, resize);
 			World.instance.CurrentScreen = _screenTitle;
 			this.visible = true;
+			
+			if (this.width != World.instance.stage.stageWidth || this.height != World.instance.stage.stageHeight)
+				resize();
+		}
+		
+		protected function resize($e:Event = null):void
+		{
+			var scale:Boolean = false;
+			if (scale)
+			{
+			//trace("current size: " + this.width + " - " + this.height);
+			//trace("new size: " + World.instance.stage.stageWidth);
+				var wRatio:Number = World.instance.stage.stageWidth / this.width;
+				var hRatio:Number = World.instance.stage.stageHeight / this.height;
+				
+				this.width *= wRatio;
+				this.height *= hRatio;
+			//trace("wRatio: " + wRatio);
+			//trace("hRight: " + hRatio);
+			}
+			else
+			{
+				this.x = (World.instance.stage.stageWidth - this.width) * 0.5;
+				this.y = (World.instance.stage.stageHeight - this.height) * 0.5;
+			}
+			//this.x *= wRatio;
+			//this.y *= hRatio;
 		}
 		
 		public function End():void
 		{
+			World.instance.removeEventListener(Event.RESIZE, resize);
 			this.visible = false;
 		}
 	}
