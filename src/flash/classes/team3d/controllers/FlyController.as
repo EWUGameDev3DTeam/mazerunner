@@ -27,10 +27,12 @@ package team3d.controllers
 		{
 			var lb:LensBase = new PerspectiveLens(75);
 			lb.far = 20000;
-			var fpc:FirstPersonController = new FirstPersonController(new Camera3D(lb), 0, 90, -90, 90, 0)
+			var fpc:FirstPersonController = new FirstPersonController(new Camera3D(lb), 0, 90, -90, 90, 0);
+			fpc.tiltAngle = 0;
+			fpc.panAngle = 0;
 			_baseController = fpc;
 			fpc.fly = true;
-			fpc.targetObject.z = 3000;
+			fpc.targetObject.y = 3000;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

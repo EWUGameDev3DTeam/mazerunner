@@ -45,6 +45,7 @@
 		*/
 		public function shoot(a:Asset)
 		{
+			return;
 			if(this._nFire == 2)
 			{
 				var positionVector:Vector3D = new Vector3D;

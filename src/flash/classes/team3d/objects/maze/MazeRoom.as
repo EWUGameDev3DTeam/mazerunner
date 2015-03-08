@@ -9,7 +9,7 @@ package team3d.objects.maze {
 	 * ...
 	 * @author Dan Watt
 	 */
-	public class MazeRoom 
+	public class MazeRoom
 	{
 		private var _rowWall	:Asset;
 		private var _colWall	:Asset;

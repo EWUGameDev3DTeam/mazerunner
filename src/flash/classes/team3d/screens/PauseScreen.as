@@ -151,9 +151,6 @@ package team3d.screens
 				_btnFullscreen.visible = false;
 			
 			World.instance.unlockMouse();
-			
-			//TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
-			this.visible = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -215,9 +212,6 @@ package team3d.screens
 		{
 			World.instance.stage.removeEventListener(FullScreenEvent.FULL_SCREEN, showFullscreenBtn);
 			super.End();
-			
-			//TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
-			this.visible = false;
 		}
 	}
 }
