@@ -21,6 +21,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -156,16 +157,19 @@ package team3d.screens
 		
 		private function settingsClicked($e:MouseEvent):void 
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 		}
 		
 		private function controlsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.CONTROLS);
 		}
 		
 		private function quitClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.TITLE);
 		}
 		
@@ -173,6 +177,7 @@ package team3d.screens
 		{
 			if(World.instance.isFullScreenInteractive)
 			{
+				SoundAS.playFx("Button");
 				World.instance.lockMouse();
 				this.DoneSignal.dispatch(BaseScreen.GAME);
 			}
@@ -184,6 +189,7 @@ package team3d.screens
 		
 		private function fullscreenClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			World.instance.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 		}
 		

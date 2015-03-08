@@ -11,6 +11,7 @@
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
+	import flash.net.SharedObject;
 	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
 	import team3d.objects.World;
@@ -30,13 +31,14 @@
 	 */
 	public class KinematicPlayer extends BasePlayer
 	{
-		private var _ghostObject:AWPGhostObject;
-		private var _character:AWPKinematicCharacterController;
-		private var _fpc	:FirstPersonController;
-		private var _cam 	:Camera3D;
-		private var _speed:Number = 1;
-		private var _pan:Number = 0.0;
-		private var _tilt:Number = 90.0;
+		private var _ghostObject	:AWPGhostObject;
+		private var _character		:AWPKinematicCharacterController;
+		private var _fpc			:FirstPersonController;
+		private var _cam 			:Camera3D;
+		private var _speed			:Number = 1;
+		private var _pan			:Number = 0.0;
+		private var _tilt			:Number = 90.0;
+		public var so				:SharedObject = SharedObject.getLocal("dataTeam3D");
 		
 		/**
 		*	Creates a kinematic character controller 
@@ -146,9 +148,9 @@
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
-			this._pan += $e.movementX * 0.1;
-			this._tilt += $e.movementY * 0.07;
-
+			this._pan += $e.movementX * (0.002 * this.so.data.mouseX);
+			this._tilt += $e.movementY * (0.002 * this.so.data.mouseY * ((this.so.data.invertY)? -1 : 1));
+			
 
 			if(this._tilt > 45)
 				this._tilt = 45;	

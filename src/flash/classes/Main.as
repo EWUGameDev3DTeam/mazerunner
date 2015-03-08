@@ -26,6 +26,7 @@ package
 	import team3d.screens.TitleScreen;
 	import team3d.screens.TutorialScreen;
 	import team3d.screens.WonScreen;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -64,6 +65,9 @@ package
 			_debugScreen = new DebugScreen();
 			_debugScreen.Begin();
 			this.addChild(_debugScreen);
+			
+			SoundAS.loadSound("./audio/sfx/Button.mp3", "Button");
+			SoundAS.loadSound("./audio/sfx/SoundLevelChange.mp3", "SoundLevelChange");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

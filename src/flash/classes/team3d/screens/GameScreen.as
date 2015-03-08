@@ -12,6 +12,7 @@ package team3d.screens
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.net.SharedObject;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -179,17 +180,9 @@ package team3d.screens
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
 			
+			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
-			/*
-			   //create a cannon
-			   var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			   cannon.addObjectActivator(this._player.controller.ghostObject);
-			   cannon.transformTo(new Vector3D(70,200,0));
-			   cannon.rotateTo(new Vector3D(0,0,0));
-			   cannon.addToScene(World.instance.view, World.instance.physics);
-			   //End cannon creation
-			 */
 			
 			var rectangle:Shape = new Shape();
 			rectangle.name = "rectangleFade";

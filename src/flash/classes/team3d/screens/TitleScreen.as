@@ -19,6 +19,7 @@
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.Button;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * Title Screen
@@ -184,6 +185,7 @@
 		 */
 		private function creditsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.CREDITS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
@@ -192,6 +194,7 @@
 		
 		private function settingsClicked($e:MouseEvent):void
 		{
+			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
