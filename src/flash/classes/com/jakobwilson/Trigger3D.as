@@ -6,6 +6,7 @@
 	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import flash.geom.Vector3D;
 
+
 	/**
 	*	A trigger that can be applied as a child to a mesh using Mesh.addChild()
 	*	A wrapper class for the trigger so it can be applied as a child to assets
@@ -45,7 +46,6 @@
 			this._trig.end();
 		}
 		
-		
 		/*-----------------------------------ACTIVATOR MANAGEMENT--------------------------------------------*/
 		/**
 		* Allows you to add an activator(Asset) that will set off the trigger when in range
@@ -81,7 +81,6 @@
 		{
 			this._trig.clearActivators();
 		}
-		
 		
 		override public function set position(v:Vector3D):void
 		{

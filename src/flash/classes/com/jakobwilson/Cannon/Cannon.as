@@ -33,6 +33,7 @@
 			this._shot = shot;
 			this._shot.transformTo(this._cannon.position);
 			this._firingTrigger = new Trigger3D(activationRange, 20);
+			this._firingTrigger.position = this._cannon.position;
 			this._cannon.model.addChild(ObjectContainer3D(this._firingTrigger));
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
@@ -103,6 +104,7 @@
 		public function transformTo(v:Vector3D)
 		{
 			this._cannon.transformTo(v);
+			this._firingTrigger.position = v;
 		}
 		
 		public function rotateTo(v:Vector3D)

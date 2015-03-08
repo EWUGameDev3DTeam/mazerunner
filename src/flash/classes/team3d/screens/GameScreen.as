@@ -6,6 +6,7 @@ package team3d.screens
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
+	import com.jakobwilson.Cannon.Cannon;
 	import com.jakobwilson.Trigger3D;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
@@ -20,6 +21,7 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
 	import team3d.objects.maze.Maze;
+	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
@@ -36,6 +38,7 @@ package team3d.screens
 		
 		public var PausedSignal			:Signal;
 		
+		//private var _floor				:Mesh;
 		private var _paused				:Boolean;
 		
 		private var _controlsEnabled	:Boolean;
@@ -44,6 +47,7 @@ package team3d.screens
 		
 		private var _flyPlayer			:FlyPlayer;
 		
+		public static const origin		:Vector3D = new Vector3D();
 		private var _cage				:Asset;
 		private var _cageMoving			:Boolean;
 		
@@ -80,6 +84,8 @@ package team3d.screens
 			DoneSignal = new Signal(Boolean);
 			PausedSignal = new Signal();
 			
+			var so:SharedObject = SharedObject.getLocal("dataTeam3D");
+			so.data.gameScreen = this;
 			_winTrigger = new Trigger3D(800);
 			_winTrigger.TriggeredSignal.add(wonGame);
 			
@@ -165,6 +171,34 @@ package team3d.screens
 			_exitOpening = true;
 			_won = false;
 			
+			/*
+			var rectangle:Shape = new Shape;
+			rectangle.graphics.beginFill(0xFF00FF);
+			rectangle.graphics.drawRect(0, 0, this.width,this.height); 
+			rectangle.graphics.endFill();
+			addChild(rectangle);
+			
+			TweenLite.to(rectangle, 2.0, {alpha:0.0});
+			*/
+			
+			//Create player
+			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
+			_player.addToWorld(World.instance.view, World.instance.physics);
+			_player.controller.warp(new Vector3D(0, 10000, 0));
+			_player.Begin();
+			//end player
+			
+			/*
+			this._floor = new Mesh(new PlaneGeometry(10000, 10000, 1, 1, true, true), new ColorMaterial(0xFFFFFF));
+			this._floor.x = 0;
+			this._floor.y = -50;
+			this._floor.z = 0;
+			var floorCol:AWPBoxShape = new AWPBoxShape(10000, 1, 10000);
+			var floorRigidBody:AWPRigidBody = new AWPRigidBody(floorCol, _floor, 0);
+			floorRigidBody.friction = 1;
+			floorRigidBody.position = new Vector3D(_floor.x, _floor.y, _floor.z);
+			floorRigidBody.rotation = new Vector3D(_floor.rotationX, _floor.rotationY, _floor.rotationZ);
+			World.instance.addObject(floorRigidBody);
 			//*/
 			var maze:Maze = createMaze(rows, cols);
 			createPlayer();
@@ -183,8 +217,20 @@ package team3d.screens
 			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
+			//create a cannon
+			//this.createCannon(new Vector3D(-250, 200, 0), origin);
+			//this.createCannon(new Vector3D(250, 200, 0), origin);
+			//End cannon creation
 			
-			var rectangle:Shape = new Shape();
+			//_player = new HumanPlayer(World.instance.view.camera);
+			//World.instance.addObject(_player.rigidbody);
+			// start the player, this also starts the HumanController associated with it
+			//_player.Begin();
+			
+			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			//World.instance.view.camera = FlyController(_player.Controller).Camera;
+			
+			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
 			rectangle.graphics.beginFill(0x000000);
 			rectangle.graphics.drawRect(0, 0, this.width, this.height);
@@ -297,6 +343,16 @@ package team3d.screens
 			_player.Begin();
 		}
 		
+		public function createCannon($transform:Vector3D, $rotation:Vector3D)
+		{
+			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
+			cannon.addObjectActivator(this._player.controller.ghostObject);
+			cannon.transformTo($transform);
+			cannon.rotateTo($rotation);
+			cannon.addToScene(World.instance.view, World.instance.physics);
+			trace("create cannon");
+		}
+		
 		private function failedGame():void
 		{
 			this.DoneSignal.dispatch(false);
@@ -318,6 +374,46 @@ package team3d.screens
 			
 			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
+			
+			for (var i:Number = 0; i < maze.Rooms.length; i++)
+			{	
+				var rooms = maze.Rooms[i];
+				
+				if (rooms != null)
+				{
+					for(var j:Number = 0; j < rooms.length; j++)
+					{
+						var room:MazeRoom = rooms[j];
+						var transform1:Vector3D;
+						var transform2:Vector3D;
+						var transform3:Vector3D;
+						
+						var side:Number = Math.random();
+						var chance:Number = Math.random();
+						
+						if (side < .5 && room.ColumnWall != null && chance < .5)
+						{
+							transform1 = room.ColumnWall.position.add(new Vector3D(50, 200, 200));
+							transform2 = room.ColumnWall.position.add(new Vector3D(50, 200, -200));
+							transform3 = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
+							
+							this.createCannon(transform1, new Vector3D(0, 90));
+							this.createCannon(transform2, new Vector3D(0, 90));
+							this.createCannon(transform3, new Vector3D(0, 90));
+						}
+						else if (room.RowWall != null && chance < .5)
+						{
+							transform1 = room.RowWall.position.add(new Vector3D(200, 200, 50));
+							transform2 = room.RowWall.position.add(new Vector3D( -200, 200, 50));
+							transform3 = room.RowWall.position.add(new Vector3D(0, 200, 50));
+							
+							this.createCannon(transform1, origin);
+							this.createCannon(transform2, origin);
+							this.createCannon(transform3, origin);
+						}
+					}
+				}
+			}
 			return maze;
 		}
 		
