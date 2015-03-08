@@ -22,12 +22,17 @@
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
+	import team3d.utils.pathfinding.NavGraph;
 	import org.flintparticles.threeD.renderers.Camera;
 	import away3d.cameras.Camera3D;
 	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.animators.SkeletonAnimator;
-		import away3d.entities.Mesh;
+	import away3d.entities.Mesh;
+	import away3d.primitives.CubeGeometry;
+	import away3d.tools.helpers.data.MeshDebug;
+	import team3d.utils.pathfinding.PathNode;
+	import away3d.containers.ObjectContainer3D;
 
 	
 	
@@ -51,8 +56,15 @@
 		private var _player				:KinematicPlayer;
 		
 		private var _flyPlayer			:FlyPlayer;
+		
+		private var _maze				:Maze;
+		
+		private var _graph				:NavGraph;
+		
+		private var _cube				:Mesh;		//for debug, remove before release
+		private var _path				:ObjectContainer3D;
 		/** set to true for debug output*/
-		private var _debug = false;
+		private var _debug = true;;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -86,11 +98,8 @@
 			
 			_controlsEnabled = false;
 			_paused = false;	
-			
-			World.instance.view.scene.addChild(AssetManager.instance.getAsset("Monster").model);
-			//AssetManager.instance.getAsset("Monster").model.animator.start();
-			//AssetManager.instance.getAsset("Monster").model.animator.play("Walking", null, 0);
-			trace(AssetManager.instance.getAsset("Monster").model.animator);
+
+
 			/*
 			var rectangle:Shape = new Shape;
 			rectangle.graphics.beginFill(0xFF00FF);
@@ -153,6 +162,24 @@
 			cannon.addToScene(World.instance.view, World.instance.physics);
 			//End cannon creation
 			
+		
+			//create navGraph
+			this._graph = new NavGraph();
+			this._graph.genFromMaze(this._maze.Rooms, new Vector3D(0, 100, 425));
+			
+			if(this._debug)
+				World.instance.view.scene.addChild(this._graph.getWaypointMesh());
+			//end navgraph
+			
+			//Player position test
+			this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
+			this._cube.position = this._graph.getNearestWayPoint(_player.controller.ghostObject.position).position;
+			World.instance.view.scene.addChild(this._cube);
+			//end player positon test
+			
+
+
+		
 			//_player = new HumanPlayer(World.instance.view.camera);
 			//World.instance.addObject(_player.rigidbody);
 			// start the player, this also starts the HumanController associated with it
@@ -190,8 +217,8 @@
 			var startz:Number = -30;
 			
 			
-			var maze:Maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall, floor);
-			World.instance.addMaze(maze);
+			this._maze = MazeBuilder.instance.Build(rows, cols, startx, startz, wall, floor);
+			World.instance.addMaze(this._maze);
 		}
 		
 		public function Unpause()
@@ -273,6 +300,20 @@
 			DebugScreen.Text("mouseLock: " + World.instance.isMouseLocked, true);
 			
 			if (_paused) return;
+			
+			
+			//create a path using dijkstra's
+			
+			if(_path != null)
+				World.instance.view.scene.removeChild(this._path);
+			var start:PathNode = _graph.getNearestWayPoint(this._player.controller.ghostObject.position);
+			var end:PathNode = _graph.getNearestWayPoint(new Vector3D(10000,0,10000));
+			var path:Vector.<PathNode> = _graph.getPath(start, end);
+			this._path = NavGraph.getPathMesh(path);
+			World.instance.view.scene.addChild(_path);
+			//end path creation
+			
+			this._cube.position = this._graph.getNearestWayPoint(this._player.controller.ghostObject.position).position;
 			
 			if (World.instance.isNormal || !World.instance.isMouseLocked)
 			{

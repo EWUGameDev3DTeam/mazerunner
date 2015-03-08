@@ -24,6 +24,7 @@
 	import flash.events.Event;
 	import awayphysics.events.AWPEvent;
 	import team3d.events.MovementOverrideEvent;
+	import away3d.primitives.CubeGeometry;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -39,12 +40,14 @@
 		private var _pan:Number = 0.0;
 		private var _tilt:Number = 90.0;
 		private var _overrideVector:Vector3D = new Vector3D();
+	
 		
 		/**
 		*	Creates a kinematic character controller 
 		*/
 		public function KinematicPlayer($cam:Camera3D, $height:int, $radius:int, $speed:Number)
 		{
+			
 			_cam = $cam;
 			_fpc = new FirstPersonController($cam);
 			_fpc.targetObject.z = height * 0.8;

@@ -75,6 +75,15 @@
 		}
 		
 		/**
+		* 	Allows you to remove an activator(AWPCollisionObject) so it will no longer set off the trigger
+		*	@param Asset a - the AWPCollisionObject that can now set off the trigger
+		*/
+		public function removeObjectActivator(a:AWPCollisionObject)
+		{
+			this._trig.removeObjectActivator(a);
+		}
+		
+		/**
 		*	clears all activators so nothing can set off the trigger
 		*/
 		public function clearActivators()
