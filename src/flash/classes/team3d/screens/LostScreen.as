@@ -16,7 +16,7 @@ package team3d.screens
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
-	import team3d.ui.Button;
+	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -89,7 +89,7 @@ package team3d.screens
 			tf.y = 360;
 			this.addChild(tf);
 			
-			var btnContinue:Button = new Button();
+			var btnContinue:GameButton = new GameButton();
 			btnContinue.text("Continue");
 			btnContinue.width = 200;
 			btnContinue.height = 100;

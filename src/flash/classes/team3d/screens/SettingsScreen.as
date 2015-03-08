@@ -21,7 +21,7 @@ package team3d.screens
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
-	import team3d.ui.Button;
+	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -95,7 +95,7 @@ package team3d.screens
 			tf.y = 200;
 			this.addChild(tf);
 			
-			var btnCancel:Button = new Button();
+			var btnCancel:GameButton = new GameButton();
 			btnCancel.text("Cancel");
 			btnCancel.width = 200;
 			btnCancel.height = 100;
@@ -108,7 +108,7 @@ package team3d.screens
 			btnCancel.y = this.height - btnCancel.height - 20;
 			this.addChild(btnCancel);
 			
-			var btnSave:Button = new Button();
+			var btnSave:GameButton = new GameButton();
 			btnSave.text("Save");
 			btnSave.width = 200;
 			btnSave.height = 100;

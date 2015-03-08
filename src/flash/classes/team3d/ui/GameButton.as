@@ -16,7 +16,7 @@ package team3d.ui
 	 * ...
 	 * @author Dan Watt
 	 */
-	public class Button extends Sprite
+	public class GameButton extends Sprite
 	{
 		private static var ButtonCount:int = 0;
 		
@@ -27,7 +27,7 @@ package team3d.ui
 		private var _hover:Sprite;
 		private var _text:TextField;
 		
-		public function Button()
+		public function GameButton()
 		{
 			super();
 			_btnID = ButtonCount++;

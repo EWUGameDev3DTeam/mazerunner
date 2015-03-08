@@ -21,7 +21,7 @@ package team3d.screens
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
-	import team3d.ui.Button;
+	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -31,11 +31,11 @@ package team3d.screens
 	 */
 	public class PauseScreen extends BaseScreen
 	{
-		private var _btnSettings	:Button;
-		private var _btnControls	:Button;
-		private var _btnQuit		:Button;
-		private var _btnContinue	:Button;
-		private var _btnFullscreen	:Button;
+		private var _btnSettings	:GameButton;
+		private var _btnControls	:GameButton;
+		private var _btnQuit		:GameButton;
+		private var _btnContinue	:GameButton;
+		private var _btnFullscreen	:GameButton;
 		
 		private var _loaded			:Boolean;
 		
@@ -79,7 +79,7 @@ package team3d.screens
 			format.bold = true;
 			format.align = TextFormatAlign.CENTER;
 			
-			_btnSettings = new Button();
+			_btnSettings = new GameButton();
 			_btnSettings.name = "btnSettings";
 			_btnSettings.text("Settings");
 			_btnSettings.width = btnwidth;
@@ -89,7 +89,7 @@ package team3d.screens
 			_btnSettings.y = man.y + 20;
 			this.addChild(_btnSettings);
 			
-			_btnControls = new Button();
+			_btnControls = new GameButton();
 			_btnControls.name = "btnControls";
 			_btnControls.text("Controls");
 			_btnControls.width = btnwidth;
@@ -99,7 +99,7 @@ package team3d.screens
 			_btnControls.y = _btnSettings.y + _btnSettings.height + 20;
 			this.addChild(_btnControls);
 			
-			_btnQuit = new Button();
+			_btnQuit = new GameButton();
 			_btnQuit.name = "btnQuit";
 			_btnQuit.text("Quit");
 			_btnQuit.width = btnwidth;
@@ -109,7 +109,7 @@ package team3d.screens
 			_btnQuit.y = _btnControls.y + _btnControls.height + 20;
 			this.addChild(_btnQuit);
 			
-			_btnContinue = new Button();
+			_btnContinue = new GameButton();
 			_btnContinue.name = "btnContinue";
 			_btnContinue.text("Continue");
 			_btnContinue.width = btnwidth;
@@ -119,7 +119,7 @@ package team3d.screens
 			_btnContinue.y = _btnQuit.y + _btnQuit.height + 20;
 			this.addChild(_btnContinue);
 			
-			_btnFullscreen = new Button();
+			_btnFullscreen = new GameButton();
 			_btnFullscreen.name = "btnFullScreen";
 			_btnFullscreen.text("Full Screen");
 			_btnFullscreen.width = btnwidth;

@@ -17,7 +17,7 @@
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
-	import team3d.ui.Button;
+	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -104,7 +104,7 @@
 				this.addChild(_aArrows[i]);
 			}
 			
-			var btn:Button = new Button();
+			var btn:GameButton = new GameButton();
 			btn.name = "btnContinue";
 			btn.visible = false;
 			btn.x = (this.width - btn.width) * 0.5;

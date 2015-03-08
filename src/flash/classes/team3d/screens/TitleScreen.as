@@ -18,7 +18,7 @@
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
-	import team3d.ui.Button;
+	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -91,7 +91,7 @@
 			tf.y = 100;
 			this.addChild(tf);
 			
-			var btnPlay:Button = new Button();
+			var btnPlay:GameButton = new GameButton();
 			btnPlay.height = 250;
 			btnPlay.width = 400;
 			btnPlay.text("Play");
@@ -104,7 +104,7 @@
 			btnPlay.y = tf.y +tf.height + 25;
 			this.addChild(btnPlay);
 			
-			var btnCredits:Button = new Button();
+			var btnCredits:GameButton = new GameButton();
 			btnCredits.width = 200;
 			btnCredits.height = 100;
 			btnCredits.text("Credits");
@@ -117,7 +117,7 @@
 			btnCredits.y = btnPlay.y;
 			this.addChild(btnCredits);
 			
-			var btnSettings:Button = new Button();
+			var btnSettings:GameButton = new GameButton();
 			btnSettings.width = 200;
 			btnSettings.height = 100;
 			btnSettings.text("Settings");
