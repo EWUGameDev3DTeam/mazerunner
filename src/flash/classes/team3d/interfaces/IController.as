@@ -1,8 +1,6 @@
 package team3d.interfaces
 {
 	import away3d.cameras.Camera3D;
-	import away3d.controllers.ControllerBase;
-	import flash.display.MovieClip;
 	
 	/**
 	 * ...

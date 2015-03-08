@@ -1,14 +1,12 @@
 ﻿package com.jakobwilson.Cannon
 {
-	import away3d.core.base.Object3D;
+	import away3d.containers.ObjectContainer3D;
+	import away3d.containers.View3D;
+	import awayphysics.collision.dispatch.AWPGhostObject;
+	import awayphysics.dynamics.AWPDynamicsWorld;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.Trigger3D;
-	import away3d.containers.View3D;
-	import awayphysics.dynamics.AWPDynamicsWorld;
-	import awayphysics.dynamics.AWPRigidBody;
 	import flash.geom.Vector3D;
-	import away3d.containers.ObjectContainer3D;
-	import awayphysics.collision.dispatch.AWPGhostObject;
 
 	/**
 	*	A class to wrap a cannon. Handles spawning cannon balls and displaying the cannon

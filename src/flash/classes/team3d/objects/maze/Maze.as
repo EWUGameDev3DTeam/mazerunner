@@ -1,9 +1,7 @@
 ﻿package team3d.objects.maze
 {
-	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.Asset;
 	import team3d.objects.maze.MazeRoom;
-	import flash.geom.Vector3D;
 	
 	/**
 	 * ...

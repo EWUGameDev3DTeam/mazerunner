@@ -1,18 +1,16 @@
 ﻿package team3d.utils.pathfinding
 {
-	import team3d.utils.pathfinding.PathNode;
+	import away3d.containers.ObjectContainer3D;
+	import away3d.entities.Mesh;
+	import away3d.entities.SegmentSet;
+	import away3d.materials.ColorMaterial;
+	import away3d.primitives.CubeGeometry;
+	import away3d.primitives.LineSegment;
+	import flash.geom.Vector3D;
 	import team3d.objects.maze.MazeRoom;
 	import team3d.utils.pathfinding.PathNode;
 	
-	import flash.geom.Vector3D;
 	
-	import away3d.entities.SegmentSet;
-	import away3d.primitives.LineSegment;
-	import away3d.containers.ObjectContainer3D;
-	import away3d.entities.Mesh;
-	import away3d.primitives.CubeGeometry;
-	import away3d.materials.ColorMaterial;
-	import away3d.tools.helpers.data.MeshDebug;
 	
 
 	/**
@@ -23,11 +21,11 @@
 	{
 		public static const INFINITY:Number = 10000000000000000000000000.0;
 		
-		private var waypoints:Vector.<PathNode> = new Vector.<PathNode>;
+		private var waypoints:Vector.<PathNode>;
 		
 		public function NavGraph() 
 		{
-			
+			waypoints = new Vector.<PathNode>();
 		}
 		
 		
@@ -289,7 +287,6 @@
 	
 
 }
-
 
 import team3d.utils.pathfinding.PathNode;
 

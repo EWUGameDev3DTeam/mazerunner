@@ -1,31 +1,26 @@
 ﻿package  com.jakobwilson
 {
-	import flash.events.Event;
-	import flash.net.URLRequest;
-	import flash.geom.Vector3D;
-	
+	import away3d.containers.View3D;
 	import away3d.entities.Mesh;
-	import away3d.events.LoaderEvent;
 	import away3d.events.AssetEvent;
+	import away3d.library.assets.AssetType;
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.parsers.Parsers;
-	import away3d.materials.ColorMaterial;
-	import away3d.library.assets.AssetType
-	import away3d.tools.utils.Bounds;
 	import away3d.primitives.SkyBox;
-	
-	import org.osflash.signals.Signal;
-	
+	import away3d.tools.utils.Bounds;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
+	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.collision.shapes.AWPCollisionShape;
 	import awayphysics.collision.shapes.AWPCompoundShape;
-	import awayphysics.collision.shapes.AWPBoxShape;
 	import awayphysics.collision.shapes.AWPSphereShape;
-	import awayphysics.collision.dispatch.AWPCollisionObject;
-	import awayphysics.dynamics.AWPRigidBody;
-	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
-	import away3d.tools.helpers.data.MeshDebug;
-	import away3d.animators.IAnimator;
+	import awayphysics.dynamics.AWPRigidBody;
+	import flash.geom.Vector3D;
+	import flash.net.URLRequest;
+	import org.osflash.signals.Signal;
+	
+	
+	
 	
 	
 	

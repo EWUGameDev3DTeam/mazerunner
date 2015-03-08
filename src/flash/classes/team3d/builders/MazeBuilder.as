@@ -1,15 +1,11 @@
 package team3d.builders
 {
-	import adobe.utils.CustomActions;
 	import away3d.entities.Mesh;
 	import away3d.tools.utils.Bounds;
-	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.Asset;
-	import com.jakobwilson.AssetManager;
-	import flash.display.Sprite;
 	import flash.geom.Vector3D;
-	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.maze.Maze;
+	import team3d.objects.maze.MazeRoom;
 	import team3d.utils.Utils;
 	
 	/**

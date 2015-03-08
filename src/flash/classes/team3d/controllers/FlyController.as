@@ -3,17 +3,10 @@
 	import away3d.cameras.Camera3D;
 	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
-	import away3d.containers.View3D;
-	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
-	import away3d.core.partition.MeshNode;
-	import away3d.entities.Mesh;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
-	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
-	import flash.geom.Vector3D;
-	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
 	import team3d.bases.BaseController;
 	import team3d.objects.World;
 	

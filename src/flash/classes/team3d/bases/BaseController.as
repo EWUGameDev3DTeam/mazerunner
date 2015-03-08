@@ -2,8 +2,6 @@ package team3d.bases
 {
 	import away3d.cameras.Camera3D;
 	import away3d.controllers.ControllerBase;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
 	import team3d.interfaces.IController;
 
 	

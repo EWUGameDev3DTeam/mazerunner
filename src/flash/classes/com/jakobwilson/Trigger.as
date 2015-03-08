@@ -1,13 +1,11 @@
 ﻿package  com.jakobwilson
 {
-	import org.osflash.signals.Signal;
-	import com.jakobwilson.Asset;
-	import away3d.core.base.Object3D;
-	import flash.events.Event;
-	import flash.display.Sprite;
-	import flash.geom.Vector3D;
 	import awayphysics.collision.dispatch.AWPCollisionObject;
-	import team3d.screens.DebugScreen;
+	import com.jakobwilson.Asset;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.geom.Vector3D;
+	import org.osflash.signals.Signal;
 	
 	/**
 	*	A trigger class that maintains a list of assets that can trigger it(called activators). 

@@ -1,13 +1,10 @@
 package team3d.bases
 {
-	import com.greensock.events.LoaderEvent;
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import org.osflash.signals.Signal;
 	import team3d.interfaces.IScreen;
 	import team3d.objects.World;
-	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...

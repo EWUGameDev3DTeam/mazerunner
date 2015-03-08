@@ -1,11 +1,9 @@
 ﻿package team3d.screens
 {
 	import away3d.cameras.Camera3D;
-	import away3d.cameras.lenses.LensBase;
 	import away3d.cameras.lenses.PerspectiveLens;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
-	import away3d.primitives.CubeGeometry;
 	import away3d.tools.utils.Bounds;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
@@ -32,7 +30,6 @@
 	import team3d.objects.World;
 	import team3d.utils.CountDownTimer;
 	import team3d.utils.pathfinding.NavGraph;
-	import team3d.utils.pathfinding.PathNode;
 	
 	/**
 	 *

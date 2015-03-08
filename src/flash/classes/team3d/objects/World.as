@@ -1,7 +1,6 @@
 ﻿package team3d.objects {
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
-	import awayphysics.dynamics.AWPRigidBody;
 	import com.jakobwilson.Asset;
 	import flash.display.Stage;
 	import flash.display.StageDisplayState;
@@ -9,7 +8,6 @@
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
-	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...

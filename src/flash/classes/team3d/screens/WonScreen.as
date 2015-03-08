@@ -1,14 +1,8 @@
 package team3d.screens
 {
-	import adobe.utils.CustomActions;
-	import com.greensock.events.LoaderEvent;
-	import com.greensock.loading.data.ImageLoaderVars;
-	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.TweenMax;
-	import flash.display.SimpleButton;
 	import flash.display.Sprite;
-	import flash.display.StageDisplayState;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;

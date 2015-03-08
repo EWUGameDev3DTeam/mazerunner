@@ -1,22 +1,17 @@
 ﻿package team3d.screens
 {
-	import com.greensock.events.LoaderEvent;
-	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
 	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
-	import team3d.objects.World;
 	import team3d.ui.GameButton;
 	import treefortress.sound.SoundAS;
 	

@@ -1,7 +1,7 @@
 ﻿package team3d.utils.pathfinding
 {
-	import flash.geom.Vector3D;
 	import away3d.containers.ObjectContainer3D;
+	import flash.geom.Vector3D;
 
 	/**
 	*	A simple pathnode for use in the NavGraph

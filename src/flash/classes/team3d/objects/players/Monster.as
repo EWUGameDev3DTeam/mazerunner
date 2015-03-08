@@ -1,9 +1,9 @@
 ﻿package team3d.objects.players
 {
-	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import awayphysics.collision.dispatch.AWPGhostObject;
-	import com.jakobwilson.Asset;
 	import awayphysics.collision.shapes.AWPCapsuleShape;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
+	import com.jakobwilson.Asset;
 	
 	public class Monster extends AWPKinematicCharacterController
 	{

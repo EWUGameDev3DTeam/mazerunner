@@ -4,7 +4,6 @@ package team3d.utils
 	import flash.utils.getTimer;
 	import org.osflash.signals.Signal;
 	import team3d.objects.World;
-	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...

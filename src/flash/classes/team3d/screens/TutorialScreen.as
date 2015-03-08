@@ -1,15 +1,7 @@
 package team3d.screens
 {
-	import adobe.utils.CustomActions;
 	import away3d.cameras.Camera3D;
-	import away3d.core.math.Vector3DUtils;
-	import away3d.entities.Mesh;
-	import away3d.materials.ColorMaterial;
-	import away3d.primitives.PlaneGeometry;
 	import away3d.tools.utils.Bounds;
-	import awayphysics.collision.shapes.AWPBoxShape;
-	import awayphysics.dynamics.AWPRigidBody;
-	import com.greensock.events.LoaderEvent;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
@@ -22,8 +14,6 @@ package team3d.screens
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
-	import team3d.builders.MazeBuilder;
-	import team3d.objects.maze.Maze;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;

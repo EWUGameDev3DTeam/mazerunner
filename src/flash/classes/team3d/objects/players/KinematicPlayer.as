@@ -2,30 +2,22 @@
 {
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
-	import away3d.controllers.ControllerBase;
 	import away3d.controllers.FirstPersonController;
-	import away3d.core.partition.MeshNode;
-	import away3d.entities.Mesh;
+	import awayphysics.collision.dispatch.AWPGhostObject;
+	import awayphysics.collision.shapes.AWPCapsuleShape;
+	import awayphysics.data.AWPCollisionFlags;
+	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
-	import flash.display.MovieClip;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
-	import flash.net.SharedObject;
-	import org.flintparticles.threeD.renderers.controllers.FirstPersonCamera;
-	import team3d.bases.BaseController;
-	import team3d.objects.World;
-	import awayphysics.collision.dispatch.AWPGhostObject;
 	import flash.media.Camera;
-	import awayphysics.collision.shapes.AWPCapsuleShape;
-	import awayphysics.dynamics.character.AWPKinematicCharacterController;
-	import awayphysics.dynamics.AWPDynamicsWorld;
+	import flash.net.SharedObject;
 	import team3d.bases.BasePlayer;
-	import awayphysics.data.AWPCollisionFlags;
-	import flash.events.Event;
-	import awayphysics.events.AWPEvent;
 	import team3d.events.MovementOverrideEvent;
-	import away3d.primitives.CubeGeometry;
+	import team3d.objects.World;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController

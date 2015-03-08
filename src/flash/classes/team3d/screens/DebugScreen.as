@@ -1,6 +1,5 @@
 package team3d.screens
 {
-	import com.greensock.loading.LoaderMax;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.text.TextField;

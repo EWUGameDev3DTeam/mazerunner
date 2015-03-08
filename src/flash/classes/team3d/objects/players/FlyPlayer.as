@@ -1,20 +1,9 @@
 package team3d.objects.players
 {
-	import away3d.cameras.Camera3D;
-	import away3d.cameras.lenses.LensBase;
-	import away3d.cameras.lenses.PerspectiveLens;
-	import away3d.controllers.FirstPersonController;
-	import away3d.entities.Mesh;
-	import away3d.materials.ColorMaterial;
-	import away3d.primitives.SphereGeometry;
-	import awayphysics.collision.shapes.AWPSphereShape;
 	import awayphysics.dynamics.AWPRigidBody;
 	import flash.events.Event;
-	import flash.geom.Vector3D;
 	import team3d.bases.BasePlayer;
-	import team3d.controllers.FirstPersonCameraController;
 	import team3d.controllers.FlyController;
-	import team3d.interfaces.IController;
 	
 	/**
 	 * ...

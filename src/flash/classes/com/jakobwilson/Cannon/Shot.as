@@ -1,18 +1,14 @@
 ﻿package  com.jakobwilson.Cannon
 {
-	import com.jakobwilson.Asset;
-	import flash.utils.Timer;
-	import flash.events.Event;
-	import flash.events.TimerEvent;	
 	import away3d.containers.View3D;
-	import away3d.entities.Mesh;
-	import awayphysics.dynamics.AWPDynamicsWorld;
-	import away3d.materials.TextureMaterial;
-	import flash.geom.Vector3D;
-	import flash.display.DisplayObject;
-	import awayphysics.events.AWPEvent;
 	import awayphysics.data.AWPCollisionFlags;
-	import com.greensock.TweenMax;
+	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.events.AWPEvent;
+	import com.jakobwilson.Asset;
+	import flash.events.Event;
+	import flash.events.TimerEvent;
+	import flash.geom.Vector3D;
+	import flash.utils.Timer;
 	import team3d.events.MovementOverrideEvent;
 	
 	/**
