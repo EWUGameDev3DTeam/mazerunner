@@ -12,18 +12,21 @@ package team3d.screens
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
 	import team3d.objects.maze.Maze;
-	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
+	import team3d.utils.CountDownTimer;
 	
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @author Nate Chatellier
 	 */
 	public class GameScreen extends BaseScreen
@@ -35,7 +38,7 @@ package team3d.screens
 		private var _paused				:Boolean;
 		
 		private var _controlsEnabled	:Boolean;
-
+		
 		private var _player				:KinematicPlayer;
 		
 		private var _flyPlayer			:FlyPlayer;
@@ -54,10 +57,13 @@ package team3d.screens
 		private var _exitClosing		:Boolean;
 		private var _exitOpening		:Boolean;
 		private var _exitWall			:Asset;
-		
 		private var _winTrigger			:Trigger3D;
+		private var _won				:Boolean;
 		
 		private var _wallHeight			:Number;
+		
+		private var _timerText			:TextField;
+		private var _timer				:CountDownTimer;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -75,6 +81,19 @@ package team3d.screens
 			
 			_winTrigger = new Trigger3D(800);
 			_winTrigger.TriggeredSignal.add(wonGame);
+			
+			_timer = new CountDownTimer();
+			_timer.CompletedSignal.add(timeUp);
+			
+			var format:TextFormat = new TextFormat();
+			format.size = 60;
+			
+			_timerText = new TextField();
+			_timerText.autoSize = TextFieldAutoSize.LEFT;
+			_timerText.defaultTextFormat = format;
+			_timerText.textColor = 0xFFFFFF;
+			
+			this.addChild(_timerText);
 		}
 		
 		private function openEntrance($a:Asset):void
@@ -84,6 +103,9 @@ package team3d.screens
 		
 		private function closeEntrance($a:Asset):void
 		{
+			if (!_entranceClosing)
+				_timer.start();
+			
 			_entranceClosing = true;
 			if (_entranceOpening)
 			{
@@ -92,10 +114,14 @@ package team3d.screens
 			}
 		}
 		
-		private function closeExit($a:Asset):void
+		private function closeExit($a:Asset = null):void
 		{
 			if (!_exitClosing)
+			{
 				_winTrigger.begin();
+				_won = true;
+				_timer.stop();
+			}
 			
 			_exitClosing = true;
 			
@@ -105,10 +131,16 @@ package team3d.screens
 			}
 		}
 		
+		private function timeUp():void
+		{
+			_exitClosing = true;
+			_won = false;
+		}
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
-		 * 
+		 *
 		 */
 		override public function Begin():void
 		{
@@ -120,6 +152,9 @@ package team3d.screens
 			var rows:int = 5;
 			var cols:int = 5;
 			
+			_timer.reset(0,5,0);
+			_timerText.textColor = 0xFFFFFF;
+			
 			_cageMoving = true;
 			_controlsEnabled = false;
 			_paused = false;
@@ -127,6 +162,7 @@ package team3d.screens
 			_entranceClosing = false;
 			_exitClosing = false;
 			_exitOpening = true;
+			_won = false;
 			
 			//*/
 			var maze:Maze = createMaze(rows, cols);
@@ -146,14 +182,14 @@ package team3d.screens
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
 			/*
-			//create a cannon
-			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			cannon.addObjectActivator(this._player.controller.ghostObject);
-			cannon.transformTo(new Vector3D(70,200,0));
-			cannon.rotateTo(new Vector3D(0,0,0));
-			cannon.addToScene(World.instance.view, World.instance.physics);
-			//End cannon creation
-			*/
+			   //create a cannon
+			   var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
+			   cannon.addObjectActivator(this._player.controller.ghostObject);
+			   cannon.transformTo(new Vector3D(70,200,0));
+			   cannon.rotateTo(new Vector3D(0,0,0));
+			   cannon.addToScene(World.instance.view, World.instance.physics);
+			   //End cannon creation
+			 */
 			
 			var rectangle:Shape = new Shape();
 			rectangle.name = "rectangleFade";
@@ -163,7 +199,7 @@ package team3d.screens
 			this.addChild(rectangle);
 			//toggleCamera();
 			
-			TweenMax.fromTo(rectangle, 2, { autoAlpha:1}, { autoAlpha:0, delay:0.5 } );
+			TweenMax.fromTo(rectangle, 2, {autoAlpha: 1}, {autoAlpha: 0, delay: 0.5});
 		}
 		
 		private function wireTriggers($maze:Maze):void
@@ -209,7 +245,7 @@ package team3d.screens
 			
 			var exitRoom:int = Math.random() * $maze.Columns;
 			_exitWall = $maze.RowBorder[exitRoom];
-			var xloc:Number = _exitWall.position.x;// floorLength * exitRoom;
+			var xloc:Number = _exitWall.position.x; // floorLength * exitRoom;
 			
 			var zloc:Number;
 			var halfWidth:Number = wallWidth * 0.5;
@@ -239,7 +275,6 @@ package team3d.screens
 		private function createEntrance($maze:Maze):void
 		{
 			var roomnum:int = int(Math.floor($maze.Columns * 0.5));
-			DebugScreen.Text("room: " + roomnum);
 			var wall:Asset = $maze.GetRoom(0, roomnum).RowWall;
 			Bounds.getMeshBounds(wall.model);
 			var wallLength:Number = Bounds.depth;
@@ -251,8 +286,6 @@ package team3d.screens
 			Bounds.getMeshBounds(_cage.model);
 			var x:Number = wall.position.x + (wallLength * 0.5);
 			var z:Number = wall.position.z - (Bounds.depth * 0.5) - 50;
-			DebugScreen.Text("x: " + x);
-			DebugScreen.Text("z: " + z, true);
 			_cage.transformTo(new Vector3D(x, 4000, z));
 			World.instance.addObject(_cage);
 			
@@ -290,18 +323,28 @@ package team3d.screens
 			var startx:Number = 0;
 			var startz:Number = 0;
 			
-			
 			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
 			return maze;
 		}
 		
-		public function Unpause(){_paused = false;}
-		public function Pause(){_paused = true;}
+		public function Unpause()
+		{
+			_paused = false;
+			if(_timer.HasBeenStarted)
+				_timer.start();
+		}
+		
+		public function Pause()
+		{
+			_paused = true;
+			_timer.stop();
+		}
 		
 		protected function pauseGame():void
 		{
-			if (_paused) return;
+			if (_paused)
+				return;
 			
 			this.PausedSignal.dispatch();
 		}
@@ -313,13 +356,12 @@ package team3d.screens
 		 */
 		override public function End():void
 		{
+			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
 			//*			TEMPORARY KEY BINDINGS
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.F, failedGame);
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.G, wonGame);
 			//			TEMPORARY KEY BINDINGS*/
-			
-			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
 			
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.P, pauseGame);
 			
@@ -337,6 +379,7 @@ package team3d.screens
 			
 			this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));
+			
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -364,6 +407,34 @@ package team3d.screens
 			}
 		}
 		
+		private function updateTimer():void
+		{
+			var seconds:String = _timer.Seconds.toString();
+			
+			if (_timer.Seconds < 10)
+				seconds = "0" + seconds;
+			
+			_timerText.text = _timer.Minutes + ":" + seconds;
+			
+			
+			if (_timer.Minutes < 1)
+			{
+				var millis:String = _timer.Milliseconds.toString();
+				if (_timer.Milliseconds < 100 && _timer.Milliseconds > 10)
+					millis = "0" + millis;
+				else if (_timer.Milliseconds < 10)
+					millis = "00" + millis;
+				
+				_timerText.appendText(":" + millis);
+			}
+			
+			if (_timer.Minutes < 1 && _timer.Seconds > 30)
+			{
+				_timerText.textColor = 0xFFFF00;
+			}
+			else if (_timer.Minutes < 1 && _timer.Seconds < 30)
+				_timerText.textColor = 0xFF0000;
+		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -372,13 +443,16 @@ package team3d.screens
 		 */
 		protected function enterFrame($e:Event):void
 		{
-			if (_paused) return;
+			if (_paused)
+				return;
 			
 			if (World.instance.isNormal || !World.instance.isMouseLocked)
 			{
 				pauseGame();
 				return;
 			}
+			
+			updateTimer();
 			
 			if (_cageMoving)
 			{
@@ -416,6 +490,8 @@ package team3d.screens
 				{
 					_exitClosing = false;
 					_exitClose.end();
+					if (!_won)
+						failedGame();
 				}
 			}
 			else if (_exitOpening)
@@ -424,11 +500,6 @@ package team3d.screens
 				if (_exitWall.position.y + _wallHeight <= 0)
 					_exitOpening = false;
 			}
-			
-			//DebugScreen.Text("entrance closing: " + _entranceClosing);
-			//DebugScreen.Text("entrance opening: " + _entranceOpening, true);
-			//DebugScreen.Text("exit closing: " + _exitClosing, true);
-			//DebugScreen.Text("exit opening: " + _exitOpening, true);
 			
 			World.instance.update();
 		}

@@ -9,6 +9,7 @@
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...
@@ -170,7 +171,6 @@
 		 */
 		public function update():void
 		{
-			lockMouse();
 			_physics.step(1/30, 1, 1/30);
 			_view.render();
 		}
@@ -261,6 +261,7 @@
 		 */
 		public function unlockMouse():Boolean
 		{
+			
 			if (isNormal)
 				return false;
 			

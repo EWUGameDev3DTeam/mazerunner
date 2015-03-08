@@ -47,7 +47,7 @@ package team3d.screens
 			format.bold = true;
 			
 			_text.defaultTextFormat = format;
-			_text.autoSize = TextFieldAutoSize.LEFT;
+			_text.autoSize = TextFieldAutoSize.CENTER;
             _text.mouseEnabled = false;
             _text.selectable = false;
 			_text.textColor = 0x000000;
@@ -58,8 +58,10 @@ package team3d.screens
 			_text.visible = true;
 			_text.alpha = 1;
 			
-			_text.x = _text.y = 0;
+			_text.x = World.instance.stage.stageWidth * 0.5;
+			_text.y = 0;
 			this.addChild(_text);
+			World.instance.stage.addEventListener(Event.RESIZE, resize);
 		}
 		
 		public static function Text($s:String, $append:Boolean = false):void
@@ -73,6 +75,11 @@ package team3d.screens
 				_text.visible = false;
 			else if(!_text.visible)
 				_text.visible = true;
+		}
+		
+		private function resize($e:Event)
+		{
+			_text.x = World.instance.stage.stageWidth * 0.5;
 		}
 	}
 }
