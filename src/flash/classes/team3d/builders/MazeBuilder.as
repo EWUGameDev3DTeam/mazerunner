@@ -289,6 +289,8 @@ package team3d.builders
 			}
 			//*/
 			
+			colWallBorder[int(Math.floor($maze.Rows * 0.5))]
+			
 			$maze.RowBorder = rowWallBorder;
 			$maze.ColumnBorder = colWallBorder;
 		}

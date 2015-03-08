@@ -2,12 +2,14 @@
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.AWPRigidBody;
+	import com.jakobwilson.Asset;
 	import flash.display.Stage;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...
@@ -117,19 +119,19 @@
 		/**
 		 * Adds the given object to the world
 		 *
-		 * @param	$b	The associated rigid body to add to the world
+		 * @param	$b	The asset to add to the world
 		 */
-		public function addObject($b:AWPRigidBody):void
+		public function addObject($a:Asset):void
 		{
 			// nothing to add
-			if ($b == null)
+			if ($a == null)
 				return;
 			
 			// add the mesh to the world
-			_view.scene.addChild($b.skin);
+			_view.scene.addChild($a.model);
 			
 			// add it to the physics world
-			_physics.addRigidBody($b);
+			_physics.addRigidBody($a.rigidBody);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -146,20 +148,20 @@
 				for each(var r in row)
 				{
 					if (r.HasColumnWall)
-						addObject(r.ColumnWall.rigidBody);
+						addObject(r.ColumnWall);
 					
 					if (r.HasRowWall)
-						addObject(r.RowWall.rigidBody);
+						addObject(r.RowWall);
 					
-					addObject(r.Floor.rigidBody);
+					addObject(r.Floor);
 				}
 			}
 			
 			for each(var rowBorder in $m.RowBorder)
-				addObject(rowBorder.rigidBody);
+				addObject(rowBorder);
 				
 			for each(var colBorder in $m.ColumnBorder)
-				addObject(colBorder.rigidBody);
+				addObject(colBorder);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -169,7 +171,6 @@
 		 */
 		public function update():void
 		{
-			lockMouse();
 			_physics.step(1/30, 1, 1/30);
 			_view.render();
 		}
@@ -260,6 +261,7 @@
 		 */
 		public function unlockMouse():Boolean
 		{
+			
 			if (isNormal)
 				return false;
 			

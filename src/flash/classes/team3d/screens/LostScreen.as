@@ -35,7 +35,6 @@ package team3d.screens
 		public function LostScreen()
 		{
 			super();
-			
 			DoneSignal = new Signal();
 			_screenTitle = "Lost";
 			
