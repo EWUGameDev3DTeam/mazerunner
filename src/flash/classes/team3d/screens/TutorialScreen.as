@@ -313,5 +313,11 @@ package team3d.screens
 			
 			World.instance.update();
 		}
+		
+		override protected function resize($e:Event = null):void 
+		{
+			//super.resize($e);
+			// do nothing, VERY intentional
+		}
 	}
 }
