@@ -19,7 +19,6 @@
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
