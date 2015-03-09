@@ -180,7 +180,6 @@
 		 */
 		private function creditsClicked($e:MouseEvent):void
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.CREDITS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}
@@ -189,7 +188,6 @@
 		
 		private function settingsClicked($e:MouseEvent):void
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch(BaseScreen.SETTINGS);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}

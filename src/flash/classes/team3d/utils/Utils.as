@@ -7,6 +7,7 @@ package team3d.utils
 	 */
 	public class Utils 
 	{
+		
 		private static var _instance	:Utils;
 		
 		public function Utils($lock:Class)

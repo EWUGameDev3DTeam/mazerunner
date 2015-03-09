@@ -166,7 +166,6 @@
 		
 		private function doneClick(e:MouseEvent):void 
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		

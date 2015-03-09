@@ -116,7 +116,6 @@ package team3d.screens
 		
 		private function doneClick($e:MouseEvent):void 
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		

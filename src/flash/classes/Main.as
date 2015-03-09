@@ -3,6 +3,7 @@ package
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.ImageLoader;
 	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.MP3Loader;
 	import com.greensock.plugins.GlowFilterPlugin;
 	import com.greensock.plugins.TweenPlugin;
 	import com.natejc.input.KeyboardManager;
@@ -10,6 +11,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.net.SharedObject;
 	import team3d.bases.BaseScreen;
 	import team3d.interfaces.IScreen;
 	import team3d.objects.World;
@@ -24,7 +26,10 @@ package
 	import team3d.screens.TitleScreen;
 	import team3d.screens.TutorialScreen;
 	import team3d.screens.WonScreen;
+	import team3d.utils.GameData;
+	import team3d.utils.Utils;
 	import treefortress.sound.SoundAS;
+	import treefortress.sound.SoundInstance;
 	
 	/**
 	 * drive class for Operation Silent Badger
@@ -64,8 +69,37 @@ package
 			_debugScreen.Begin();
 			this.addChild(_debugScreen);
 			
+			initData();
+			loadSounds();
+		}
+		
+		/**
+		 * Initializes all in game user defined variables to defaults if they don't exist
+		 */
+		private function initData():void
+		{
+			var so:SharedObject = SharedObject.getLocal(GameData.SHAREDNAME);
+			if (so.data[GameData.MOUSEX] == undefined)
+				so.data[GameData.MOUSEX] = 62.5;
+			
+			if (so.data[GameData.MOUSEY] == undefined)
+				so.data[GameData.MOUSEY] = 62.5;
+				
+			if (so.data[GameData.INVERT] == undefined)
+				so.data[GameData.INVERT] = false;
+				
+			if (so.data[GameData.AUDIO] == undefined)
+				so.data[GameData.AUDIO] = 1;
+				
+			SoundAS.masterVolume = so.data[GameData.AUDIO];
+		}
+		
+		private function loadSounds():void
+		{
+			SoundAS.loadCompleted.add(soundCompleted);
 			SoundAS.loadSound("./audio/sfx/Button.mp3", "Button");
 			SoundAS.loadSound("./audio/sfx/SoundLevelChange.mp3", "SoundLevelChange");
+			SoundAS.loadSound("./audio/music/title.mp3", "title");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -92,6 +126,12 @@ package
 			loadWon(queue);
 			loadLost(queue);
 			queue.load();
+		}
+		
+		private function soundCompleted($s:SoundInstance):void
+		{
+			if ($s.type == "title")
+				SoundAS.playLoop("title");
 		}
 		
 		private function loadLoading($q:LoaderMax):void

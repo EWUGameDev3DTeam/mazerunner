@@ -18,6 +18,7 @@
 	import team3d.bases.BasePlayer;
 	import team3d.events.MovementOverrideEvent;
 	import team3d.objects.World;
+	import team3d.utils.GameData;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -33,14 +34,14 @@
 		private var _pan			:Number = 0.0;
 		private var _tilt			:Number = 90.0;
 		private var _overrideVector	:Vector3D = new Vector3D();
-		public var so				:SharedObject = SharedObject.getLocal("dataTeam3D");
+		private var _so				:SharedObject;
 		
 		/**
 		*	Creates a kinematic character controller 
 		*/
 		public function KinematicPlayer($cam:Camera3D, $height:int, $radius:int, $speed:Number)
 		{
-			
+			_so = SharedObject.getLocal(GameData.SHAREDNAME);
 			_cam = $cam;
 			_fpc = new FirstPersonController($cam);
 			_fpc.targetObject.z = height * 0.8;
@@ -151,16 +152,16 @@
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
-			this._pan += $e.movementX * (0.002 * this.so.data.mouseX);
-			this._tilt += $e.movementY * (0.002 * this.so.data.mouseY * ((this.so.data.invertY)? -1 : 1));
+			_pan += $e.movementX * (0.002 * _so.data[GameData.MOUSEX]);
+			_tilt += $e.movementY * (0.002 * _so.data[GameData.MOUSEY] * (_so.data[GameData.INVERT] ? -1 : 1));
 			
 
-			if(this._tilt > 45)
-				this._tilt = 45;	
-			if(this._tilt < -45)
-				this._tilt = -45;
+			if(_tilt > 45)
+				_tilt = 45;	
+			if(_tilt < -45)
+				_tilt = -45;
 			
-			_character.ghostObject.rotation = new Vector3D(this._tilt,this._pan,0);
+			_character.ghostObject.rotation = new Vector3D(_tilt, _pan, 0);
 			
 		}
 		

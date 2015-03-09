@@ -9,6 +9,7 @@ package team3d.ui
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import treefortress.sound.SoundAS;
 	
 	/**
 	 * ...
@@ -34,7 +35,7 @@ package team3d.ui
 			this.mouseChildren = false;
 			this.addEventListener(MouseEvent.ROLL_OUT, mouseOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			this.addEventListener(MouseEvent.MOUSE_UP, mouseHover);
+			this.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			this.addEventListener(MouseEvent.ROLL_OVER, mouseHover);
 			
 			var imgWidth:int = 300;
@@ -107,6 +108,12 @@ package team3d.ui
 			this.getChildByName("idle" + _btnID).visible = false;
 			this.getChildByName("hover" + _btnID).visible = false;
 			this.getChildByName("down" + _btnID).visible = true;
+		}
+		
+		private function mouseUp(e:MouseEvent):void
+		{
+			mouseHover(e);
+			SoundAS.playFx("Button");
 		}
 	}
 }
