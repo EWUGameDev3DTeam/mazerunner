@@ -109,6 +109,8 @@ package team3d.screens
 		{
 			super.Begin();
 			
+			SoundAS.playFx("DefeatSound");
+			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		

@@ -1,5 +1,7 @@
 ﻿package com.jakobwilson.Cannon
 {
+	import away3d.audio.drivers.ISound3DDriver;
+	import away3d.audio.Sound3D;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.View3D;
 	import awayphysics.collision.dispatch.AWPGhostObject;
@@ -7,6 +9,7 @@
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.Trigger3D;
 	import flash.geom.Vector3D;
+	import treefortress.sound.SoundAS;
 
 	/**
 	*	A class to wrap a cannon. Handles spawning cannon balls and displaying the cannon
@@ -21,6 +24,7 @@
 		private var _world:AWPDynamicsWorld;
 		private const degreesToRad:Number = 0.0174532925;
 		private var _nFire:Number = 0;
+		private var _firingTriggerContainer:ObjectContainer3D;
 		
 		/**
 		* Creates a cannon and sets up its shot 
@@ -31,12 +35,12 @@
 			this._shot = shot;
 			this._shot.transformTo(this._cannon.position);
 			this._firingTrigger = new Trigger3D(activationRange, 60);
-			this._firingTrigger.position = new Vector3D(0,0,4000);
-			this._cannon.model.addChild(ObjectContainer3D(this._firingTrigger));
+			this._firingTrigger.position = new Vector3D(0, 0, 4000);
+			this._firingTriggerContainer = ObjectContainer3D(this._firingTrigger);
+			this._cannon.model.addChild(this._firingTriggerContainer);
 			
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
-			
 		}
 		
 		/**
@@ -58,7 +62,7 @@
 				shotForce.scaleBy(500);
 				
 				var sht:Shot = new Shot(shotModel,shotForce, this._view, this._world);
-			
+				
 				this._nFire = 0;
 			}
 			else

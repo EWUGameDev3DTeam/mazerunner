@@ -17,6 +17,7 @@ package team3d.screens
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
+	import treefortress.sound.SoundAS;
 	
 
 	
@@ -248,6 +249,9 @@ package team3d.screens
 			_player.End();
 			_flyPlayer.End();
 			_elevatorDown.end();
+			
+			SoundAS.pause("title");
+			SoundAS.playFx("Elevator", .3);
 			
 			this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));

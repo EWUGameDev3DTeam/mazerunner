@@ -99,7 +99,21 @@ package
 			SoundAS.loadCompleted.add(soundCompleted);
 			SoundAS.loadSound("./audio/sfx/Button.mp3", "Button");
 			SoundAS.loadSound("./audio/sfx/SoundLevelChange.mp3", "SoundLevelChange");
+			SoundAS.loadSound("./audio/sfx/CannonFiring.mp3", "CannonFiring");
+			SoundAS.loadSound("./audio/sfx/DefeatSound.mp3", "DefeatSound");
+			SoundAS.loadSound("./audio/sfx/DoorClosing.mp3", "DoorClosing");
+			SoundAS.loadSound("./audio/sfx/DoorsOpening.mp3", "DoorsOpening");
+			SoundAS.loadSound("./audio/sfx/Elevator.mp3", "Elevator");
+			SoundAS.loadSound("./audio/sfx/LoadingFinished.mp3", "LoadingFinished");
+			SoundAS.loadSound("./audio/sfx/MonsterSounds.mp3", "MonsterSounds");
+			SoundAS.loadSound("./audio/sfx/OrbHitPlayer.mp3", "OrbHitPlayer");
+			SoundAS.loadSound("./audio/sfx/PlayerDeath.mp3", "PlayerDeath");
+			SoundAS.loadSound("./audio/sfx/PlayerFootstep.mp3", "PlayerFootstep");
+			SoundAS.loadSound("./audio/sfx/TimeEnds.mp3", "TimeEnds");
+			SoundAS.loadSound("./audio/sfx/VictorySound.mp3", "VictorySound");
+			
 			SoundAS.loadSound("./audio/music/title.mp3", "title");
+			SoundAS.loadSound("./audio/music/GameMusic.mp3", "GameMusic");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

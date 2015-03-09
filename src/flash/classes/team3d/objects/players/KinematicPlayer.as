@@ -3,6 +3,7 @@
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
 	import away3d.controllers.FirstPersonController;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.collision.dispatch.AWPGhostObject;
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import awayphysics.data.AWPCollisionFlags;
@@ -19,6 +20,7 @@
 	import team3d.events.MovementOverrideEvent;
 	import team3d.objects.World;
 	import team3d.utils.GameData;
+	import treefortress.sound.SoundAS;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -56,7 +58,7 @@
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
-			_character.setWalkDirection(new Vector3D(0,0,0));
+			_character.setWalkDirection(new Vector3D(0, 0, 0));
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -110,11 +112,15 @@
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy($speed);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				vf = _character.ghostObject.front;
-				vf.scaleBy(-$speed);
+				vf.scaleBy( -$speed);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
@@ -122,12 +128,16 @@
 				vs = _character.ghostObject.right;
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
 				vs = _character.ghostObject.right;
 				vs.scaleBy($speed*0.5);
 				vf.scaleBy(0.7);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
@@ -194,9 +204,9 @@
 		*/
 		public function overrideMovement($e:MovementOverrideEvent)
 		{
+			SoundAS.playFx("OrbHitPlayer");
 			
 			this._overrideVector = $e.force;
 		}
-		
 	}
 }
