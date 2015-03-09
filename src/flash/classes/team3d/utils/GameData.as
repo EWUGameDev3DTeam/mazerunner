@@ -8,7 +8,7 @@ package team3d.utils
 	 */
 	public class GameData
 	{
-		public static const SHAREDNAME		:String = "dataTeam3D";
+		public static const SHAREDNAME		:String = "dataTeam3D1";
 		public static const AUDIO			:String = "audio";
 		public static const MOUSEX			:String = "mouseX";
 		public static const MOUSEY			:String = "mouseY";
