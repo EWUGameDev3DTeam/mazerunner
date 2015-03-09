@@ -80,7 +80,7 @@
 				xDist = this._position.x - a.position.x;
 				yDist = this._position.y - a.position.y;
 				zDist = this._position.z - a.position.z;
-				distance = Math.sqrt(Math.pow(xDist,2) + Math.pow(Math.sqrt(Math.pow(yDist,2) + Math.pow(zDist,2)),2));
+				distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2) + Math.pow(zDist, 2));
 				if(distance < this._range)
 				{
 					this.TriggeredSignal.dispatch(a);
@@ -94,9 +94,10 @@
 				xDist = this._position.x - o.position.x;
 				yDist = this._position.y - o.position.y;
 				zDist = this._position.z - o.position.z;
-				distance = Math.sqrt(Math.pow(xDist,2) + Math.pow(Math.sqrt(Math.pow(yDist,2) + Math.pow(zDist,2)),2));
+				distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2) + Math.pow(zDist, 2));
 				if(distance < this._range)
 				{
+					if (this.TriggeredSignal == null) return;
 					this.TriggeredSignal.dispatch(null);
 					this.bIsTriggered = true;
 				}

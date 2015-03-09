@@ -9,6 +9,7 @@
 	import flash.geom.Vector3D;
 	import team3d.objects.maze.MazeRoom;
 	import team3d.utils.pathfinding.PathNode;
+	import team3d.screens.DebugScreen;
 	
 	
 	
@@ -169,9 +170,8 @@
 			//Now that we have found the path, we backtrack from the end node, selecting all of the nodes with the shortest
 			//distance from the start node, this is our finished path
 			
-			var finalPath:Vector.<PathNode> = new Vector.<PathNode>;	//A vector to hold the final path
+			var finalPath:Vector.<PathNode> = new Vector.<PathNode>();	//A vector to hold the final path
 			var shortestAdj:ListItem;									//an adjacency to hold the shortest adjacenct
-			
 			while(current.node != start)
 			{
 
@@ -189,12 +189,13 @@
 					if(curAdj.distance < shortestAdj.distance)
 						shortestAdj = curAdj;
 				}
-				//closedList.splice(closedList.indexOf(current), 1);
+				closedList.splice(closedList.indexOf(current), 1);
 				current = shortestAdj;
+				
 			}
 			
 			finalPath.push(current.node);
-
+			//finalPath.reverse();
 			return finalPath;
 			
 		}
@@ -226,7 +227,6 @@
 					return i;
 			}
 			return null;
-			//throw new Error("Could not find pathNode " + n.position);
 		}
 		
 		/**
@@ -278,7 +278,7 @@
 			 
 			for (var i:int = 1; i < path.length;i++)
 			{
-				segments.addSegment(new LineSegment(path[i].position, path[i-1].position, 0x00FF00, 0x00FF00, 5));
+				segments.addSegment(new LineSegment(path[i].position, path[i-1].position, 0xFF0000, 0x00FF00, 5));
 			}
 			ret.addChild(segments);
 			return ret;

@@ -98,11 +98,12 @@
 		
 		private function remove()
 		{
-			if(this._view.scene.numChildren > 0)
+			if(this._view.scene.contains(this._model.model))
 				this._view.scene.removeChild(this._model.model);
 			
 			this._model.rigidBody.removeEventListener(AWPEvent.COLLISION_ADDED,this.knockBack);
-			this._world.removeRigidBody(this._model.rigidBody);
+			if(this._world.rigidBodies.indexOf(this._model.rigidBody) > -1 || this._world.nonStaticRigidBodies.indexOf(this._model.rigidBody) > -1)
+				this._world.removeRigidBody(this._model.rigidBody);
 			this._model = null;
 			this._stateTimer.stop();
 			this._stateTimer = null;

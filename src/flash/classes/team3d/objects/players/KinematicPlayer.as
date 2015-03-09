@@ -37,6 +37,7 @@
 		private var _tilt			:Number = 90.0;
 		private var _overrideVector	:Vector3D = new Vector3D();
 		private var _so				:SharedObject;
+		public var canWalk			:Boolean  = true;
 		
 		/**
 		*	Creates a kinematic character controller 
@@ -68,6 +69,7 @@
 		 */
 		override public function Begin():void
 		{
+			this.canWalk = true;
 			World.instance.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			this.addEventListener(Event.ENTER_FRAME,this.onFrame);
 			this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
@@ -99,6 +101,13 @@
 		 */
 		public function Move($speed:Number):void
 		{
+
+			if(!this.canWalk)
+			{
+				_character.setWalkDirection(new Vector3D());
+				return;
+			}
+			
 			if(this._overrideVector.length > 0.1)
 				this._overrideVector.scaleBy(0.95);		//dampen
 			else
@@ -131,6 +140,7 @@
 				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
+
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
 				vs = _character.ghostObject.right;
@@ -151,6 +161,7 @@
 			vs.y = 0;
 			vf.y = 0;
 
+			
 			_character.setWalkDirection(vf.add(vs).add(this._overrideVector));
 		}
 		

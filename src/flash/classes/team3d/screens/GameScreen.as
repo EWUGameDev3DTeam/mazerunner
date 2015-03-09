@@ -5,6 +5,8 @@
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.tools.utils.Bounds;
+	import away3d.materials.ColorMaterial;
+	import away3d.primitives.CubeGeometry;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
@@ -19,7 +21,6 @@
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
@@ -31,6 +32,7 @@
 	import team3d.utils.CountDownTimer;
 	import team3d.utils.pathfinding.NavGraph;
 	import treefortress.sound.SoundAS;
+	import team3d.objects.npc.MonsterPlayer;
 	
 	/**
 	 *
@@ -53,8 +55,9 @@
 		
 		private var _cube				:Mesh;		//for debug, remove before release
 		private var _path				:ObjectContainer3D;
+		private var _maze				:Maze;
 		/** set to true for debug output*/
-		private var _debug = true;
+		private var _debug = false;
 		
 		public static const origin		:Vector3D = new Vector3D();
 		private var _cage				:Asset;
@@ -79,6 +82,10 @@
 		private var _timerText			:TextField;
 		private var _timer				:CountDownTimer;
 		
+		private var _cannons 			:Vector.<Cannon> = new Vector.<Cannon>();	// a vector to hold cannons so they won't get garbage collected. 
+														 						//This should be removed after cannons are refactored
+		private var _monster:MonsterPlayer;
+		private var _monsterPath:ObjectContainer3D;		//the monster's path mesh for debug
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -99,7 +106,7 @@
 			_winTrigger.TriggeredSignal.add(wonGame);
 			
 			_timer = new CountDownTimer();
-			_timer.CompletedSignal.add(timeUp);
+			_timer.CompletedSignal.add(closeExit);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 60;
@@ -138,18 +145,11 @@
 		private function closeExit($a:Asset = null):void
 		{
 			if (!_exitClosing)
-			{
-				_winTrigger.begin();
-				_won = true;
 				_timer.stop();
-			}
 			
 			_exitClosing = true;
-			
 			if (_exitOpening)
-			{
 				_exitOpening = false;
-			}
 		}
 		
 		private function timeUp():void
@@ -175,12 +175,12 @@
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
-			var rows:int = 5;
-			var cols:int = 5;
+			var rows:int = 10;
+			var cols:int = 10;
 			
 			SoundAS.playLoop("GameMusic", .1);
 			
-			_timer.reset(0,5,0);
+			_timer.reset(5,5,0);
 			_timerText.textColor = 0xFFFFFF;
 			
 			_cageMoving = true;
@@ -193,14 +193,16 @@
 			_won = false;
 			
 			//Create player
+			/*
 			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
 			_player.addToWorld(World.instance.view, World.instance.physics);
 			_player.controller.warp(new Vector3D(0, 10000, 0));
 			_player.Begin();
+			*/
 			//end player
 			
-			var maze:Maze = createMaze(rows, cols);
 			createPlayer();
+			var maze:Maze = createMaze(rows, cols);
 			createEntrance(maze);
 			createExit(maze);
 			wireTriggers(maze);
@@ -223,20 +225,21 @@
 				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
 			
-		
 			//create navGraph
-			//this._graph = new NavGraph();
-			//this._graph.genFromMaze(this._maze.Rooms, new Vector3D(0, 100, 425));
+			this._graph = new NavGraph();
+			this._graph.genFromMaze(this._maze.Rooms, new Vector3D(425, 300, 425));
+			if(this._debug)
+				World.instance.view.scene.addChild(this._graph.getWaypointMesh());
+			//end navgraph			
 			
-			//if(this._debug)
-			//	World.instance.view.scene.addChild(this._graph.getWaypointMesh());
-			//end navgraph
-			
-			//Player position test
-			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
-			//this._cube.position = this._graph.getNearestWayPoint(_player.controller.ghostObject.position).position;
-			//World.instance.view.scene.addChild(this._cube);
-			//end player positon test
+			//Create a Monster
+			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"),300, 100, 0.05);
+			_monster.controller.ghostObject.position = new Vector3D(750,150, 750);
+			_monster.NavGraph = this._graph;
+			_monster.setTarget(this._player.controller.ghostObject.skin);
+			_monster.addToWorld(World.instance.view, World.instance.physics);
+			_monster.targetTouchedSignal.add(this.failedGame);
+			_monster.Begin();
 			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
@@ -247,6 +250,8 @@
 			//toggleCamera();
 			
 			TweenMax.fromTo(rectangle, 2, {autoAlpha: 1}, {autoAlpha: 0, delay: 0.5});
+			
+			_player.canWalk = false;
 		}
 		
 		private function wireTriggers($maze:Maze):void
@@ -272,12 +277,13 @@
 			
 			_exitClose = new Trigger3D(800);
 			_exitClose.TriggeredSignal.add(closeExit);
-			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 2000);
+			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 810);
 			_exitClose.addObjectActivator(_player.controller.ghostObject);
 			_exitClose.begin();
 			
 			_winTrigger.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 6000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
+			_winTrigger.begin();
 		}
 		
 		private function createExit($maze:Maze):void
@@ -358,14 +364,22 @@
 			cannon.transformTo($transform);
 			cannon.rotateTo($rotation);
 			cannon.addToScene(World.instance.view, World.instance.physics);
+			this._cannons.push(cannon);
+		}
+		
+		private function checkWin():void
+		{
+			if (_player.controller.ghostObject.position.z < _exitWall.position.z)
+				failedGame();
 		}
 		
 		private function failedGame():void
 		{
+			this._monster.targetTouchedSignal.remove(this.failedGame);
 			this.DoneSignal.dispatch(false);
 		}
 		
-		private function wonGame($a:Asset):void
+		private function wonGame($a:Asset = null):void
 		{
 			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
@@ -381,6 +395,7 @@
 			
 			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
+			this._maze = maze;///Added for AI - Jake
 			
 			for (var i:Number = 0; i < maze.Rooms.length; i++)
 			{	
@@ -547,6 +562,15 @@
 		{
 			if (_paused)
 				return;
+				
+			if(this._debug)
+			{
+				if(this._monsterPath != null && World.instance.view.scene.contains(this._monsterPath))
+					World.instance.view.scene.removeChild(this._monsterPath);
+				this._monsterPath = this._monster.getPathMesh();
+				if(this._monsterPath != null)
+					World.instance.view.scene.addChild(this._monsterPath);
+			}
 			
 			if (World.instance.isNormal || !World.instance.isMouseLocked)
 			{
@@ -563,6 +587,7 @@
 				{
 					_cageMoving = false;
 					_player.Camera.lens.far = 5000;
+					_player.canWalk = true;
 				}
 			}
 			
@@ -592,8 +617,7 @@
 				{
 					_exitClosing = false;
 					_exitClose.end();
-					if (!_won)
-						failedGame();
+					checkWin();
 				}
 			}
 			else if (_exitOpening)

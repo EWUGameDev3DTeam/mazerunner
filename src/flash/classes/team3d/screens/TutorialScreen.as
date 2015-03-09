@@ -1,4 +1,4 @@
-package team3d.screens
+﻿package team3d.screens
 {
 	import away3d.cameras.Camera3D;
 	import away3d.tools.utils.Bounds;
@@ -69,6 +69,7 @@ package team3d.screens
 		{
 			if (_goingDown) return;
 			_goingDown = true;
+			_player.canWalk = false;
 			TweenMax.fromTo(this.getChildByName("rectangleFade"), 2, { autoAlpha:0 }, { autoAlpha:1, onComplete:DoneSignal.dispatch } );
 		}
 		

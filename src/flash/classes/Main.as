@@ -151,7 +151,10 @@ package
 		private function loadLoading($q:LoaderMax):void
 		{
 			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
+			var mob:ImageLoader = new ImageLoader("images/MonsterSmall.png", { name:"monstersmall" } );
+			
 			$q.append(overlay);
+			$q.append(mob);
 			
 			for (var i:int = 0; i < 25; i++)
 				$q.append(new ImageLoader("images/GUI/Arrow.png", { name:("loadingArrow" + i), width:50, height:60, alpha:0 } ));
