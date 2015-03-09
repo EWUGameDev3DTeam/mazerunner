@@ -5,7 +5,6 @@
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
 	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
@@ -16,6 +15,7 @@
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.GameButton;
+	import team3d.ui.Monster2D;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -29,9 +29,7 @@
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private var		_aArrows	:Vector.<Sprite>;
-		
-		private var		_bChasing	:Boolean;
-		private var 	_mob		:Sprite;
+		private var 	_mob		:Monster2D;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -119,7 +117,7 @@
 			btn.addEventListener(MouseEvent.CLICK, doneClick);
 			this.addChild(btn);
 			
-			_mob = LoaderMax.getContent("monstersmall");
+			_mob = new Monster2D(LoaderMax.getContent("monstersmall"));
 			_mob.name = "monstersmall";
 			_mob.x = this.width * 0.5;
 			_mob.y = this.height * 0.5;
@@ -136,17 +134,15 @@
 			super.Begin();
 			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:0 }, { autoAlpha:1 } );
-			this.addEventListener(MouseEvent.MOUSE_MOVE, chaseMouse);
-			this.addEventListener(Event.ENTER_FRAME, enterFrame);
+			this.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			_mob.Begin();
 			
 			loadAssets();
-			_bChasing = true;
-			
-			position = new Vector3D(_mob.x, _mob.y);
-			velocity = new Vector3D(-1, -2);
-			target = new Vector3D(0, 0);
-			desired = new Vector3D(0, 0);
-			steering = new Vector3D(0, 0);
+		}
+		
+		private function mouseMove(e:MouseEvent):void 
+		{
+			_mob.Target = new Vector3D(World.instance.stage.mouseX, World.instance.stage.mouseY);
 		}
 		
 		private function loadAssets()
@@ -191,72 +187,6 @@
 			this.DoneSignal.dispatch();
 		}
 		
-		//http://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
-		public static const MAX_FORCE 		:Number = 2.4;
-		public static const MAX_VELOCITY 	:Number = 3;
-		public static const SENSITIVITY		:Number = 0.5;
-		
-		public var position 	:Vector3D;
-		public var velocity 	:Vector3D = new Vector3D(-1, -2);
-		public var target 		:Vector3D = new Vector3D(0, 0);
-		public var desired 		:Vector3D = new Vector3D(0, 0);
-		public var steering 	:Vector3D = new Vector3D(0, 0);
-		public var mass			:Number = 5;
-		private function chaseMouse($e:MouseEvent):void
-		{
-			position = new Vector3D(_mob.x, _mob.y);
-			target	 = new Vector3D(World.instance.stage.mouseX, World.instance.stage.mouseY);
-			
-			truncate(velocity, MAX_VELOCITY);
-		}
-		
-		private function seek(target:Vector3D):Vector3D
-		{
-			var force :Vector3D;
-			var distance:Number;
-			desired = target.subtract(position);
-			distance = desired.length;
-			desired.normalize();
-			
-			desired.x *= MAX_VELOCITY;
-			desired.y *= MAX_VELOCITY;
-			
-			force = desired.subtract(velocity);
-			
-			return force;
-		}
-		
-		private function truncate(vector:Vector3D, max:Number):void
-		{
-			var i :Number;
-
-			i = max / vector.length;
-			i = i < 1.0 ? 1.0 : i;
-			
-			vector.scaleBy(i);
-		}
-		
-		private function enterFrame($e:Event):void
-		{
-			if(Math.abs(_mob.x - World.instance.stage.mouseX) >= SENSITIVITY && Math.abs(_mob.y - World.instance.stage.mouseY) >= SENSITIVITY)
-			{
-				steering = seek(target);
-				
-				truncate(steering, MAX_FORCE);
-				steering.scaleBy(1 / mass);
-				
-				velocity = velocity.add(steering);
-				truncate(velocity, MAX_VELOCITY);
-				
-				position = position.add(velocity);
-				
-				_mob.x = position.x;
-				_mob.y = position.y;
-				
-			}
-			//_mob.rotationZ = (Math.atan2(World.instance.stage.mouseX - _mob.x, World.instance.stage.mouseY - _mob.y) * 180 / Math.PI)
-		}
-		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -265,7 +195,7 @@
 		override public function End():void
 		{
 			super.End();
-			
+			_mob.End();
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 1 }, { autoAlpha:0 } );
 		}
 	}
