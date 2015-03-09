@@ -210,21 +210,6 @@
 				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
 			
-		
-			//create navGraph
-			//this._graph = new NavGraph();
-			//this._graph.genFromMaze(this._maze.Rooms, new Vector3D(0, 100, 425));
-			
-			//if(this._debug)
-			//	World.instance.view.scene.addChild(this._graph.getWaypointMesh());
-			//end navgraph
-			
-			//Player position test
-			//this._cube = new Mesh(new CubeGeometry(), new ColorMaterial(0x0000FF));
-			//this._cube.position = this._graph.getNearestWayPoint(_player.controller.ghostObject.position).position;
-			//World.instance.view.scene.addChild(this._cube);
-			//end player positon test
-			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
 			rectangle.graphics.beginFill(0x000000);
@@ -259,7 +244,7 @@
 			
 			_exitClose = new Trigger3D(800);
 			_exitClose.TriggeredSignal.add(closeExit);
-			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 2000);
+			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 800);
 			_exitClose.addObjectActivator(_player.controller.ghostObject);
 			_exitClose.begin();
 			
