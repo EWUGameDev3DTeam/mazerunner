@@ -6,13 +6,16 @@
 	import com.jakobwilson.AssetManager;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
+	import team3d.objects.World;
 	import team3d.ui.GameButton;
+	import team3d.ui.Monster2D;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -26,6 +29,7 @@
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private var		_aArrows	:Vector.<Sprite>;
+		private var 	_mob		:Monster2D;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -112,6 +116,12 @@
 			btn.textFormat = format;
 			btn.addEventListener(MouseEvent.CLICK, doneClick);
 			this.addChild(btn);
+			
+			_mob = new Monster2D(LoaderMax.getContent("monstersmall"));
+			_mob.name = "monstersmall";
+			_mob.x = this.width * 0.5;
+			_mob.y = this.height * 0.5;
+			this.addChild(_mob);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -124,8 +134,15 @@
 			super.Begin();
 			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:0 }, { autoAlpha:1 } );
+			this.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			_mob.Begin();
 			
 			loadAssets();
+		}
+		
+		private function mouseMove(e:MouseEvent):void 
+		{
+			_mob.Target = new Vector3D(World.instance.stage.mouseX, World.instance.stage.mouseY);
 		}
 		
 		private function loadAssets()
@@ -178,7 +195,7 @@
 		override public function End():void
 		{
 			super.End();
-			
+			_mob.End();
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 1 }, { autoAlpha:0 } );
 		}
 	}

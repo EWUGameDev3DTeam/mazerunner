@@ -21,7 +21,6 @@
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import org.flintparticles.threeD.renderers.Camera;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
@@ -106,7 +105,7 @@
 			_winTrigger.TriggeredSignal.add(wonGame);
 			
 			_timer = new CountDownTimer();
-			_timer.CompletedSignal.add(timeUp);
+			_timer.CompletedSignal.add(closeExit);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 60;
@@ -140,18 +139,11 @@
 		private function closeExit($a:Asset = null):void
 		{
 			if (!_exitClosing)
-			{
-				_winTrigger.begin();
-				_won = true;
 				_timer.stop();
-			}
 			
 			_exitClosing = true;
-			
 			if (_exitOpening)
-			{
 				_exitOpening = false;
-			}
 		}
 		
 		private function timeUp():void
@@ -221,8 +213,6 @@
 				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
 			
-			
-			
 			//create navGraph
 			this._graph = new NavGraph();
 			this._graph.genFromMaze(this._maze.Rooms, new Vector3D(425, 300, 425));
@@ -238,8 +228,6 @@
 			_monster.addToWorld(World.instance.view, World.instance.physics);
 			_monster.targetTouchedSignal.add(this.failedGame);
 			_monster.Begin();
-		
-			
 			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
@@ -277,12 +265,13 @@
 			
 			_exitClose = new Trigger3D(800);
 			_exitClose.TriggeredSignal.add(closeExit);
-			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 2000);
+			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 810);
 			_exitClose.addObjectActivator(_player.controller.ghostObject);
 			_exitClose.begin();
 			
 			_winTrigger.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 6000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
+			_winTrigger.begin();
 		}
 		
 		private function createExit($maze:Maze):void
@@ -366,13 +355,19 @@
 			this._cannons.push(cannon);
 		}
 		
+		private function checkWin():void
+		{
+			if (_player.controller.ghostObject.position.z < _exitWall.position.z)
+				failedGame();
+		}
+		
 		private function failedGame():void
 		{
 			this._monster.targetTouchedSignal.remove(this.failedGame);
 			this.DoneSignal.dispatch(false);
 		}
 		
-		private function wonGame($a:Asset):void
+		private function wonGame($a:Asset = null):void
 		{
 			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
@@ -604,8 +599,7 @@
 				{
 					_exitClosing = false;
 					_exitClose.end();
-					if (!_won)
-						failedGame();
+					checkWin();
 				}
 			}
 			else if (_exitOpening)
