@@ -33,6 +33,7 @@
 		private var _pan			:Number = 0.0;
 		private var _tilt			:Number = 90.0;
 		private var _overrideVector	:Vector3D = new Vector3D();
+		public var canWalk			:Boolean  = true;
 		public var so				:SharedObject = SharedObject.getLocal("dataTeam3D");
 		
 		/**
@@ -65,6 +66,7 @@
 		 */
 		override public function Begin():void
 		{
+			this.canWalk = true;
 			World.instance.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			this.addEventListener(Event.ENTER_FRAME,this.onFrame);
 			this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
@@ -96,6 +98,13 @@
 		 */
 		public function Move($speed:Number):void
 		{
+
+			if(!this.canWalk)
+			{
+				_character.setWalkDirection(new Vector3D());
+				return;
+			}
+			
 			if(this._overrideVector.length > 0.1)
 				this._overrideVector.scaleBy(0.95);		//dampen
 			else
@@ -122,6 +131,7 @@
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
 			}
+
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
 			{
 				vs = _character.ghostObject.right;
@@ -140,6 +150,7 @@
 			vs.y = 0;
 			vf.y = 0;
 
+			
 			_character.setWalkDirection(vf.add(vs).add(this._overrideVector));
 		}
 		

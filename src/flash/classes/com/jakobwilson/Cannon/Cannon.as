@@ -46,7 +46,7 @@
 		{
 			if(this._nFire == 2)
 			{
-				var positionVector:Vector3D = new Vector3D;
+				var positionVector:Vector3D = new Vector3D();
 				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
 				positionVector.y = this._cannon.position.y;
 				positionVector.z = this._cannon.position.z +( Math.cos(this._cannon.rotation.y*this.degreesToRad)*100);
