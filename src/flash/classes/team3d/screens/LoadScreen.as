@@ -178,12 +178,13 @@
 			for (var i:int = 0; i < _aArrows.length; i++)
 				TweenMax.fromTo(_aArrows[i], 0.5, { autoAlpha:1 }, { autoAlpha:0, delay:1 } );
 			
+			SoundAS.playFx("LoadingFinished");
+				
 			TweenMax.fromTo(this.getChildByName("btnContinue"), 0.5, { autoAlpha:0 }, { autoAlpha:1, delay:1 } );
 		}
 		
 		private function doneClick(e:MouseEvent):void 
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		

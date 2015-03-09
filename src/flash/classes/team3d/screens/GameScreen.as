@@ -31,6 +31,7 @@
 	import team3d.objects.World;
 	import team3d.utils.CountDownTimer;
 	import team3d.utils.pathfinding.NavGraph;
+	import treefortress.sound.SoundAS;
 	import team3d.objects.npc.MonsterPlayer;
 	
 	/**
@@ -121,6 +122,8 @@
 		private function openEntrance($a:Asset):void
 		{
 			_entranceOpening = true;
+			
+			SoundAS.playFx("DoorsOpening", .2);
 		}
 		
 		private function closeEntrance($a:Asset):void
@@ -134,6 +137,9 @@
 				_entranceOpening = false;
 				_entranceOpen.end();
 			}
+			
+			SoundAS.pause("DoorsOpening");
+			SoundAS.pause("Elevator");
 		}
 		
 		private function closeExit($a:Asset = null):void
@@ -149,6 +155,10 @@
 		private function timeUp():void
 		{
 			_exitClosing = true;
+			
+			SoundAS.playFx("TimeEnds");
+			SoundAS.playFx("DoorClosing", 2);
+			
 			_won = false;
 		}
 		
@@ -167,6 +177,8 @@
 			
 			var rows:int = 10;
 			var cols:int = 10;
+			
+			SoundAS.playLoop("GameMusic", .1);
 			
 			_timer.reset(5,5,0);
 			_timerText.textColor = 0xFFFFFF;
@@ -432,12 +444,16 @@
 			_paused = false;
 			if(_timer.HasBeenStarted)
 				_timer.start();
+				
+			SoundAS.resumeAll();
 		}
 		
 		public function Pause()
 		{
 			_paused = true;
 			_timer.stop();
+			
+			SoundAS.pauseAll();
 		}
 		
 		protected function pauseGame():void
@@ -473,6 +489,8 @@
 			
 			World.instance.End();
 			super.End();
+			
+			SoundAS.pause("GameMusic");
 			
 			World.instance.unlockMouse();
 			

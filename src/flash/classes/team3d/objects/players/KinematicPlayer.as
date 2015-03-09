@@ -3,6 +3,7 @@
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
 	import away3d.controllers.FirstPersonController;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.collision.dispatch.AWPGhostObject;
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import awayphysics.data.AWPCollisionFlags;
@@ -18,6 +19,8 @@
 	import team3d.bases.BasePlayer;
 	import team3d.events.MovementOverrideEvent;
 	import team3d.objects.World;
+	import team3d.utils.GameData;
+	import treefortress.sound.SoundAS;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -33,15 +36,15 @@
 		private var _pan			:Number = 0.0;
 		private var _tilt			:Number = 90.0;
 		private var _overrideVector	:Vector3D = new Vector3D();
+		private var _so				:SharedObject;
 		public var canWalk			:Boolean  = true;
-		public var so				:SharedObject = SharedObject.getLocal("dataTeam3D");
 		
 		/**
 		*	Creates a kinematic character controller 
 		*/
 		public function KinematicPlayer($cam:Camera3D, $height:int, $radius:int, $speed:Number)
 		{
-			
+			_so = SharedObject.getLocal(GameData.SHAREDNAME);
 			_cam = $cam;
 			_fpc = new FirstPersonController($cam);
 			_fpc.targetObject.z = height * 0.8;
@@ -56,7 +59,7 @@
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
-			_character.setWalkDirection(new Vector3D(0,0,0));
+			_character.setWalkDirection(new Vector3D(0, 0, 0));
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -118,11 +121,15 @@
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy($speed);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				vf = _character.ghostObject.front;
-				vf.scaleBy(-$speed);
+				vf.scaleBy( -$speed);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
 			if (KeyboardManager.instance.isKeyDown(KeyCode.A))
@@ -130,6 +137,8 @@
 				vs = _character.ghostObject.right;
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.D))
@@ -137,6 +146,8 @@
 				vs = _character.ghostObject.right;
 				vs.scaleBy($speed*0.5);
 				vf.scaleBy(0.7);
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
@@ -162,16 +173,16 @@
 		 */
 		protected function mouseMove($e:MouseEvent):void
 		{
-			this._pan += $e.movementX * (0.002 * this.so.data.mouseX);
-			this._tilt += $e.movementY * (0.002 * this.so.data.mouseY * ((this.so.data.invertY)? -1 : 1));
+			_pan += $e.movementX * (0.002 * _so.data[GameData.MOUSEX]);
+			_tilt += $e.movementY * (0.002 * _so.data[GameData.MOUSEY] * (_so.data[GameData.INVERT] ? -1 : 1));
 			
 
-			if(this._tilt > 45)
-				this._tilt = 45;	
-			if(this._tilt < -45)
-				this._tilt = -45;
+			if(_tilt > 45)
+				_tilt = 45;	
+			if(_tilt < -45)
+				_tilt = -45;
 			
-			_character.ghostObject.rotation = new Vector3D(this._tilt,this._pan,0);
+			_character.ghostObject.rotation = new Vector3D(_tilt, _pan, 0);
 			
 		}
 		
@@ -204,9 +215,9 @@
 		*/
 		public function overrideMovement($e:MovementOverrideEvent)
 		{
+			SoundAS.playFx("OrbHitPlayer");
 			
 			this._overrideVector = $e.force;
 		}
-		
 	}
 }

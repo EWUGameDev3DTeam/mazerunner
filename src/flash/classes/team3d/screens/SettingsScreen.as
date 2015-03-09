@@ -4,6 +4,7 @@ package team3d.screens
 	import com.greensock.TweenMax;
 	import fl.controls.CheckBox;
 	import fl.controls.Slider;
+	import fl.events.SliderEvent;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -16,6 +17,8 @@ package team3d.screens
 	import team3d.bases.BaseScreen;
 	import team3d.objects.World;
 	import team3d.ui.GameButton;
+	import team3d.utils.GameData;
+	import team3d.utils.Utils;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -25,11 +28,11 @@ package team3d.screens
 	 */
 	public class SettingsScreen extends BaseScreen
 	{
-		private var _audioSlider:Slider = new Slider();
-		private var _mouseYsensitivity:Slider = new Slider();
-		private var _mouseXsensitivity:Slider = new Slider();
-		private var _invertY:CheckBox = new CheckBox();
-		public var so	:SharedObject = SharedObject.getLocal("dataTeam3D");;
+		private var _audioSlider		:Slider;
+		private var _mouseYsensitivity	:Slider;
+		private var _mouseXsensitivity	:Slider;
+		private var _invertY			:CheckBox;
+		private var _so					:SharedObject;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -42,6 +45,7 @@ package team3d.screens
 			
 			DoneSignal = new Signal();
 			_screenTitle = "Settings";
+			_so = SharedObject.getLocal(GameData.SHAREDNAME);
 			
 			initComps();
 		}
@@ -120,6 +124,7 @@ package team3d.screens
 			
 			var spacing:int = 65;
 			
+			_audioSlider = new Slider();
 			_audioSlider.width = 400;
 			_audioSlider.maximum = 100;
 			_audioSlider.minimum = 0;
@@ -130,17 +135,10 @@ package team3d.screens
 			_audioSlider.getChildAt(1).y -= 3;
 			_audioSlider.x = this.width - _audioSlider.width - 100;
 			_audioSlider.y = tf.y + 35;
+			_audioSlider.value = 100;
 			this.addChild(_audioSlider);
 			
-			if(this.so.data.audio == undefined){
-				this._audioSlider.value = 100;
-				this.so.data.audio = this._audioSlider.value;
-			}
-			else
-				this._audioSlider.value = so.data.audio;
-			
-			SoundAS.masterVolume = this._audioSlider.value * .01;
-			
+			_mouseYsensitivity = new Slider();
 			_mouseYsensitivity.width = 400;
 			_mouseYsensitivity.maximum = 100;
 			_mouseYsensitivity.minimum = 25;
@@ -151,16 +149,10 @@ package team3d.screens
 			_mouseYsensitivity.getChildAt(1).y -= 3;
 			_mouseYsensitivity.x = _audioSlider.x;
 			_mouseYsensitivity.y = _audioSlider.y + spacing;
+			_mouseYsensitivity.value = 62.5;
 			this.addChild(_mouseYsensitivity);
 			
-			if (this.so.data.mouseY == undefined){
-				this._mouseYsensitivity.value = 62.5;
-				this.so.data.mouseY = this._mouseYsensitivity.value;
-			}
-			else
-				this._mouseYsensitivity.value = so.data.mouseY;
-			
-			
+			_mouseXsensitivity = new Slider();
 			_mouseXsensitivity.width = 400;
 			_mouseXsensitivity.maximum = 100;
 			_mouseXsensitivity.minimum = 25;
@@ -171,27 +163,15 @@ package team3d.screens
 			_mouseXsensitivity.getChildAt(1).y -= 3;
 			_mouseXsensitivity.x = _mouseYsensitivity.x;
 			_mouseXsensitivity.y = _mouseYsensitivity.y + spacing;
+			_mouseXsensitivity.value = 62.5;
 			this.addChild(_mouseXsensitivity);
 			
-			if (so.data.mouseX == undefined){
-				this._mouseXsensitivity.value = 62.5;
-				this.so.data.mouseX = this._mouseXsensitivity.value;
-			}
-			else
-				this._mouseXsensitivity.value = so.data.mouseX;
-			
-			
+			_invertY = new CheckBox();
 			_invertY.label = "";
 			_invertY.x = _mouseXsensitivity.x + _mouseXsensitivity.width * 0.5 - _invertY.width * 0.5;
 			_invertY.y = _mouseXsensitivity.y + spacing;
+			_invertY.selected = false;
 			this.addChild(_invertY);
-			
-			if (this.so.data.invertY == undefined){
-				this._invertY.selected = false;
-				this.so.data.invertY = this._invertY.selected;
-			}
-			else
-				this._invertY.selected = so.data.invertY;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -203,17 +183,26 @@ package team3d.screens
 		{
 			super.Begin();
 			
-			this.addEventListener(Event.ENTER_FRAME, newFrame);
-			this._audioSlider.addEventListener(MouseEvent.MOUSE_UP, changeAudio);
-			
+			loadSettings();
+			_audioSlider.addEventListener(SliderEvent.CHANGE, changeAudio);
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
+		}
+		
+		/**
+		 * Loads the user defined values into the settings
+		 */
+		private function loadSettings():void
+		{
+			_audioSlider.value = _so.data[GameData.AUDIO] * 100;
+			_mouseXsensitivity.value = _so.data[GameData.MOUSEX];
+			_mouseYsensitivity.value = _so.data[GameData.MOUSEY];
+			_invertY.selected = _so.data[GameData.INVERT];
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private function cancelClicked($e:MouseEvent):void 
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		
@@ -221,7 +210,14 @@ package team3d.screens
 		
 		private function saveClicked($e:MouseEvent):void
 		{
-			SoundAS.playFx("Button");
+			var audio:Number = _audioSlider.value * 0.01;
+			_so.data[GameData.AUDIO] = audio;
+			SoundAS.masterVolume = _so.data[GameData.AUDIO];
+			
+			_so.data[GameData.MOUSEX] = _mouseXsensitivity.value;
+			_so.data[GameData.MOUSEY] = _mouseYsensitivity.value;
+			_so.data[GameData.INVERT] = _invertY.selected;
+			
 			this.DoneSignal.dispatch();
 		}
 		
@@ -229,32 +225,16 @@ package team3d.screens
 		
 		private function changeAudio($event:Event)
 		{
-			this.so.data.audio = this._audioSlider.value;
-				SoundAS.masterVolume = this._audioSlider.value * .01;
-				SoundAS.playFx("SoundLevelChange");
-		}
-		
-		/* ---------------------------------------------------------------------------------------- */
-		
-		private function newFrame($event:Event):void 
-		{
-			/*
-			if (this.so.data.audio != this._audioSlider.value)
-			{
-				this.so.data.audio = this._audioSlider.value;
-				SoundAS.masterVolume = this._audioSlider.value * .01;
-				SoundAS.playFx("SoundLevelChange");
-			}	
-			*/	
+			trace(_audioSlider.value);
+			var master:Number = SoundAS.masterVolume;
+			var volume:Number = SoundAS.volume;
+			SoundAS.masterVolume = 1;
+			SoundAS.volume = 1;
 			
-			if (this.so.data.mouseY != this._mouseYsensitivity.value)
-				this.so.data.mouseY = this._mouseYsensitivity.value;
-				
-			if (this.so.data.mouseX != this._mouseXsensitivity.value)
-				this.so.data.mouseX = this._mouseXsensitivity.value;
-				
-			if (this.so.data.invertY != this._invertY.selected)
-				this.so.data.invertY = this._invertY.selected;
+			SoundAS.playFx("SoundLevelChange", _audioSlider.value * 0.01);
+			
+			SoundAS.masterVolume = master;
+			SoundAS.volume = volume;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -265,8 +245,6 @@ package team3d.screens
 		override public function End():void
 		{
 			super.End();
-			
-			this.removeEventListener(Event.ENTER_FRAME, newFrame);
 			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha:1 }, { autoAlpha:0 } );
 		}

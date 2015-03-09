@@ -1,3 +1,5 @@
+http://www.freesfx.co.uk - button click
+https://www.youtube.com/watch?v=Fsj_d6Yd2ow - title music
 http://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
 http://www.emanueleferonato.com/2010/08/04/changing-a-movieclip-registration-point-on-the-fly-with-as3/
 http://gamedev.stackexchange.com/questions/24322/rotating-sprite-to-face-cursor

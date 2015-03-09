@@ -109,6 +109,8 @@ package team3d.screens
 		{
 			super.Begin();
 			
+			SoundAS.playFx("DefeatSound");
+			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );
 		}
 		
@@ -116,7 +118,6 @@ package team3d.screens
 		
 		private function doneClick($e:MouseEvent):void 
 		{
-			SoundAS.playFx("Button");
 			this.DoneSignal.dispatch();
 		}
 		
