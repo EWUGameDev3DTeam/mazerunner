@@ -134,8 +134,8 @@
 			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.enqueue("Sky", "Models/Sky/NightSky.awd", Asset.SKYBOX);
 			AssetManager.instance.enqueue("DebugSky", "Models/Sky/AxisSky.awd", Asset.SKYBOX);//remove for release
-			AssetManager.instance.enqueue("Cage", "Models/Cage/Cage.awd", Asset.BOX, Asset.STATIC);
-			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Cage", "Models/Cage/PlatForm.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.NONE);
 			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);
 			AssetManager.instance.enqueue("Monster", "Models/Monster/Monster.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.load(this.onProgress, this.onComplete);
