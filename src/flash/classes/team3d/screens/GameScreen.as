@@ -97,7 +97,7 @@
 			_winTrigger.TriggeredSignal.add(wonGame);
 			
 			_timer = new CountDownTimer();
-			_timer.CompletedSignal.add(timeUp);
+			_timer.CompletedSignal.add(closeExit);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 60;
@@ -131,18 +131,11 @@
 		private function closeExit($a:Asset = null):void
 		{
 			if (!_exitClosing)
-			{
-				_winTrigger.begin();
-				_won = true;
 				_timer.stop();
-			}
 			
 			_exitClosing = true;
-			
 			if (_exitOpening)
-			{
 				_exitOpening = false;
-			}
 		}
 		
 		private function timeUp():void
@@ -244,12 +237,13 @@
 			
 			_exitClose = new Trigger3D(800);
 			_exitClose.TriggeredSignal.add(closeExit);
-			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 800);
+			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 810);
 			_exitClose.addObjectActivator(_player.controller.ghostObject);
 			_exitClose.begin();
 			
 			_winTrigger.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 6000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
+			_winTrigger.begin();
 		}
 		
 		private function createExit($maze:Maze):void
@@ -333,12 +327,18 @@
 			trace("create cannon");
 		}
 		
+		private function checkWin():void
+		{
+			if (_player.controller.ghostObject.position.z < _exitWall.position.z)
+				failedGame();
+		}
+		
 		private function failedGame():void
 		{
 			this.DoneSignal.dispatch(false);
 		}
 		
-		private function wonGame($a:Asset):void
+		private function wonGame($a:Asset = null):void
 		{
 			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
@@ -559,8 +559,7 @@
 				{
 					_exitClosing = false;
 					_exitClose.end();
-					if (!_won)
-						failedGame();
+					checkWin();
 				}
 			}
 			else if (_exitOpening)
