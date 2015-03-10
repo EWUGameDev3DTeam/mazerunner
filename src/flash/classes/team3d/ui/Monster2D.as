@@ -31,6 +31,8 @@ package team3d.ui
 		
 		public function Monster2D($m:Sprite)
 		{
+			this.mouseChildren = false;
+			this.mouseEnabled = false;
 			this.addChild($m);
 			new_reg_x = $m.width * 0.5;
 			new_reg_y = $m.height * 0.5;
