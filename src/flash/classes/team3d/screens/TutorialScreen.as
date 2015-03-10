@@ -67,6 +67,8 @@
 		
 		private function goDown($a:Asset):void
 		{
+			SoundAS.playFx("Elevator");
+			
 			if (_goingDown) return;
 			_goingDown = true;
 			_player.canWalk = false;
@@ -252,7 +254,6 @@
 			_elevatorDown.end();
 			
 			SoundAS.pause("title");
-			SoundAS.playFx("Elevator", .3);
 			
 			this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));

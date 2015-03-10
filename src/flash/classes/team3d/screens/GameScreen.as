@@ -178,7 +178,7 @@
 			var rows:int = 10;
 			var cols:int = 10;
 			
-			SoundAS.playLoop("GameMusic", .1);
+			SoundAS.playLoop("GameMusic", .05);
 			
 			_timer.reset(5,5,0);
 			_timerText.textColor = 0xFFFFFF;
@@ -497,6 +497,8 @@
 			this._cannons = null;
 			
 			SoundAS.pause("GameMusic");
+			
+			SoundAS.playFx("PlayerDeath");
 			
 			World.instance.unlockMouse();
 			

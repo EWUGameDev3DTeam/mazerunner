@@ -215,6 +215,7 @@
 		*/
 		public function overrideMovement($e:MovementOverrideEvent)
 		{
+			if (!SoundAS.getSound("OrbHitPlayer").isPlaying)
 			SoundAS.playFx("OrbHitPlayer");
 			
 			this._overrideVector = $e.force;

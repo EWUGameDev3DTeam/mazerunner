@@ -28,6 +28,7 @@
 	import away3d.materials.ColorMaterial;
 	import away3d.tools.helpers.data.MeshDebug;
 	import away3d.entities.Mesh;
+	import treefortress.sound.SoundAS;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -110,6 +111,8 @@
 				this.targetTouchedSignal.dispatch();
 			}
 			
+			if (!SoundAS.getSound("MonsterSounds").isPlaying)
+				SoundAS.playFx("MonsterSounds", .75);
 		}
 		
 		/**
