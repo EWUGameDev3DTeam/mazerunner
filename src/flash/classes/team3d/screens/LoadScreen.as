@@ -155,6 +155,7 @@
 			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.NONE);
 			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);
 			AssetManager.instance.enqueue("Monster", "Models/Monster/Monster.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Ground", "Models/Ground/Ground.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.load(this.onProgress, this.onComplete);
 		}
 		

@@ -107,9 +107,12 @@
 				
 		}
 		
-		public function scale($t:Vector3D)
+		public function scaleTo($t:Vector3D)
 		{
-			
+			if(this._collisionType == NONE)	//if it is just a mesh
+				this._model.scale($t.x);
+			else
+				this._rigidBody.scale = $t;
 		}
 		
 		/*------------------------------------CLONING------------------------------------------------*/		
