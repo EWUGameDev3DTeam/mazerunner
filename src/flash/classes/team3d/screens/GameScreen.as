@@ -496,10 +496,6 @@
 				c.End();
 			this._cannons = null;
 			
-			
-			World.instance.End();
-			super.End();
-			
 			SoundAS.pause("GameMusic");
 			
 			World.instance.unlockMouse();
@@ -507,6 +503,8 @@
 			this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));
 			
+			World.instance.End();
+			super.End();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
