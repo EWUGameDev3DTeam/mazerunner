@@ -70,6 +70,14 @@
 		}
 		
 		/**
+		*	Cleans up the cannon
+		*/
+		public function End()
+		{
+			this._firingTrigger.end();
+		}
+		
+		/**
 		*	adds the cannon to the scene
 		*/
 		public function addToScene(view:View3D, world:AWPDynamicsWorld = null)

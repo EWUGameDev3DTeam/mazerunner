@@ -482,10 +482,16 @@
 			
 			_player.End();
 			_flyPlayer.End();
+			_monster.End();
 			
 			_entranceClose.end();
 			_entranceOpen.end();
 			_exitClose.end();
+			
+			for each(var c:Cannon in this._cannons)
+				c.End();
+			this._cannons = null;
+			
 			
 			World.instance.End();
 			super.End();
