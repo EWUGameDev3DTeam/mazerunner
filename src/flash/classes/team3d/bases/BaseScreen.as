@@ -47,8 +47,7 @@ package team3d.bases
 			World.instance.CurrentScreen = _screenTitle;
 			this.visible = true;
 			
-			if (this.width != World.instance.stage.stageWidth || this.height != World.instance.stage.stageHeight)
-				resize();
+			resize();
 		}
 		
 		protected function resize($e:Event = null):void

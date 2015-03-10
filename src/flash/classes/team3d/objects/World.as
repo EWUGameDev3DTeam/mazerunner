@@ -89,8 +89,8 @@
 			while (_view.scene.numChildren > 0)
 				_view.scene.removeChildAt(0);
 			
-			_view.stage3DProxy.clear();
-			_view.stage3DProxy.dispose();
+			if(_view.stage3DProxy != null)
+				_view.dispose();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
