@@ -252,7 +252,7 @@
 			_elevatorDown.end();
 			
 			SoundAS.pause("title");
-			SoundAS.playFx("Elevator", .3);
+			SoundAS.playFx("Elevator");
 			
 			this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));
