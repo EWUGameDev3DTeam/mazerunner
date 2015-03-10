@@ -82,8 +82,8 @@
 		private var _timerText			:TextField;
 		private var _timer				:CountDownTimer;
 		
-		private var _cannons 			:Vector.<Cannon> = new Vector.<Cannon>();	// a vector to hold cannons so they won't get garbage collected. 
-														 						//This should be removed after cannons are refactored
+		private var _cannons 			:Vector.<Cannon>	// a vector to hold cannons so they won't get garbage collected. 
+															//This should be removed after cannons are refactored
 		private var _monster:MonsterPlayer;
 		private var _monsterPath:ObjectContainer3D;		//the monster's path mesh for debug
 		/* ---------------------------------------------------------------------------------------- */
@@ -396,7 +396,7 @@
 			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
 			World.instance.addMaze(maze);
 			this._maze = maze;///Added for AI - Jake
-			
+			_cannons = new Vector.<Cannon>();
 			for (var i:Number = 0; i < maze.Rooms.length; i++)
 			{	
 				var rooms = maze.Rooms[i];
