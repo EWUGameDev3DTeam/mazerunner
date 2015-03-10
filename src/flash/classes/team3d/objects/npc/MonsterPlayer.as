@@ -107,7 +107,6 @@
 			this.Move(this._speed);
 			if(this._target != null && this._character.ghostObject.position.subtract(this._target.position).length < 250)
 			{
-				trace("Touched target");
 				this.targetTouchedSignal.dispatch();
 			}
 			
@@ -144,8 +143,8 @@
 				vf.normalize();
 				this._character.ghostObject.rotationY = Math.atan(vf.x/vf.z)*57.2957795;
 				vf.scaleBy($speed);
-				if(this._currentPath != null && this._currentPath.length > 0)
-					trace("Current target: " + this._currentTarget);
+				//if(this._currentPath != null && this._currentPath.length > 0)
+					//trace("Current target: " + this._currentTarget);
 			}
 			else if(this._state == CHASING)
 			{
@@ -179,7 +178,7 @@
 			//trace("current target " + this._currentTarget);
 			if(this._target == null || this._navGraph == null)
 			{
-				trace("Idle state - no target");
+				//trace("Idle state - no target");
 				return IDLE;
 			}
 			//get the path
@@ -189,13 +188,13 @@
 							
 			if(this._currentPath == null)
 			{
-				trace("Idle state - no path");
+				//trace("Idle state - no path");
 				return IDLE;
 			}
 			
 			if(this._currentPath.length == 1)
 			{
-				trace("Chasing state");
+				//trace("Chasing state");
 				return CHASING;
 			}
 			if(this._currentPath != null)
@@ -203,7 +202,7 @@
 				this._currentTarget = this._currentPath.pop().position;
 				this._currentTarget = this._currentPath.pop().position;
 				
-				trace("Searching state");
+				//trace("Searching state");
 				return SEARCHING;
 			}
 			
