@@ -1,5 +1,6 @@
 ﻿package  com.jakobwilson.Cannon
 {
+	import away3d.audio.drivers.SimplePanVolumeDriver;
 	import away3d.audio.Sound3D;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.View3D;
@@ -26,7 +27,7 @@
 		private var _firePower:Vector3D;	/**< the force applied to the shot when it's fired*/
 		private var _view:View3D; 			/**< The view*/
 		private var _world:AWPDynamicsWorld;/**< The physics world*/
-		//private var _firingSound:Sound3D;
+		private var _firingSound:Sound3D;
 		
 		private var _canKnockBack:Boolean = true;
 		
@@ -51,7 +52,7 @@
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.grow);
 			this._stateTimer.start();
 			
-			//this._firingSound = new Sound3D(SoundAS.getSound("CannonFiring").sound, ObjectContainer3D(this._model));
+			//this._firingSound = new Sound3D(SoundAS.getSound("CannonFiring").sound, this._view.camera, new SimplePanVolumeDriver());
 		}
 		
 		private function grow(e:Event)
