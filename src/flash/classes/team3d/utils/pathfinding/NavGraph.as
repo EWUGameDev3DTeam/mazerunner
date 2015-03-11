@@ -20,7 +20,7 @@
 	*/
 	public class NavGraph 
 	{
-		public static const INFINITY:Number = 10000000000000000000000000.0;
+		public static const INFINITY:Number = 100000000000000000000000000000.0;
 		
 		private var waypoints:Vector.<PathNode>;
 		

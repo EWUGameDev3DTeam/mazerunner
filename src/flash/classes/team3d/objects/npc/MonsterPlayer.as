@@ -255,12 +255,12 @@
 			
 			var path:Vector.<PathNode> = new Vector.<PathNode>;
 			
-			path.push(new PathNode(this._character.ghostObject.position));
+			
 			
 			for each(var p:PathNode in this._currentPath)
 				path.push(p);
 				
-			
+			path.push(new PathNode(this._character.ghostObject.position));
 			var ret:ObjectContainer3D =  NavGraph.getPathMesh(path);
 			var target: Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF00FF));
 			target.position = this._currentTarget;
