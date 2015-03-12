@@ -144,7 +144,10 @@
 					
 				vf = this._currentTarget.subtract(this._character.ghostObject.position);
 				vf.normalize();
-				this._character.ghostObject.rotationY = Math.atan(vf.x/vf.z)*57.2957795;
+				if(vf.z > 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
+				else if(vf.z < 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
 				vf.scaleBy($speed);
 				//if(this._currentPath != null && this._currentPath.length > 0)
 					//trace("Current target: " + this._currentTarget);
@@ -154,7 +157,10 @@
 				this._currentTarget = this._target.position;
 				vf = this._currentTarget.subtract(this._character.ghostObject.position);
 				vf.normalize();
-				this._character.ghostObject.rotationY = Math.atan(vf.x/vf.z)*57.2957795;
+				if(vf.z > 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
+				else if(vf.z < 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
 				vf.scaleBy($speed);
 			}
 			
