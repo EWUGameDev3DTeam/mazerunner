@@ -66,6 +66,7 @@
 		private var _entranceAnimation		:MoveYAnimation;
 		private var _entranceOpenTrigger	:Trigger3D;
 		private var _entranceCloseTrigger	:Trigger3D;
+		private var _timeStartTrigger		:Trigger3D;
 		private var _entranceWall			:Asset;
 		
 		private var _exitAnimation			:MoveYAnimation;
@@ -116,6 +117,7 @@
 		{
 			_player.Camera.lens.far = 5000;
 			_player.canWalk = true;
+			_monster.Begin();
 		}
 		
 		private function openEntrance($a:Asset):void
@@ -130,7 +132,6 @@
 		{
 			_entranceOpenTrigger.end();
 			_entranceCloseTrigger.end();
-			_timer.start();
 			_entranceAnimation.Reverse();
 			
 			SoundAS.pause("DoorsOpening");
@@ -149,6 +150,11 @@
 			SoundAS.playFx("TimeEnds");
 			SoundAS.playFx("DoorClosing", 2);
 			closeExit();
+		}
+		
+		private function startTimer($a:Asset):void
+		{
+			_timer.start();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -177,13 +183,13 @@
 			
 			createPlayer();
 			var maze:Maze = createMaze(rows, cols, _player.controller.ghostObject);
-			createEntrance(maze);
-			wireTriggers(maze);
+			createElevator(maze);
 			createGround();
 			createMonster();
+			wireTriggers(maze);
 			
 			_cageAnimation = new MoveYAnimation(_cage, 10, 20, cageDone);
-			_entranceAnimation = new MoveYAnimation(_entranceWall, 1, -_wallHeight);
+			_entranceAnimation = new MoveYAnimation(_maze.entranceWall, 1, -_wallHeight);
 			_exitAnimation = new MoveYAnimation(_maze.exitWall, 1, -_wallHeight, null, checkWin);
 			
 			//*			TEMPORARY KEY BINDINGS
@@ -219,28 +225,32 @@
 		
 		private function wireTriggers($maze:Maze):void
 		{
-			var pos:int = int(Math.floor($maze.Columns * 0.5));
-			_entranceWall = $maze.GetRoom(0, pos).RowWall;
+			var entranceWall:Asset = $maze.entranceWall;
+			var exitWall:Asset = $maze.exitWall;
 			//_exitWall = $maze.RowBorder[pos];
 			
-			Bounds.getMeshBounds(_entranceWall.model);
+			Bounds.getMeshBounds(entranceWall.model);
 			_wallHeight = Bounds.height;
-			
+			DebugScreen.Text("text: " + entranceWall);
 			_entranceOpenTrigger = new Trigger3D(2000);
 			_entranceOpenTrigger.TriggeredSignal.add(openEntrance);
-			_entranceOpenTrigger.position = _entranceWall.model.position;
+			_entranceOpenTrigger.position = entranceWall.model.position;
 			_entranceOpenTrigger.addObjectActivator(_player.controller.ghostObject);
 			_entranceOpenTrigger.begin();
 			
 			_entranceCloseTrigger = new Trigger3D(800);
 			_entranceCloseTrigger.TriggeredSignal.add(closeEntrance);
-			_entranceCloseTrigger.position = new Vector3D(_entranceWall.position.x, _entranceWall.position.y, _entranceWall.position.z + 800);
-			_entranceCloseTrigger.addObjectActivator(_player.controller.ghostObject);
+			_entranceCloseTrigger.position = new Vector3D(entranceWall.position.x, entranceWall.position.y, entranceWall.position.z + 800);
+			_entranceCloseTrigger.addObjectActivator(_monster.controller.ghostObject);
 			_entranceCloseTrigger.begin();
 			
+			_timeStartTrigger = new Trigger3D(800);
+			_timeStartTrigger.TriggeredSignal.add(startTimer);
+			_timeStartTrigger.position = new Vector3D(entranceWall.position.x, entranceWall.position.y, entranceWall.position.z + 800);
+			_timeStartTrigger.addObjectActivator(_player.controller.ghostObject);
+			_timeStartTrigger.begin();
+			
 			_exitCloseTrigger = new Trigger3D(800);
-			_exitCloseTrigger.TriggeredSignal.add(closeExit);
-			var exitWall:Asset = _maze.exitWall;
 			_exitCloseTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 810);
 			_exitCloseTrigger.addObjectActivator(_player.controller.ghostObject);
 			_exitCloseTrigger.begin();
@@ -248,26 +258,6 @@
 			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 6000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
 			_winTrigger.begin();
-		}
-		
-		private function createEntrance($maze:Maze):void
-		{
-			var roomnum:int = int(Math.floor($maze.Columns * 0.5));
-			var wall:Asset = $maze.GetRoom(0, roomnum).RowWall;
-			Bounds.getMeshBounds(wall.model);
-			var wallLength:Number = Bounds.depth;
-			
-			_cage = AssetManager.instance.getCopy("Cage");
-			Bounds.getMeshBounds(_cage.model);
-			var cageLength:Number = Bounds.depth;
-			
-			Bounds.getMeshBounds(_cage.model);
-			var x:Number = wall.position.x + (wallLength * 0.5);
-			var z:Number = wall.position.z - (Bounds.depth * 0.5) - 50;
-			_cage.transformTo(new Vector3D(x, 4000, z));
-			World.instance.addObject(_cage);
-			
-			_player.controller.warp(new Vector3D(_cage.position.x, _cage.position.y + 500, _cage.position.z));
 		}
 		
 		private function createPlayer():void
@@ -299,14 +289,50 @@
 			//end navgraph			
 			
 			//Create a Monster
-			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"),300, 100, 0.05);
-			_monster.controller.ghostObject.position = new Vector3D(750,150, 750);
+			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"), 300, 100, 0.05);
+			_monster.controller.ghostObject.position = new Vector3D(_player.controller.ghostObject.x, 150, _player.controller.ghostObject.z - 7000);
 			_monster.NavGraph = this._graph;
 			_monster.setTarget(this._player.controller.ghostObject.skin);
 			_monster.addToWorld(World.instance.view, World.instance.physics);
 			_monster.targetTouchedSignal.add(this.failedGame);
-			_monster.Begin();
 		}
+		
+		private function createMaze($rows:int, $cols:int, $ghost:AWPGhostObject):Maze
+		{
+			var wall:Asset = AssetManager.instance.getAsset("Wall");
+			var floor:Asset = AssetManager.instance.getAsset("Floor");
+			
+			var startx:Number = 0;
+			var startz:Number = 0;
+			
+			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, $ghost, wall, floor);
+			World.instance.addMaze(maze);
+			_maze = maze;///Added for AI - Jake
+			
+			return maze;
+		}
+		
+		private function createElevator($maze:Maze):void
+		{
+			var roomnum:int = int(Math.floor($maze.Columns * 0.5));
+			var wall:Asset = $maze.GetRoom(0, roomnum).RowWall;
+			Bounds.getMeshBounds(wall.model);
+			var wallLength:Number = Bounds.depth;
+			
+			_cage = AssetManager.instance.getCopy("Cage");
+			Bounds.getMeshBounds(_cage.model);
+			var cageLength:Number = Bounds.depth;
+			
+			Bounds.getMeshBounds(_cage.model);
+			var x:Number = wall.position.x + (wallLength * 0.5);
+			var z:Number = wall.position.z - (Bounds.depth * 0.5) - 50;
+			_cage.transformTo(new Vector3D(x, 4000, z));
+			World.instance.addObject(_cage);
+			
+			_player.controller.warp(new Vector3D(_cage.position.x, _cage.position.y + 500, _cage.position.z));
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
 		
 		private function checkWin():void
 		{
@@ -326,20 +352,7 @@
 			this.DoneSignal.dispatch(true);
 		}
 		
-		private function createMaze($rows:int, $cols:int, $ghost:AWPGhostObject):Maze
-		{
-			var wall:Asset = AssetManager.instance.getAsset("Wall");
-			var floor:Asset = AssetManager.instance.getAsset("Floor");
-			
-			var startx:Number = 0;
-			var startz:Number = 0;
-			
-			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, $ghost, wall, floor);
-			World.instance.addMaze(maze);
-			_maze = maze;///Added for AI - Jake
-			
-			return maze;
-		}
+		/* ---------------------------------------------------------------------------------------- */
 		
 		public function Unpause()
 		{
@@ -368,9 +381,7 @@
 		
 		protected function pauseGame():void
 		{
-			if (_paused)
-				return;
-			
+			if (_paused) return;
 			this.PausedSignal.dispatch();
 		}
 		
@@ -415,12 +426,8 @@
 		private function endCannons():void
 		{
 			for (var row:int = 0; row < _maze.Rows; row++)
-			{
 				for (var col:int = 0; col < _maze.Columns; col++)
-				{
 					_maze.GetRoom(row, col).endCannons();
-				}
-			}
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

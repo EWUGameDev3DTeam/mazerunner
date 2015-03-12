@@ -105,6 +105,7 @@ package team3d.builders
 			genMaze(maze, $startx, $startz, wall, floor);
 			addCannons(maze, $ghost);
 			addExit(maze, wall, floor);
+			addEntrance(maze, wall, floor);
 			
 			return maze;
 		}
@@ -336,26 +337,40 @@ package team3d.builders
 			{
 				zloc = floorLength * ($maze.Rows + i) + halfLength;
 				exit.push(moveAsset($floor.clone(), xloc, zloc + halfWidth, 0, 0, 0));
-				//floor = AssetManager.instance.getCopy("Floor");
-				//floor.transformTo(new Vector3D(xloc, 0, zloc + halfWidth));
-				//World.instance.addObject(floor);
 				exit.push(moveAsset($wall.clone(), xloc - halfLength, zloc + halfWidth, 0, 0, 0));
-				//wall = AssetManager.instance.getCopy("Wall");
-				//wall.transformTo(new Vector3D(xloc - halfLength, 0, zloc + halfWidth));
-				//World.instance.addObject(wall);
-				
 				exit.push(moveAsset($wall.clone(), xloc + halfLength, zloc + halfWidth, 0, 0, 0));
-				//wall = AssetManager.instance.getCopy("Wall");
-				//wall.transformTo(new Vector3D(xloc + halfLength, 0, zloc + halfWidth));
-				//World.instance.addObject(wall);
 			}
 			
 			exit.push(moveAsset($wall.clone(), xloc +halfWidth, zloc + halfLength, 0, 0, 0, true));
-			//wall = AssetManager.instance.getCopy("Wall");
-			//wall.transformTo(new Vector3D(xloc + halfWidth, 0, zloc + halfLength));
-			//wall.rotateTo(new Vector3D(0, 90, 0));
 			$maze.exit = exit;
-			//World.instance.addObject(wall);
+		}
+		
+		private function addEntrance($maze:Maze, $wall:Asset, $floor:Asset)
+		{
+			var entrance:Vector.<Asset> = new Vector.<Asset>();
+			Bounds.getMeshBounds($floor.model);
+			var floorLength:Number = Bounds.depth;
+			
+			Bounds.getMeshBounds($wall.model);
+			var wallWidth:Number = Bounds.width;
+			
+			var entranceWall:Asset = $maze.GetRoom(0, int(Math.floor($maze.Columns * 0.5))).RowWall;
+			//var entranceWall:Asset = $maze.RowBorder[int(Math.floor($maze.Columns * 0.5))];
+			$maze.entranceWall = entranceWall;
+			var xloc:Number = entranceWall.position.x;
+			
+			var zloc:Number;
+			var halfWidth:Number = wallWidth * 0.5;
+			var halfLength:Number = floorLength * 0.5;
+			for (var i:int = 1; i <= 10; i++)
+			{
+				zloc = -floorLength * i + halfLength;
+				entrance.push(moveAsset($floor.clone(), xloc, zloc + halfWidth, 0, 0, 0));
+				entrance.push(moveAsset($wall.clone(), xloc - halfLength, zloc + halfWidth, 0, 0, 0));
+				entrance.push(moveAsset($wall.clone(), xloc + halfLength, zloc + halfWidth, 0, 0, 0));
+			}
+			entrance.push(moveAsset($wall.clone(), xloc, zloc - halfLength + halfWidth, 0, 0, 0, true));
+			$maze.entrance = entrance;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

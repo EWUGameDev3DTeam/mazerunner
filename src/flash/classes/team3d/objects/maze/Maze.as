@@ -19,6 +19,7 @@
 		private var _rows			:int;
 		private var _cols			:int;
 		private var _exit			:Vector.<Asset>;
+		private var _entrance		:Vector.<Asset>;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -179,6 +180,18 @@
 		public function get exit():Vector.<Asset>
 		{
 			return _exit;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set entrance($entrance:Vector.<Asset>):void
+		{
+			_entrance = $entrance;
+		}
+		
+		public function get entrance():Vector.<Asset>
+		{
+			return _entrance;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
