@@ -5,8 +5,7 @@
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.tools.utils.Bounds;
-	import away3d.materials.ColorMaterial;
-	import away3d.primitives.CubeGeometry;
+	import awayphysics.collision.dispatch.AWPGhostObject;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
@@ -24,15 +23,16 @@
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
+	import team3d.factory.CannonFactory;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.maze.MazeRoom;
+	import team3d.objects.npc.MonsterPlayer;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
 	import team3d.utils.CountDownTimer;
 	import team3d.utils.pathfinding.NavGraph;
 	import treefortress.sound.SoundAS;
-	import team3d.objects.npc.MonsterPlayer;
 	
 	/**
 	 *
@@ -59,7 +59,6 @@
 		/** set to true for debug output*/
 		private var _debug = false;
 		
-		public static const origin		:Vector3D = new Vector3D();
 		private var _cage				:Asset;
 		private var _cageMoving			:Boolean;
 		
@@ -82,8 +81,6 @@
 		private var _timerText			:TextField;
 		private var _timer				:CountDownTimer;
 		
-		private var _cannons 			:Vector.<Cannon>	// a vector to hold cannons so they won't get garbage collected. 
-															//This should be removed after cannons are refactored
 		private var _monster:MonsterPlayer;
 		private var _monsterPath:ObjectContainer3D;		//the monster's path mesh for debug
 		/* ---------------------------------------------------------------------------------------- */
@@ -192,24 +189,13 @@
 			_exitOpening = true;
 			_won = false;
 			
-			//Create player
-			/*
-			_player = new KinematicPlayer(World.instance.view.camera, 300,100,0.4);
-			_player.addToWorld(World.instance.view, World.instance.physics);
-			_player.controller.warp(new Vector3D(0, 10000, 0));
-			_player.Begin();
-			*/
-			//end player
-			
-			
-			AssetManager.instance.getAsset("Ground").scaleTo(new Vector3D(100,100,100));
-			AssetManager.instance.getAsset("Ground").transformTo(new Vector3D(0,-5,0));
-			AssetManager.instance.getAsset("Ground").addToScene(World.instance.view, World.instance.physics);
 			createPlayer();
-			var maze:Maze = createMaze(rows, cols);
+			var maze:Maze = createMaze(rows, cols, _player.controller.ghostObject);
 			createEntrance(maze);
 			createExit(maze);
 			wireTriggers(maze);
+			createGround();
+			createMonster();
 			
 			//*			TEMPORARY KEY BINDINGS
 			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
@@ -229,21 +215,7 @@
 				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
 			
-			//create navGraph
-			this._graph = new NavGraph();
-			this._graph.genFromMaze(this._maze.Rooms, new Vector3D(425, 300, 425));
-			if(this._debug)
-				World.instance.view.scene.addChild(this._graph.getWaypointMesh());
-			//end navgraph			
-			
-			//Create a Monster
-			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"),300, 100, 0.05);
-			_monster.controller.ghostObject.position = new Vector3D(750,150, 750);
-			_monster.NavGraph = this._graph;
-			_monster.setTarget(this._player.controller.ghostObject.skin);
-			_monster.addToWorld(World.instance.view, World.instance.physics);
-			_monster.targetTouchedSignal.add(this.failedGame);
-			_monster.Begin();
+
 			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
@@ -361,14 +333,30 @@
 			_player.Begin();
 		}
 		
-		public function createCannon($transform:Vector3D, $rotation:Vector3D)
+		private function createGround():void
 		{
-			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			cannon.addObjectActivator(this._player.controller.ghostObject);
-			cannon.transformTo($transform);
-			cannon.rotateTo($rotation);
-			cannon.addToScene(World.instance.view, World.instance.physics);
-			this._cannons.push(cannon);
+			AssetManager.instance.getAsset("Ground").scaleTo(new Vector3D(100,100,100));
+			AssetManager.instance.getAsset("Ground").transformTo(new Vector3D(0,-5,0));
+			AssetManager.instance.getAsset("Ground").addToScene(World.instance.view, World.instance.physics);
+		}
+		
+		private function createMonster():void
+		{
+			//create navGraph
+			this._graph = new NavGraph();
+			this._graph.genFromMaze(this._maze.Rooms, new Vector3D(425, 300, 425));
+			if(this._debug)
+				World.instance.view.scene.addChild(this._graph.getWaypointMesh());
+			//end navgraph			
+			
+			//Create a Monster
+			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"),300, 100, 0.05);
+			_monster.controller.ghostObject.position = new Vector3D(750,150, 750);
+			_monster.NavGraph = this._graph;
+			_monster.setTarget(this._player.controller.ghostObject.skin);
+			_monster.addToWorld(World.instance.view, World.instance.physics);
+			_monster.targetTouchedSignal.add(this.failedGame);
+			_monster.Begin();
 		}
 		
 		private function checkWin():void
@@ -389,7 +377,7 @@
 			this.DoneSignal.dispatch(true);
 		}
 		
-		private function createMaze($rows:int, $cols:int):Maze
+		private function createMaze($rows:int, $cols:int, $ghost:AWPGhostObject):Maze
 		{
 			var wall:Asset = AssetManager.instance.getAsset("Wall");
 			var floor:Asset = AssetManager.instance.getAsset("Floor");
@@ -397,49 +385,10 @@
 			var startx:Number = 0;
 			var startz:Number = 0;
 			
-			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, wall, floor);
+			var maze:Maze = MazeBuilder.instance.Build($rows, $cols, startx, startz, $ghost, wall, floor);
 			World.instance.addMaze(maze);
-			this._maze = maze;///Added for AI - Jake
-			_cannons = new Vector.<Cannon>();
-			for (var i:Number = 0; i < maze.Rooms.length; i++)
-			{	
-				var rooms = maze.Rooms[i];
-				
-				if (rooms != null)
-				{
-					for(var j:Number = 0; j < rooms.length; j++)
-					{
-						var room:MazeRoom = rooms[j];
-						var transform1:Vector3D;
-						var transform2:Vector3D;
-						var transform3:Vector3D;
-						
-						var side:Number = Math.random();
-						var chance:Number = Math.random();
-						
-						if (side < .5 && room.ColumnWall != null && chance < .5)
-						{
-							transform1 = room.ColumnWall.position.add(new Vector3D(50, 200, 200));
-							transform2 = room.ColumnWall.position.add(new Vector3D(50, 200, -200));
-							transform3 = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
-							
-							this.createCannon(transform1, new Vector3D(0, 90));
-							this.createCannon(transform2, new Vector3D(0, 90));
-							this.createCannon(transform3, new Vector3D(0, 90));
-						}
-						else if (room.RowWall != null && chance < .5)
-						{
-							transform1 = room.RowWall.position.add(new Vector3D(200, 200, 50));
-							transform2 = room.RowWall.position.add(new Vector3D( -200, 200, 50));
-							transform3 = room.RowWall.position.add(new Vector3D(0, 200, 50));
-							
-							this.createCannon(transform1, origin);
-							this.createCannon(transform2, origin);
-							this.createCannon(transform3, origin);
-						}
-					}
-				}
-			}
+			_maze = maze;///Added for AI - Jake
+			
 			return maze;
 		}
 		
@@ -492,12 +441,9 @@
 			_entranceOpen.end();
 			_exitClose.end();
 			
-			for each(var c:Cannon in this._cannons)
-				c.End();
-			this._cannons = null;
+			endCannons();
 			
 			SoundAS.pause("GameMusic");
-			
 			SoundAS.playFx("PlayerDeath");
 			
 			World.instance.unlockMouse();
@@ -507,6 +453,17 @@
 			
 			World.instance.End();
 			super.End();
+		}
+		
+		private function endCannons():void
+		{
+			for (var row:int = 0; row < _maze.Rows; row++)
+			{
+				for (var col:int = 0; col < _maze.Columns; col++)
+				{
+					_maze.GetRoom(row, col).endCannons();
+				}
+			}
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

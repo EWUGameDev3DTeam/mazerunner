@@ -23,7 +23,7 @@
 		private var _view:View3D;
 		private var _world:AWPDynamicsWorld;
 		private const degreesToRad:Number = 0.0174532925;
-		private var _nFire:Number = 0;
+		private var _nFire:Number;
 		private var _firingTriggerContainer:ObjectContainer3D;
 		
 		/**
@@ -39,6 +39,7 @@
 			this._firingTriggerContainer = ObjectContainer3D(this._firingTrigger);
 			this._cannon.model.addChild(this._firingTriggerContainer);
 			
+			this._nFire = int(Math.random() * 2);
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
 		}
