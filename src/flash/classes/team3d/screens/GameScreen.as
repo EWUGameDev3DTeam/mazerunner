@@ -21,6 +21,7 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.osflash.signals.Signal;
+	import team3d.animation.MoveYAnimation;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
 	import team3d.factory.CannonFactory;
@@ -43,46 +44,41 @@
 	{
 		/* ---------------------------------------------------------------------------------------- */
 		
-		public var PausedSignal			:Signal;
+		public var PausedSignal				:Signal;
 		
-		private var _paused				:Boolean;
-		private var _controlsEnabled	:Boolean;
+		private var _paused					:Boolean;
+		private var _controlsEnabled		:Boolean;
 		
-		private var _player				:KinematicPlayer;
-		private var _flyPlayer			:FlyPlayer;
+		private var _player					:KinematicPlayer;
+		private var _flyPlayer				:FlyPlayer;
 		
-		private var _graph				:NavGraph;
+		private var _graph					:NavGraph;
 		
-		private var _cube				:Mesh;		//for debug, remove before release
-		private var _path				:ObjectContainer3D;
-		private var _maze				:Maze;
+		private var _cube					:Mesh;		//for debug, remove before release
+		private var _path					:ObjectContainer3D;
+		private var _maze					:Maze;
 		/** set to true for debug output*/
 		private var _debug = false;
 		
-		private var _cage				:Asset;
-		private var _cageMoving			:Boolean;
+		private var _cageAnimation			:MoveYAnimation;
+		private var _cage					:Asset;
 		
-		private var _entranceOpen		:Trigger3D;
-		private var _entranceClose		:Trigger3D;
-		private var _entranceOpening	:Boolean;
-		private var _entranceClosing	:Boolean;
-		private var _entranceTriggered	:Boolean;
-		private var _entranceWall		:Asset;
+		private var _entranceAnimation		:MoveYAnimation;
+		private var _entranceOpenTrigger	:Trigger3D;
+		private var _entranceCloseTrigger	:Trigger3D;
+		private var _entranceWall			:Asset;
 		
-		private var _exitClose			:Trigger3D;
-		private var _exitClosing		:Boolean;
-		private var _exitOpening		:Boolean;
-		private var _exitWall			:Asset;
-		private var _winTrigger			:Trigger3D;
-		private var _won				:Boolean;
+		private var _exitAnimation			:MoveYAnimation;
+		private var _exitCloseTrigger		:Trigger3D;
+		private var _winTrigger				:Trigger3D;
 		
-		private var _wallHeight			:Number;
+		private var _wallHeight				:Number;
 		
-		private var _timerText			:TextField;
-		private var _timer				:CountDownTimer;
+		private var _timerText				:TextField;
+		private var _timer					:CountDownTimer;
 		
-		private var _monster:MonsterPlayer;
-		private var _monsterPath:ObjectContainer3D;		//the monster's path mesh for debug
+		private var _monster				:MonsterPlayer;
+		private var _monsterPath			:ObjectContainer3D;		//the monster's path mesh for debug
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -103,7 +99,7 @@
 			_winTrigger.TriggeredSignal.add(wonGame);
 			
 			_timer = new CountDownTimer();
-			_timer.CompletedSignal.add(closeExit);
+			_timer.CompletedSignal.add(timeUp);
 			
 			var format:TextFormat = new TextFormat();
 			format.size = 60;
@@ -116,24 +112,26 @@
 			this.addChild(_timerText);
 		}
 		
+		private function cageDone():void
+		{
+			_player.Camera.lens.far = 5000;
+			_player.canWalk = true;
+		}
+		
 		private function openEntrance($a:Asset):void
 		{
-			_entranceOpening = true;
+			_entranceOpenTrigger.end();
+			_entranceAnimation.Begin();
 			
 			SoundAS.playFx("DoorsOpening", .2);
 		}
 		
 		private function closeEntrance($a:Asset):void
 		{
-			if (!_entranceClosing)
-				_timer.start();
-			
-			_entranceClosing = true;
-			if (_entranceOpening)
-			{
-				_entranceOpening = false;
-				_entranceOpen.end();
-			}
+			_entranceOpenTrigger.end();
+			_entranceCloseTrigger.end();
+			_timer.start();
+			_entranceAnimation.Reverse();
 			
 			SoundAS.pause("DoorsOpening");
 			SoundAS.pause("Elevator");
@@ -141,22 +139,16 @@
 		
 		private function closeExit($a:Asset = null):void
 		{
-			if (!_exitClosing)
-				_timer.stop();
-			
-			_exitClosing = true;
-			if (_exitOpening)
-				_exitOpening = false;
+			_exitCloseTrigger.end();
+			_timer.stop();
+			_exitAnimation.Reverse();
 		}
 		
 		private function timeUp():void
 		{
-			_exitClosing = true;
-			
 			SoundAS.playFx("TimeEnds");
 			SoundAS.playFx("DoorClosing", 2);
-			
-			_won = false;
+			closeExit();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -177,25 +169,22 @@
 			
 			SoundAS.playLoop("GameMusic", .05);
 			
-			_timer.reset(5,5,0);
+			_timer.reset(0,5,0);
 			_timerText.textColor = 0xFFFFFF;
 			
-			_cageMoving = true;
 			_controlsEnabled = false;
 			_paused = false;
-			_entranceOpening = false;
-			_entranceClosing = false;
-			_exitClosing = false;
-			_exitOpening = true;
-			_won = false;
 			
 			createPlayer();
 			var maze:Maze = createMaze(rows, cols, _player.controller.ghostObject);
 			createEntrance(maze);
-			createExit(maze);
 			wireTriggers(maze);
 			createGround();
 			createMonster();
+			
+			_cageAnimation = new MoveYAnimation(_cage, 10, 20, cageDone);
+			_entranceAnimation = new MoveYAnimation(_entranceWall, 1, -_wallHeight);
+			_exitAnimation = new MoveYAnimation(_maze.exitWall, 1, -_wallHeight, null, checkWin);
 			
 			//*			TEMPORARY KEY BINDINGS
 			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
@@ -204,8 +193,6 @@
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
-			
-			//World.instance.view.camera = FlyController(_player.Controller).Camera;
 			KeyboardManager.instance.addKeyUpListener(KeyCode.P, pauseGame);
 			
 			//Create the skybox
@@ -214,8 +201,6 @@
 			else
 				AssetManager.instance.getAsset("Sky").addToScene(World.instance.view, World.instance.physics);
 			//end skybox
-			
-
 			
 			var rectangle:Shape = new Shape;
 			rectangle.name = "rectangleFade";
@@ -226,6 +211,8 @@
 			//toggleCamera();
 			
 			TweenMax.fromTo(rectangle, 2, {autoAlpha: 1}, {autoAlpha: 0, delay: 0.5});
+			_cageAnimation.Begin();
+			_exitAnimation.Begin();
 			
 			_player.canWalk = false;
 		}
@@ -239,66 +226,28 @@
 			Bounds.getMeshBounds(_entranceWall.model);
 			_wallHeight = Bounds.height;
 			
-			_entranceOpen = new Trigger3D(2000);
-			_entranceOpen.TriggeredSignal.add(openEntrance);
-			_entranceOpen.position = _entranceWall.model.position;
-			_entranceOpen.addObjectActivator(_player.controller.ghostObject);
-			_entranceOpen.begin();
+			_entranceOpenTrigger = new Trigger3D(2000);
+			_entranceOpenTrigger.TriggeredSignal.add(openEntrance);
+			_entranceOpenTrigger.position = _entranceWall.model.position;
+			_entranceOpenTrigger.addObjectActivator(_player.controller.ghostObject);
+			_entranceOpenTrigger.begin();
 			
-			_entranceClose = new Trigger3D(800);
-			_entranceClose.TriggeredSignal.add(closeEntrance);
-			_entranceClose.position = new Vector3D(_entranceWall.position.x, _entranceWall.position.y, _entranceWall.position.z + 800);
-			_entranceClose.addObjectActivator(_player.controller.ghostObject);
-			_entranceClose.begin();
+			_entranceCloseTrigger = new Trigger3D(800);
+			_entranceCloseTrigger.TriggeredSignal.add(closeEntrance);
+			_entranceCloseTrigger.position = new Vector3D(_entranceWall.position.x, _entranceWall.position.y, _entranceWall.position.z + 800);
+			_entranceCloseTrigger.addObjectActivator(_player.controller.ghostObject);
+			_entranceCloseTrigger.begin();
 			
-			_exitClose = new Trigger3D(800);
-			_exitClose.TriggeredSignal.add(closeExit);
-			_exitClose.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 810);
-			_exitClose.addObjectActivator(_player.controller.ghostObject);
-			_exitClose.begin();
+			_exitCloseTrigger = new Trigger3D(800);
+			_exitCloseTrigger.TriggeredSignal.add(closeExit);
+			var exitWall:Asset = _maze.exitWall;
+			_exitCloseTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 810);
+			_exitCloseTrigger.addObjectActivator(_player.controller.ghostObject);
+			_exitCloseTrigger.begin();
 			
-			_winTrigger.position = new Vector3D(_exitWall.position.x, _exitWall.position.y, _exitWall.position.z + 6000);
+			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 6000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
 			_winTrigger.begin();
-		}
-		
-		private function createExit($maze:Maze):void
-		{
-			var floor:Asset = AssetManager.instance.getAsset("Floor");
-			Bounds.getMeshBounds(floor.model);
-			var floorLength:Number = Bounds.depth;
-			
-			var wall:Asset = AssetManager.instance.getAsset("Wall");
-			Bounds.getMeshBounds(wall.model);
-			var wallWidth:Number = Bounds.width;
-			
-			var exitRoom:int = Math.random() * $maze.Columns;
-			_exitWall = $maze.RowBorder[exitRoom];
-			var xloc:Number = _exitWall.position.x; // floorLength * exitRoom;
-			
-			var zloc:Number;
-			var halfWidth:Number = wallWidth * 0.5;
-			var halfLength:Number = floorLength * 0.5;
-			for (var i:int = 0; i < 10; i++)
-			{
-				zloc = floorLength * ($maze.Rows + i) + halfLength;
-				floor = AssetManager.instance.getCopy("Floor");
-				floor.transformTo(new Vector3D(xloc, 0, zloc + halfWidth));
-				World.instance.addObject(floor);
-				
-				wall = AssetManager.instance.getCopy("Wall");
-				wall.transformTo(new Vector3D(xloc - halfLength, 0, zloc + halfWidth));
-				World.instance.addObject(wall);
-				
-				wall = AssetManager.instance.getCopy("Wall");
-				wall.transformTo(new Vector3D(xloc + halfLength, 0, zloc + halfWidth));
-				World.instance.addObject(wall);
-			}
-			
-			wall = AssetManager.instance.getCopy("Wall");
-			wall.transformTo(new Vector3D(xloc + halfWidth, 0, zloc + halfLength));
-			wall.rotateTo(new Vector3D(0, 90, 0));
-			World.instance.addObject(wall);
 		}
 		
 		private function createEntrance($maze:Maze):void
@@ -361,7 +310,7 @@
 		
 		private function checkWin():void
 		{
-			if (_player.controller.ghostObject.position.z < _exitWall.position.z)
+			if (_player.controller.ghostObject.position.z < _maze.exitWall.position.z)
 				failedGame();
 		}
 		
@@ -397,7 +346,11 @@
 			_paused = false;
 			if(_timer.HasBeenStarted)
 				_timer.start();
-				
+			
+			_exitAnimation.Resume();
+			_entranceAnimation.Resume();
+			_cageAnimation.Resume();
+			
 			SoundAS.resumeAll();
 		}
 		
@@ -405,6 +358,10 @@
 		{
 			_paused = true;
 			_timer.stop();
+			
+			_exitAnimation.Pause();
+			_entranceAnimation.Pause();
+			_cageAnimation.Pause();
 			
 			SoundAS.pauseAll();
 		}
@@ -437,9 +394,9 @@
 			_flyPlayer.End();
 			_monster.End();
 			
-			_entranceClose.end();
-			_entranceOpen.end();
-			_exitClose.end();
+			_entranceCloseTrigger.end();
+			_entranceOpenTrigger.end();
+			_exitCloseTrigger.end();
 			
 			endCannons();
 			
@@ -493,29 +450,10 @@
 		
 		private function updateTimer():void
 		{
-			var seconds:String = _timer.Seconds.toString();
-			
-			if (_timer.Seconds < 10)
-				seconds = "0" + seconds;
-			
-			_timerText.text = _timer.Minutes + ":" + seconds;
-			
-			
-			if (_timer.Minutes < 1)
-			{
-				var millis:String = _timer.Milliseconds.toString();
-				if (_timer.Milliseconds < 100 && _timer.Milliseconds > 10)
-					millis = "0" + millis;
-				else if (_timer.Milliseconds < 10)
-					millis = "00" + millis;
-				
-				_timerText.appendText(":" + millis);
-			}
+			_timerText.text = _timer.toString();
 			
 			if (_timer.Minutes < 1 && _timer.Seconds > 30)
-			{
 				_timerText.textColor = 0xFFFF00;
-			}
 			else if (_timer.Minutes < 1 && _timer.Seconds < 30)
 				_timerText.textColor = 0xFF0000;
 		}
@@ -529,7 +467,21 @@
 		{
 			if (_paused)
 				return;
-				
+			
+			if (World.instance.isNormal || !World.instance.isMouseLocked)
+			{
+				pauseGame();
+				return;
+			}
+			
+			drawDebug();
+			updateTimer();
+			
+			World.instance.update();
+		}
+		
+		private function drawDebug():void
+		{
 			if(this._debug)
 			{
 				if(this._monsterPath != null && World.instance.view.scene.contains(this._monsterPath))
@@ -538,63 +490,6 @@
 				if(this._monsterPath != null)
 					World.instance.view.scene.addChild(this._monsterPath);
 			}
-			
-			if (World.instance.isNormal || !World.instance.isMouseLocked)
-			{
-				pauseGame();
-				return;
-			}
-			
-			updateTimer();
-			
-			if (_cageMoving)
-			{
-				_cage.transformTo(new Vector3D(_cage.position.x, _cage.position.y - 10, _cage.position.z));
-				if (_cage.position.y <= 20)
-				{
-					_cageMoving = false;
-					_player.Camera.lens.far = 5000;
-					_player.canWalk = true;
-				}
-			}
-			
-			if (_entranceOpening)
-			{
-				_entranceWall.transformTo(new Vector3D(_entranceWall.position.x, _entranceWall.position.y - 1, _entranceWall.position.z));
-				if (_entranceWall.position.y + _wallHeight <= 0)
-				{
-					_entranceOpening = false;
-					_entranceOpen.end();
-				}
-			}
-			else if (_entranceClosing)
-			{
-				_entranceWall.transformTo(new Vector3D(_entranceWall.position.x, _entranceWall.position.y + 1, _entranceWall.position.z));
-				if (_entranceWall.position.y >= 0)
-				{
-					_entranceClosing = false;
-					_entranceClose.end();
-				}
-			}
-			
-			if (_exitClosing)
-			{
-				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y + 1, _exitWall.position.z));
-				if (_exitWall.position.y >= 0)
-				{
-					_exitClosing = false;
-					_exitClose.end();
-					checkWin();
-				}
-			}
-			else if (_exitOpening)
-			{
-				_exitWall.transformTo(new Vector3D(_exitWall.position.x, _exitWall.position.y - 1, _exitWall.position.z));
-				if (_exitWall.position.y + _wallHeight <= 0)
-					_exitOpening = false;
-			}
-			
-			World.instance.update();
 		}
 		
 		override protected function resize($e:Event = null):void 

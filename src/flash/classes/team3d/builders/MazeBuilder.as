@@ -104,6 +104,7 @@ package team3d.builders
 			
 			genMaze(maze, $startx, $startz, wall, floor);
 			addCannons(maze, $ghost);
+			addExit(maze, wall, floor);
 			
 			return maze;
 		}
@@ -313,6 +314,48 @@ package team3d.builders
 					}
 				}
 			}
+		}
+		
+		private function addExit($maze:Maze, $wall:Asset, $floor:Asset):void
+		{
+			var exit:Vector.<Asset> = new Vector.<Asset>();
+			Bounds.getMeshBounds($floor.model);
+			var floorLength:Number = Bounds.depth;
+			
+			Bounds.getMeshBounds($wall.model);
+			var wallWidth:Number = Bounds.width;
+			
+			var exitWall:Asset = $maze.RowBorder[int(Math.random() * $maze.Columns)];
+			$maze.exitWall = exitWall;
+			var xloc:Number = exitWall.position.x;
+			
+			var zloc:Number;
+			var halfWidth:Number = wallWidth * 0.5;
+			var halfLength:Number = floorLength * 0.5;
+			for (var i:int = 0; i < 10; i++)
+			{
+				zloc = floorLength * ($maze.Rows + i) + halfLength;
+				exit.push(moveAsset($floor.clone(), xloc, zloc + halfWidth, 0, 0, 0));
+				//floor = AssetManager.instance.getCopy("Floor");
+				//floor.transformTo(new Vector3D(xloc, 0, zloc + halfWidth));
+				//World.instance.addObject(floor);
+				exit.push(moveAsset($wall.clone(), xloc - halfLength, zloc + halfWidth, 0, 0, 0));
+				//wall = AssetManager.instance.getCopy("Wall");
+				//wall.transformTo(new Vector3D(xloc - halfLength, 0, zloc + halfWidth));
+				//World.instance.addObject(wall);
+				
+				exit.push(moveAsset($wall.clone(), xloc + halfLength, zloc + halfWidth, 0, 0, 0));
+				//wall = AssetManager.instance.getCopy("Wall");
+				//wall.transformTo(new Vector3D(xloc + halfLength, 0, zloc + halfWidth));
+				//World.instance.addObject(wall);
+			}
+			
+			exit.push(moveAsset($wall.clone(), xloc +halfWidth, zloc + halfLength, 0, 0, 0, true));
+			//wall = AssetManager.instance.getCopy("Wall");
+			//wall.transformTo(new Vector3D(xloc + halfWidth, 0, zloc + halfLength));
+			//wall.rotateTo(new Vector3D(0, 90, 0));
+			$maze.exit = exit;
+			//World.instance.addObject(wall);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

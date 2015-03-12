@@ -11,11 +11,14 @@
 	{
 		/* ---------------------------------------------------------------------------------------- */
 		
-		private var _rooms		:Vector.<Vector.<MazeRoom>>;
-		private var _colWall	:Vector.<Asset>;
-		private var _rowWall	:Vector.<Asset>;
-		private var _rows		:int;
-		private var _cols		:int;
+		private var _rooms			:Vector.<Vector.<MazeRoom>>;
+		private var _colWall		:Vector.<Asset>;
+		private var _rowWall		:Vector.<Asset>;
+		private var _exitWall		:Asset;
+		private var _entranceWall	:Asset;
+		private var _rows			:int;
+		private var _cols			:int;
+		private var _exit			:Vector.<Asset>;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -166,44 +169,40 @@
 			_rooms = $rooms;
 		}
 		
+		/* ---------------------------------------------------------------------------------------- */
 		
-		
-		
-		/**---------------JAKES ADDITIONS-----------------------*/
-		
-		/**
-		*
-		*/
-		/*
-		public function getPath(start:Vector3D, end:Vector3D):Vector.<Vector3D>
+		public function set exit($exit:Vector.<Asset>):void
 		{
-			//dijkstra's!!!
-			var path:Vector.<Vector3D> = new Vector.<Vector3D>;
-			
-			var checked:Vector.<boolean[][]> = new Vector.<MazeRoom>;
-			
-			
-			
+			_exit = $exit;
 		}
 		
-		public function getClosestTile(v:Vector3D):Vector3D
+		public function get exit():Vector.<Asset>
 		{
-			var wallLength:int = 850;
-			var closest:Vector3D = new Vector3D(0,0,0);
-			var cur:Vector3D;
-			for(i:int = 0; i < _rooms.length;i++)
-			{
-				for(x:int = 0; j < _rooms[j].length;j++)
-				{
-					cur = new Vector3D(x*wallLength, 0, y*wallLength);
-					
-					if(cur.subtract(v).length < closest.subtract(v).length)
-						closest = cur;
-				}
-			}
-			return closest;
+			return _exit;
 		}
 		
-		*/
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set exitWall($exitWall:Asset):void
+		{
+			_exitWall = $exitWall;
+		}
+		
+		public function get exitWall():Asset
+		{
+			return _exitWall;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		public function set entranceWall($entrance:Asset):void
+		{
+			_entranceWall = $entrance;
+		}
+		
+		public function get entranceWall():Asset
+		{
+			return _entranceWall;
+		}
 	}
 }

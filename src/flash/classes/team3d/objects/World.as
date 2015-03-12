@@ -160,6 +160,9 @@
 				
 			for each(var colBorder in $m.ColumnBorder)
 				addObject(colBorder);
+			
+			for each(var asset in $m.exit)
+				addObject(asset);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
