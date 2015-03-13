@@ -272,7 +272,7 @@
 			
 			SoundAS.pause("title");
 			
-			this.removeChild(World.instance.view);
+			//this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));
 			
 			World.instance.End();

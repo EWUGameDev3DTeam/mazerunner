@@ -5,6 +5,7 @@ package team3d.bases
 	import org.osflash.signals.Signal;
 	import team3d.interfaces.IScreen;
 	import team3d.objects.World;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...
@@ -48,6 +49,8 @@ package team3d.bases
 			this.visible = true;
 			
 			resize();
+			
+			trace(_screenTitle + " started");
 		}
 		
 		protected function resize($e:Event = null):void

@@ -77,6 +77,9 @@
 		
 		private var _monster				:MonsterPlayer;
 		private var _monsterPath			:ObjectContainer3D;		//the monster's path mesh for debug
+		
+		private var _wonGame				:Boolean;
+		private var _lostGame				:Boolean;
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -163,7 +166,6 @@
 		{
 			super.Begin();
 			World.instance.Begin();
-			World.instance.physics.collisionCallbackOn = true;
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
@@ -172,11 +174,14 @@
 			
 			SoundAS.playLoop("GameMusic", .05);
 			
+			_timer.stop();
 			_timer.reset(5,5,0);
 			_timerText.textColor = 0xFFFFFF;
 			
 			_controlsEnabled = false;
 			_paused = false;
+			_wonGame = false;
+			_lostGame = false;
 			
 			createPlayer();
 			var maze:Maze = createMaze(rows, cols, _player.controller.ghostObject);
@@ -338,12 +343,16 @@
 		
 		private function failedGame():void
 		{
+			if (_lostGame) return;
+			_lostGame = true;
 			this._monster.targetTouchedSignal.remove(this.failedGame);
 			this.DoneSignal.dispatch(false);
 		}
 		
 		private function wonGame($a:Asset = null):void
 		{
+			if (_wonGame) return;
+			_wonGame = true;
 			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
 		}
@@ -406,6 +415,7 @@
 			_entranceCloseTrigger.end();
 			_entranceOpenTrigger.end();
 			_exitCloseTrigger.end();
+			_timeStartTrigger.end();
 			
 			endCannons();
 			
@@ -414,8 +424,9 @@
 			
 			World.instance.unlockMouse();
 			
-			this.removeChild(World.instance.view);
-			this.removeChild(this.getChildByName("rectangleFade"));
+			//this.removeChild(World.instance.view);
+			if(this.getChildByName("rectangleFade") != null)
+				this.removeChild(this.getChildByName("rectangleFade"));
 			
 			World.instance.End();
 			super.End();

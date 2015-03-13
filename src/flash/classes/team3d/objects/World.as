@@ -2,12 +2,15 @@
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import com.jakobwilson.Asset;
+	import flash.display.DisplayObject;
 	import flash.display.Stage;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
+	import team3d.screens.GameScreen;
+	import team3d.screens.TutorialScreen;
 	
 	/**
 	 * ...
@@ -41,7 +44,21 @@
 			PauseSignal = new Signal();
 			ResumeSignal = new Signal();
 			
+			createWorld();
+		}
+		
+		private function createWorld():void
+		{
 			_view = new View3D();
+			
+			//Set up the physics world
+			if (_physics == null)
+			{
+				_physics = AWPDynamicsWorld.getInstance();
+				_physics.initWithDbvtBroadphase();
+			}
+			_physics.gravity = new Vector3D(0, -4.6, 0);//move gravity to pull down on y axis
+			_physics.collisionCallbackOn = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -72,14 +89,8 @@
 		 */
 		public function Begin():void
 		{
-			_view = new View3D();
-			//Set up the physics world
-			if (_physics == null)
-			{
-				_physics = AWPDynamicsWorld.getInstance();
-				_physics.initWithDbvtBroadphase();
-			}
-			_physics.gravity = new Vector3D(0, -4.6, 0);//move gravity to pull down on y axis
+			if (_paused)
+				_paused = false;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -89,13 +100,18 @@
 		 */
 		public function End():void
 		{
-			_physics.cleanWorld(true);
-			
 			while (_view.scene.numChildren > 0)
 				_view.scene.removeChildAt(0);
+		
+			_physics.cleanWorld(true);
+				
+			var d:DisplayObject = _view.parent;
+			if (d == null) return;
 			
-			if(_view.stage3DProxy != null)
-				_view.dispose();
+			if (d is GameScreen)
+				GameScreen(d).removeChild(_view);
+			else
+				TutorialScreen(d).removeChild(_view);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

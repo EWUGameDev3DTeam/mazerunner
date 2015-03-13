@@ -129,7 +129,6 @@
 		*/
 		private function knockBack($e: AWPEvent):void
 		{
-			DebugScreen.Text("here", true);
 			this._canKnockBack = true;
 			if($e.type == AWPEvent.COLLISION_ADDED && ($e.collisionObject.collisionFlags & AWPCollisionFlags.CF_CHARACTER_OBJECT) > 0)
 			{				
