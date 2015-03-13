@@ -9,7 +9,6 @@
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
-	import com.jakobwilson.Cannon.Cannon;
 	import com.jakobwilson.Trigger3D;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
@@ -24,9 +23,7 @@
 	import team3d.animation.MoveYAnimation;
 	import team3d.bases.BaseScreen;
 	import team3d.builders.MazeBuilder;
-	import team3d.factory.CannonFactory;
 	import team3d.objects.maze.Maze;
-	import team3d.objects.maze.MazeRoom;
 	import team3d.objects.npc.MonsterPlayer;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
