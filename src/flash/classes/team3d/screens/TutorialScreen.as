@@ -2,6 +2,7 @@
 {
 	import away3d.cameras.Camera3D;
 	import away3d.tools.utils.Bounds;
+	import awayphysics.collision.dispatch.AWPGhostObject;
 	import com.greensock.TweenMax;
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.AssetManager;
@@ -14,6 +15,7 @@
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
+	import team3d.factory.CannonFactory;
 	import team3d.objects.players.FlyPlayer;
 	import team3d.objects.players.KinematicPlayer;
 	import team3d.objects.World;
@@ -105,6 +107,10 @@
 			_player.controller.warp(new Vector3D(0, 500, 0));
 			_player.Begin();
 			
+			_flyPlayer.Controller.Camera.position.x = _player.controller.ghostObject.position.x;
+			_flyPlayer.Controller.Camera.position.y = _player.controller.ghostObject.position.y + 300;
+			_flyPlayer.Controller.Camera.position.z = _player.controller.ghostObject.position.z;
+			
 			World.instance.view.camera = cam;
 			//end player
 			
@@ -138,14 +144,7 @@
 			floorgen(floor, startx, startz, floorWidth);
 			wallgen(wall, startx, startz, floorWidth);
 			innerWalls(wall, startx, startz, floorWidth);
-			
-			//create a cannon
-			var cannon:Cannon = new Cannon(AssetManager.instance.getCopy("Cannon"), AssetManager.instance.getCopy("CannonBall"));
-			cannon.addObjectActivator(this._player.controller.ghostObject);
-			cannon.transformTo(new Vector3D(70,200,0));
-			cannon.rotateTo(new Vector3D(0,110,0));
-			cannon.addToScene(World.instance.view, World.instance.physics);
-			//End cannon creation
+			addCannons(startx, startz, floorWidth);
 			
 			// load monster
 			var monster:Asset = AssetManager.instance.getCopy("Monster");
@@ -226,8 +225,26 @@
 			World.instance.addObject(tile);
 		}
 		
-		public function Unpause():void{_paused = false;}
-		public function Pause():void{_paused = true;}
+		private function addCannons($startx:Number, $startz:Number, $floorWidth:Number)
+		{
+			var ninety:Vector3D = new Vector3D(0, 90, 0);
+			var ghost:AWPGhostObject = _player.controller.ghostObject;
+			var xloc:Number = $startx - $floorWidth * 0.5 + 50;
+			var zloc:Number = $startz + $floorWidth * 2;
+			for (var i:int = -1; i < 2; i++)
+				CannonFactory.instance.create(new Vector3D(xloc, 200, zloc + 200 * i), ninety, ghost);
+		}
+		
+		public function Unpause():void
+		{
+			_paused = false;
+			World.instance.Resume();
+		}
+		public function Pause():void
+		{
+			_paused = true;
+			World.instance.Pause();
+		}
 		
 		protected function pauseGame():void
 		{
