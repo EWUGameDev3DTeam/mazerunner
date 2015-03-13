@@ -14,6 +14,7 @@
 	import flash.utils.Timer;
 	import team3d.events.MovementOverrideEvent;
 	import team3d.objects.players.KinematicPlayer;
+	import team3d.objects.World;
 	import treefortress.sound.SoundAS;
 	
 	/**
@@ -57,6 +58,9 @@
 		
 		private function grow(e:Event)
 		{
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
 			this._scale += 0.05;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
 			
@@ -71,6 +75,9 @@
 
 		private function shoot(e:Event)
 		{
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
 			this._model.rigidBody.scale = new Vector3D(1,1,1);
 			this._scale = 1.0;
 			this._firePower.scaleBy(this._model.rigidBody.mass)
@@ -85,6 +92,9 @@
 		
 		private function fade(e:Event)
 		{
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
 			this._stateTimer.delay = 100;
 			this._scale -= 0.2;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);

@@ -9,6 +9,7 @@
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.Trigger3D;
 	import flash.geom.Vector3D;
+	import team3d.objects.World;
 	import treefortress.sound.SoundAS;
 
 	/**
@@ -49,6 +50,9 @@
 		*/
 		public function shoot(a:Asset)
 		{
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
 			if(this._nFire == 2)
 			{
 				var positionVector:Vector3D = new Vector3D();
