@@ -228,7 +228,6 @@
 			
 			Bounds.getMeshBounds(entranceWall.model);
 			_wallHeight = Bounds.height;
-			DebugScreen.Text("text: " + entranceWall);
 			_entranceOpenTrigger = new Trigger3D(2000);
 			_entranceOpenTrigger.TriggeredSignal.add(openEntrance);
 			_entranceOpenTrigger.position = entranceWall.model.position;
@@ -241,7 +240,7 @@
 			_entranceCloseTrigger.addObjectActivator(_monster.controller.ghostObject);
 			_entranceCloseTrigger.begin();
 			
-			_timeStartTrigger = new Trigger3D(800);
+			_timeStartTrigger = new Trigger3D(1000);
 			_timeStartTrigger.TriggeredSignal.add(startTimer);
 			_timeStartTrigger.position = new Vector3D(entranceWall.position.x, entranceWall.position.y, entranceWall.position.z + 800);
 			_timeStartTrigger.addObjectActivator(_player.controller.ghostObject);
