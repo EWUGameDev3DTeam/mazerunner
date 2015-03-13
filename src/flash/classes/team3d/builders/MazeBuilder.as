@@ -103,9 +103,9 @@ package team3d.builders
 			}
 			
 			genMaze(maze, $startx, $startz, wall, floor);
-			addCannons(maze, $ghost);
 			addExit(maze, wall, floor);
 			addEntrance(maze, wall, floor);
+			addCannons(maze, $ghost);
 			
 			return maze;
 		}
@@ -302,7 +302,8 @@ package team3d.builders
 							room.addCannon(CannonFactory.instance.create(transform2, NINETY, $ghost));
 							room.addCannon(CannonFactory.instance.create(transform3, NINETY, $ghost));
 						}
-						else if (room.RowWall != null && chance < chanceChance)
+						// added "&& room.RowWall != $maze.entranceWall" to the end to prevent the cannons from spawning on the entrance wall
+						else if (room.RowWall != null && chance < chanceChance  && room.RowWall != $maze.entranceWall)
 						{
 							transform1 = room.RowWall.position.add(new Vector3D(200, 200, 50));
 							transform2 = room.RowWall.position.add(new Vector3D( -200, 200, 50));
