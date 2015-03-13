@@ -155,11 +155,22 @@
 				}
 			}
 			
+			// add row border
 			for each(var rowBorder in $m.RowBorder)
 				addObject(rowBorder);
-				
+			
+			// add column border
 			for each(var colBorder in $m.ColumnBorder)
 				addObject(colBorder);
+			
+			var asset:Asset;
+			// add the exit
+			for each(asset in $m.exit)
+				addObject(asset);
+			
+			// add the entrance
+			for each(asset in $m.entrance)
+				addObject(asset);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
