@@ -77,9 +77,6 @@
 		
 		private var _monster				:MonsterPlayer;
 		private var _monsterPath			:ObjectContainer3D;		//the monster's path mesh for debug
-		
-		private var _wonGame				:Boolean;
-		private var _lostGame				:Boolean;
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -180,8 +177,6 @@
 			
 			_controlsEnabled = false;
 			_paused = false;
-			_wonGame = false;
-			_lostGame = false;
 			
 			createPlayer();
 			var maze:Maze = createMaze(rows, cols, _player.controller.ghostObject);
@@ -256,7 +251,7 @@
 			_exitCloseTrigger.addObjectActivator(_player.controller.ghostObject);
 			_exitCloseTrigger.begin();
 			
-			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 6000);
+			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 3000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
 			_winTrigger.begin();
 		}
@@ -343,16 +338,12 @@
 		
 		private function failedGame():void
 		{
-			if (_lostGame) return;
-			_lostGame = true;
 			this._monster.targetTouchedSignal.remove(this.failedGame);
 			this.DoneSignal.dispatch(false);
 		}
 		
 		private function wonGame($a:Asset = null):void
 		{
-			if (_wonGame) return;
-			_wonGame = true;
 			_winTrigger.end();
 			this.DoneSignal.dispatch(true);
 		}
