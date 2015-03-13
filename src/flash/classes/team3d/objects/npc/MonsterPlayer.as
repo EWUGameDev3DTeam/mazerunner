@@ -106,13 +106,27 @@
 			if(this._counter == 0)
 				this._state = this.checkState();
 			this.Move(this._speed);
-			if(this._target != null && this._character.ghostObject.position.subtract(this._target.position).length < 250)
+			
+			var distanceMP:Number = this._character.ghostObject.position.subtract(this._target.position).length;
+			
+			if(this._target != null && distanceMP < 250)
 			{
 				this.targetTouchedSignal.dispatch();
 			}
 			
-			if (!SoundAS.getSound("MonsterSounds").isPlaying)
-				SoundAS.playFx("MonsterSounds", .75);
+			if (distanceMP < 5000)
+			{
+				SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
+				
+				if (SoundAS.getSound("MonsterSounds").isPaused)
+					SoundAS.resume("MonsterSounds");
+				else if (!SoundAS.getSound("MonsterSounds").isPlaying)
+					SoundAS.playLoop("MonsterSounds")
+			}
+			else
+			{
+				SoundAS.pause("MonsterSounds");
+			}
 		}
 		
 		/**
