@@ -6,6 +6,7 @@
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import org.osflash.signals.Signal;
+	import team3d.objects.World;
 	
 	/**
 	*	A trigger class that maintains a list of assets that can trigger it(called activators). 
@@ -35,7 +36,6 @@
 			this._range = range;// constructor code
 			if(a != null)
 				this._watchList.push(a);
-			
 		}
 		
 		/*----------------------------------ACTIVATOR CHECKING---------------------------------------------*/
@@ -56,14 +56,18 @@
 			this.removeEventListener(Event.ENTER_FRAME, this.checkAllActivators);
 		}
 		
+		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
 		*	Checks if any of the activators are in range, if so, the trigger is fired
 		*/
 		private function checkAllActivators(e:Event)
 		{
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
 			this._checkNum = (++this._checkNum)%this._checkPeriod;
-
+			
 			
 			if(this._checkNum!=0)	//don't check every frame
 				return;

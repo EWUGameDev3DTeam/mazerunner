@@ -17,16 +17,18 @@
 	{
 		/* ---------------------------------------------------------------------------------------- */
 		
-		private static	var	_instance	:World;
+		private static	var	_instance		:World;
 		
 		/* ---------------------------------------------------------------------------------------- */
-		
+		public			var PauseSignal		:Signal;
+		public			var ResumeSignal	:Signal;
 		public			var ScreenChange	:Signal;
 		
-		private			var	_stage		:Stage;
-		private			var _view		:View3D;
-		private			var _physics	:AWPDynamicsWorld;
-		private			var _curScreen	:String;
+		private			var	_stage			:Stage;
+		private			var _view			:View3D;
+		private			var _physics		:AWPDynamicsWorld;
+		private			var _curScreen		:String;
+		private			var _paused			:Boolean;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -36,6 +38,9 @@
 				throw new Error("Cannot be initialized");
 			
 			ScreenChange = new Signal();
+			PauseSignal = new Signal();
+			ResumeSignal = new Signal();
+			
 			_view = new View3D();
 		}
 		
@@ -175,11 +180,32 @@
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
+		public function Pause():void
+		{
+			_paused = true;
+			this.PauseSignal.dispatch();
+		}
+		
+		public function Resume():void
+		{
+			_paused = false;
+			this.ResumeSignal.dispatch();
+		}
+		
+		public function get IsPaused():Boolean
+		{
+			return _paused;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
 		/**
 		 * Updates the world
 		 */
 		public function update():void
 		{
+			if (_paused) return;
+			
 			_physics.step(1/30, 1, 1/30);
 			_view.render();
 		}

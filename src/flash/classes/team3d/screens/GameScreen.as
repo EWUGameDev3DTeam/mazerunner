@@ -360,12 +360,14 @@
 			_entranceAnimation.Resume();
 			_cageAnimation.Resume();
 			
+			World.instance.Resume();
 			SoundAS.resumeAll();
 		}
 		
 		public function Pause()
 		{
 			_paused = true;
+			World.instance.Pause();
 			_timer.stop();
 			
 			_exitAnimation.Pause();
