@@ -161,9 +161,9 @@
 		 */
 		override public function Begin():void
 		{
+			//trace(_screenTitle + " begin");
 			super.Begin();
 			World.instance.Begin();
-			World.instance.physics.collisionCallbackOn = true;
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
@@ -172,6 +172,7 @@
 			
 			SoundAS.playLoop("GameMusic", .05);
 			
+			_timer.stop();
 			_timer.reset(5,5,0);
 			_timerText.textColor = 0xFFFFFF;
 			
@@ -191,8 +192,6 @@
 			
 			//*			TEMPORARY KEY BINDINGS
 			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.F, failedGame);
-			KeyboardManager.instance.addKeyUpListener(KeyCode.G, wonGame);
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -233,27 +232,32 @@
 			_entranceOpenTrigger.position = entranceWall.model.position;
 			_entranceOpenTrigger.addObjectActivator(_player.controller.ghostObject);
 			_entranceOpenTrigger.begin();
+			//trace("entrance open trigger start");
 			
 			_entranceCloseTrigger = new Trigger3D(800);
 			_entranceCloseTrigger.TriggeredSignal.add(closeEntrance);
 			_entranceCloseTrigger.position = new Vector3D(entranceWall.position.x, entranceWall.position.y, entranceWall.position.z + 800);
 			_entranceCloseTrigger.addObjectActivator(_monster.controller.ghostObject);
 			_entranceCloseTrigger.begin();
+			//trace("entrance close trigger start");
 			
 			_timeStartTrigger = new Trigger3D(1000);
 			_timeStartTrigger.TriggeredSignal.add(startTimer);
 			_timeStartTrigger.position = new Vector3D(entranceWall.position.x, entranceWall.position.y, entranceWall.position.z + 800);
 			_timeStartTrigger.addObjectActivator(_player.controller.ghostObject);
 			_timeStartTrigger.begin();
+			//trace("time start trigger start");
 			
 			_exitCloseTrigger = new Trigger3D(800);
 			_exitCloseTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 810);
 			_exitCloseTrigger.addObjectActivator(_player.controller.ghostObject);
 			_exitCloseTrigger.begin();
+			//trace("exit close trigger start");
 			
-			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 6000);
+			_winTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 3000);
 			_winTrigger.addObjectActivator(_player.controller.ghostObject);
 			_winTrigger.begin();
+			//trace("win trigger start");
 		}
 		
 		private function createPlayer():void
@@ -345,6 +349,7 @@
 		private function wonGame($a:Asset = null):void
 		{
 			_winTrigger.end();
+			//trace("won game");
 			this.DoneSignal.dispatch(true);
 		}
 		
@@ -393,8 +398,6 @@
 			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
 			//*			TEMPORARY KEY BINDINGS
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
-			KeyboardManager.instance.removeKeyUpListener(KeyCode.F, failedGame);
-			KeyboardManager.instance.removeKeyUpListener(KeyCode.G, wonGame);
 			//			TEMPORARY KEY BINDINGS*/
 			
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.P, pauseGame);
@@ -406,6 +409,7 @@
 			_entranceCloseTrigger.end();
 			_entranceOpenTrigger.end();
 			_exitCloseTrigger.end();
+			_timeStartTrigger.end();
 			
 			endCannons();
 			
@@ -414,8 +418,9 @@
 			
 			World.instance.unlockMouse();
 			
-			this.removeChild(World.instance.view);
-			this.removeChild(this.getChildByName("rectangleFade"));
+			//this.removeChild(World.instance.view);
+			if(this.getChildByName("rectangleFade") != null)
+				this.removeChild(this.getChildByName("rectangleFade"));
 			
 			World.instance.End();
 			super.End();

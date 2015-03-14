@@ -1,5 +1,6 @@
 ﻿package team3d.screens
 {
+	import adobe.utils.CustomActions;
 	import away3d.cameras.Camera3D;
 	import away3d.tools.utils.Bounds;
 	import awayphysics.collision.dispatch.AWPGhostObject;
@@ -48,6 +49,8 @@
 		
 		private var _cage				:Asset;
 		
+		private var _cannons			:Vector.<Cannon>;
+		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -65,6 +68,7 @@
 			
 			_elevatorDown = new Trigger3D(400);
 			_elevatorDown.TriggeredSignal.add(goDown);
+			_cannons = new Vector.<Cannon>();
 		}
 		
 		private function goDown($a:Asset):void
@@ -84,6 +88,7 @@
 		 */
 		override public function Begin():void
 		{
+			//trace(_screenTitle + " starting");
 			super.Begin();
 			World.instance.Begin();
 			this.addChild(World.instance.view);
@@ -232,7 +237,7 @@
 			var xloc:Number = $startx - $floorWidth * 0.5 + 50;
 			var zloc:Number = $startz + $floorWidth * 2;
 			for (var i:int = -1; i < 2; i++)
-				CannonFactory.instance.create(new Vector3D(xloc, 200, zloc + 200 * i), ninety, ghost);
+				_cannons.push(CannonFactory.instance.create(new Vector3D(xloc, 200, zloc + 200 * i), ninety, ghost));
 		}
 		
 		public function Unpause():void
@@ -269,10 +274,12 @@
 			_player.End();
 			_flyPlayer.End();
 			_elevatorDown.end();
+			while (_cannons.length > 0)
+				_cannons.pop().End();
 			
 			SoundAS.pause("title");
 			
-			this.removeChild(World.instance.view);
+			//this.removeChild(World.instance.view);
 			this.removeChild(this.getChildByName("rectangleFade"));
 			
 			World.instance.End();

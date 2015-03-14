@@ -200,6 +200,7 @@
 		override public function End():void
 		{
 			super.End();
+			//trace(_screenTitle + " ended");
 		}
 	}
 }
