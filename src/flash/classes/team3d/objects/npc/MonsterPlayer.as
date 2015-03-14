@@ -1,6 +1,8 @@
 ﻿package  team3d.objects.npc
 {
 	
+	import away3d.audio.drivers.ISound3DDriver;
+	import away3d.audio.Sound3D;
 	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
 	import away3d.controllers.FirstPersonController;
@@ -9,12 +11,14 @@
 	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.character.AWPKinematicCharacterController;
+	import com.jakobwilson.AssetManager;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	import flash.media.Camera;
+	import flash.media.Sound;
 	import flash.net.SharedObject;
 	import team3d.bases.BasePlayer;
 	import team3d.events.MovementOverrideEvent;
@@ -29,14 +33,13 @@
 	import away3d.tools.helpers.data.MeshDebug;
 	import away3d.entities.Mesh;
 	import treefortress.sound.SoundAS;
-
+	
 	/**
 	 * A player that uses the AWPKinematicCharacterController
 	 * @author	Jakob Wilson
 	 */
 	public class MonsterPlayer extends BasePlayer
 	{
-		
 		private const IDLE = 0;
 		private const SEARCHING = 1;
 		private const CHASING = 2;
@@ -55,6 +58,8 @@
 		private var _currentTarget	:Vector3D;
 		public var targetTouchedSignal:Signal = new Signal();
 		
+		private var _bSoundPlaying	:Boolean;
+		private var _bIsEnabled		:Boolean;
 
 		/**
 		*	Creates a kinematic character controller 
@@ -73,7 +78,9 @@
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
-			_character.setWalkDirection(new Vector3D(0,0,0));
+			_character.setWalkDirection(new Vector3D(0, 0, 0));
+			
+			this._bIsEnabled = false;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -85,6 +92,9 @@
 		{
 			this.addEventListener(Event.ENTER_FRAME,this.onFrame);
 			//this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
+			
+			this._bSoundPlaying = false;
+			this._bIsEnabled = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -96,23 +106,45 @@
 		{
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
 			//this._character.ghostObject.removeEventListener("MovementOverride", this.overrideMovement);
+			
+			this._bIsEnabled = false;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
 		public function onFrame(e:Event)
 		{
-			this._counter = this._counter % 30;
-			if(this._counter == 0)
-				this._state = this.checkState();
-			this.Move(this._speed);
-			if(this._target != null && this._character.ghostObject.position.subtract(this._target.position).length < 250)
+			if (this._bIsEnabled)
 			{
-				this.targetTouchedSignal.dispatch();
+				this._counter = this._counter % 30;
+				if(this._counter == 0)
+					this._state = this.checkState();
+				this.Move(this._speed);
+				
+				var distanceMP:Number = this._character.ghostObject.position.subtract(this._target.position).length;
+				
+				if(this._target != null && distanceMP < 250)
+				{
+					this.targetTouchedSignal.dispatch();
+				}
+
+				if ( distanceMP < 5000)
+				{
+					SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
+					
+					if (SoundAS.getSound("MonsterSounds").isPaused)
+						SoundAS.resume("MonsterSounds");
+					else if (!SoundAS.getSound("MonsterSounds").isPlaying)
+						SoundAS.playLoop("MonsterSounds");
+						
+					this._bSoundPlaying = true;
+				}
+				else
+				{
+					SoundAS.pause("MonsterSounds");
+					this._bSoundPlaying = false;
+				}
 			}
-			
-			if (!SoundAS.getSound("MonsterSounds").isPlaying)
-				SoundAS.playFx("MonsterSounds", .75);
 		}
 		
 		/**
@@ -267,6 +299,22 @@
 			ret.addChild(target);
 			
 			return ret;
+		}
+		
+		public function pauseSound():void
+		{
+			if (this._bSoundPlaying)
+				SoundAS.pause("MonsterSounds");
+				
+			this._bIsEnabled = false;
+		}
+		
+		public function resumeSound():void
+		{
+			if (this._bSoundPlaying)
+				SoundAS.resume("MonsterSounds");
+				
+			this._bIsEnabled = true;
 		}
 	}
 	

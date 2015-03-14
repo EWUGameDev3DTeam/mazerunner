@@ -449,7 +449,9 @@
 			if(_timer.HasBeenStarted)
 				_timer.start();
 				
-			SoundAS.resumeAll();
+			SoundAS.resume("GameMusic");
+			
+			this._monster.resumeSound();
 		}
 		
 		public function Pause()
@@ -457,7 +459,9 @@
 			_paused = true;
 			_timer.stop();
 			
-			SoundAS.pauseAll();
+			SoundAS.pause("GameMusic");
+			
+			this._monster.pauseSound();
 		}
 		
 		protected function pauseGame():void
