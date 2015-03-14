@@ -107,11 +107,11 @@
 		public function End():void
 		{
 			//trace("added: " + added);
-			added = 0;
+			//added = 0;
 			_physics.cleanWorld(true);
 			
 			var d:DisplayObject = _view.parent;
-			if (d == null) return;
+			//if (d == null) return;
 			
 			if (d is GameScreen)
 				GameScreen(d).removeChild(_view);
@@ -148,7 +148,7 @@
 		 *
 		 * @param	$b	The asset to add to the world
 		 */
-		private var added:int = 0;
+		//private var added:int = 0;
 		public function addObject($a:Asset):void
 		{
 			// nothing to add
@@ -161,7 +161,7 @@
 			// add it to the physics world
 			_physics.addRigidBody($a.rigidBody);
 			
-			added++;
+			//added++;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
