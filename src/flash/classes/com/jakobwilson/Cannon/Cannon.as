@@ -9,6 +9,8 @@
 	import com.jakobwilson.Asset;
 	import com.jakobwilson.Trigger3D;
 	import flash.geom.Vector3D;
+	import team3d.objects.World;
+	import team3d.screens.DebugScreen;
 	import treefortress.sound.SoundAS;
 
 	/**
@@ -17,13 +19,16 @@
 	*/
 	public class Cannon
 	{
+		private static const MAXFIRE = 10;
+		
 		private var _cannon:Asset;
 		private var _shot:Asset;
 		private var _firingTrigger:Trigger3D;
 		private var _view:View3D;
 		private var _world:AWPDynamicsWorld;
 		private const degreesToRad:Number = 0.0174532925;
-		private var _nFire:Number = 0;
+		private var _nFire:Number;
+		private var _nMaxFire:Number;
 		private var _firingTriggerContainer:ObjectContainer3D;
 		
 		/**
@@ -35,12 +40,15 @@
 			this._shot = shot;
 			this._shot.transformTo(this._cannon.position);
 			this._firingTrigger = new Trigger3D(activationRange, 60);
-			this._firingTrigger.position = new Vector3D(0, 0, 4000);
+			this._firingTrigger.position = new Vector3D(0, 0, 0);
 			this._firingTriggerContainer = ObjectContainer3D(this._firingTrigger);
 			this._cannon.model.addChild(this._firingTriggerContainer);
 			
+			this._nMaxFire = int(Math.random() * MAXFIRE);
+			_nFire = 0;
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
+			//trace("cannon starting");
 		}
 		
 		/**
@@ -48,7 +56,10 @@
 		*/
 		public function shoot(a:Asset)
 		{
-			if(this._nFire == 2)
+			/** Added by Dan **/
+			if (World.instance.IsPaused) return;
+			
+			if(this._nFire >= _nMaxFire)
 			{
 				var positionVector:Vector3D = new Vector3D();
 				positionVector.x = this._cannon.position.x +( Math.sin(this._cannon.rotation.y*this.degreesToRad)*100);
@@ -74,18 +85,20 @@
 		*/
 		public function End()
 		{
+			//trace("cannon ending");
 			this._firingTrigger.end();
 		}
 		
 		/**
 		*	adds the cannon to the scene
 		*/
+		//*
 		public function addToScene(view:View3D, world:AWPDynamicsWorld = null)
 		{
 			this._view = view;
 			this._world = world;
 			this._cannon.addToScene(this._view, this._world);
-		}
+		}//*/
 		
 		/**
 		*	adds an activator to the cannon
