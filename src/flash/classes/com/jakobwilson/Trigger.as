@@ -45,6 +45,7 @@
 		*/
 		public function begin()
 		{
+			//trace("starting trigger");
 			this.addEventListener(Event.ENTER_FRAME, this.checkAllActivators);
 		}
 		
@@ -53,7 +54,11 @@
 		*/
 		public function end()
 		{
+			//trace("ending trigger");
 			this.removeEventListener(Event.ENTER_FRAME, this.checkAllActivators);
+			clearActivators();
+			while (_objectList.length > 0)
+				_objectList.pop();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -148,6 +153,8 @@
 		*/
 		public function clearActivators()
 		{
+			while (_watchList.length > 0)
+				_watchList.pop();
 			this._watchList = new Vector.<Asset>();
 		}
 		

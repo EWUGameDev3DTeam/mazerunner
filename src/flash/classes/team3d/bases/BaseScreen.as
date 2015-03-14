@@ -49,8 +49,6 @@ package team3d.bases
 			this.visible = true;
 			
 			resize();
-			
-			trace(_screenTitle + " started");
 		}
 		
 		protected function resize($e:Event = null):void

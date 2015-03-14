@@ -48,6 +48,7 @@
 			_nFire = 0;
 			this._firingTrigger.TriggeredSignal.add(this.shoot);
 			this._firingTrigger.begin();
+			//trace("cannon starting");
 		}
 		
 		/**
@@ -84,18 +85,20 @@
 		*/
 		public function End()
 		{
+			//trace("cannon ending");
 			this._firingTrigger.end();
 		}
 		
 		/**
 		*	adds the cannon to the scene
 		*/
+		//*
 		public function addToScene(view:View3D, world:AWPDynamicsWorld = null)
 		{
 			this._view = view;
 			this._world = world;
 			this._cannon.addToScene(this._view, this._world);
-		}
+		}//*/
 		
 		/**
 		*	adds an activator to the cannon

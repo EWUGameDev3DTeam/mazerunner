@@ -1,12 +1,15 @@
 ﻿package team3d.objects {
 	import away3d.containers.View3D;
 	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.dynamics.AWPRigidBody;
+	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import com.jakobwilson.Asset;
 	import flash.display.DisplayObject;
 	import flash.display.Stage;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
 	import team3d.screens.GameScreen;
@@ -91,6 +94,9 @@
 		{
 			if (_paused)
 				_paused = false;
+			
+			_view = new View3D();
+			_stage.addEventListener(Event.RESIZE, windowResize);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -100,11 +106,10 @@
 		 */
 		public function End():void
 		{
-			while (_view.scene.numChildren > 0)
-				_view.scene.removeChildAt(0);
-		
+			//trace("added: " + added);
+			added = 0;
 			_physics.cleanWorld(true);
-				
+			
 			var d:DisplayObject = _view.parent;
 			if (d == null) return;
 			
@@ -112,6 +117,9 @@
 				GameScreen(d).removeChild(_view);
 			else
 				TutorialScreen(d).removeChild(_view);
+				
+			_view.dispose();
+			_stage.removeEventListener(Event.RESIZE, windowResize);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -124,13 +132,13 @@
 		public function init($stage:Stage):void
 		{
 			// if the stage is not full, meaning there was a previous stage
-			if (_stage != null)
-			{
-				_stage.removeEventListener(Event.RESIZE, windowResize);
-			}
+			//if (_stage != null)
+			//{
+			//	_stage.removeEventListener(Event.RESIZE, windowResize);
+			//}
 			
 			_stage = $stage;
-			_stage.addEventListener(Event.RESIZE, windowResize);
+			//_stage.addEventListener(Event.RESIZE, windowResize);
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -140,6 +148,7 @@
 		 *
 		 * @param	$b	The asset to add to the world
 		 */
+		private var added:int = 0;
 		public function addObject($a:Asset):void
 		{
 			// nothing to add
@@ -151,6 +160,8 @@
 			
 			// add it to the physics world
 			_physics.addRigidBody($a.rigidBody);
+			
+			added++;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
