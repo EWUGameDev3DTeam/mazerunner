@@ -60,6 +60,7 @@
 		
 		private var _bSoundPlaying	:Boolean;
 		private var _bIsEnabled		:Boolean;
+		public var done				:Boolean;
 
 		/**
 		*	Creates a kinematic character controller 
@@ -95,6 +96,7 @@
 			
 			this._bSoundPlaying = false;
 			this._bIsEnabled = true;
+			this.done = false;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -108,6 +110,7 @@
 			//this._character.ghostObject.removeEventListener("MovementOverride", this.overrideMovement);
 			
 			this._bIsEnabled = false;
+			this.done = true;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -128,7 +131,7 @@
 					this.targetTouchedSignal.dispatch();
 				}
 
-				if ( distanceMP < 5000)
+				if ( distanceMP < 5000 && !done)
 				{
 					SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
 					

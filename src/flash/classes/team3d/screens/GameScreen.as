@@ -86,6 +86,8 @@
 															//This should be removed after cannons are refactored
 		private var _monster:MonsterPlayer;
 		private var _monsterPath:ObjectContainer3D;		//the monster's path mesh for debug
+		
+		private var _bElevator			:Boolean;
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -121,9 +123,10 @@
 		
 		private function openEntrance($a:Asset):void
 		{
-			_entranceOpening = true;
+			if(!SoundAS.getSound("DoorsOpening").isPlaying && !this._entranceOpening)
+				SoundAS.playFx("DoorsOpening", .2);
 			
-			SoundAS.playFx("DoorsOpening", .2);
+			_entranceOpening = true;
 		}
 		
 		private function closeEntrance($a:Asset):void
@@ -140,6 +143,7 @@
 			
 			SoundAS.pause("DoorsOpening");
 			SoundAS.pause("Elevator");
+			this._bElevator = false;
 		}
 		
 		private function closeExit($a:Asset = null):void
@@ -256,6 +260,8 @@
 			TweenMax.fromTo(rectangle, 2, {autoAlpha: 1}, {autoAlpha: 0, delay: 0.5});
 			
 			_player.canWalk = false;
+			
+			this._bElevator = true;
 		}
 		
 		private function wireTriggers($maze:Maze):void
@@ -452,6 +458,12 @@
 			SoundAS.resume("GameMusic");
 			
 			this._monster.resumeSound();
+			
+			if (this._bElevator)
+				SoundAS.resume("Elevator");
+				
+			if (this._entranceOpening)
+				SoundAS.resume("DoorsOpening");
 		}
 		
 		public function Pause()
@@ -462,6 +474,12 @@
 			SoundAS.pause("GameMusic");
 			
 			this._monster.pauseSound();
+			
+			if (this._bElevator)
+				SoundAS.pause("Elevator");
+				
+			if (this._entranceOpening)
+				SoundAS.pause("DoorsOpening");
 		}
 		
 		protected function pauseGame():void
@@ -502,7 +520,13 @@
 			
 			SoundAS.pause("GameMusic");
 			
-			SoundAS.playFx("PlayerDeath");
+			this._monster.pauseSound();
+			
+			if (this._bElevator)
+				SoundAS.pause("Elevator");
+				
+			if (this._entranceOpening)
+				SoundAS.pause("DoorsOpening");
 			
 			World.instance.unlockMouse();
 			
