@@ -26,6 +26,7 @@ package
 	import team3d.screens.TitleScreen;
 	import team3d.screens.TutorialScreen;
 	import team3d.screens.WonScreen;
+	import team3d.ui.PluginOverlay;
 	import team3d.utils.GameData;
 	import team3d.utils.Utils;
 	import treefortress.sound.SoundAS;
@@ -129,6 +130,10 @@ package
             World.instance.stage.scaleMode = StageScaleMode.NO_SCALE;
 			World.instance.stage.align = StageAlign.TOP_LEFT;
 			TweenPlugin.activate([GlowFilterPlugin]);
+			
+			//var pluginCheck:PluginOverlay = new PluginOverlay();
+			//this.addChildAt(pluginCheck, 0);
+			//pluginCheck.check();
 			
 			var queue:LoaderMax = new LoaderMax( { onProgress:progress, onComplete:compeleted } );
 			loadLoading(queue);
