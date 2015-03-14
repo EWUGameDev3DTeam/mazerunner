@@ -1,7 +1,7 @@
 ﻿package  com.jakobwilson.Cannon
 {
 	import away3d.audio.drivers.SimplePanVolumeDriver;
-	import away3d.audio.Sound3D;
+	import team3d.sound.Sound3D;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.View3D;
 	import awayphysics.data.AWPCollisionFlags;
@@ -15,6 +15,7 @@
 	import team3d.events.MovementOverrideEvent;
 	import team3d.objects.players.KinematicPlayer;
 	import treefortress.sound.SoundAS;
+	import team3d.objects.World;
 	
 	/**
 	* A single cannon shot has three states: Growing(for inside the cannon), shooting, and fading. 
@@ -48,6 +49,9 @@
 			//Knockback event handling
 			//this._model.rigidBody.collisionFlags |= AWPCollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK; 
 			this._model.rigidBody.addEventListener(AWPEvent.COLLISION_ADDED,this.knockBack);
+			//sound3d setup
+			this._firingSound = new Sound3D(SoundAS.getSound("CannonFiring").sound, World.instance.view.camera, null, 1.0, 2000);
+			this._model.model.addChild(this._firingSound);
 			
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.grow);
 			this._stateTimer.start();
@@ -79,8 +83,8 @@
 			this._stateTimer.delay = 2000;
 			this._stateTimer.addEventListener(TimerEvent.TIMER, this.fade);
 			
-			SoundAS.playFx("CannonFiring", .15);
-			//this._firingSound.play();
+			//SoundAS.playFx("CannonFiring", .15);
+			this._firingSound.play();
 		}
 		
 		private function fade(e:Event)
@@ -88,6 +92,8 @@
 			this._stateTimer.delay = 100;
 			this._scale -= 0.2;
 			this._model.rigidBody.scale = new Vector3D(this._scale, this._scale, this._scale);
+			
+			//this._model.model.removeChild(this._firingSound);
 			
 			if(this._scale <= 0.05)
 			{

@@ -57,7 +57,7 @@
 		private var _path				:ObjectContainer3D;
 		private var _maze				:Maze;
 		/** set to true for debug output*/
-		private var _debug = true;
+		private var _debug = false;
 		
 		public static const origin		:Vector3D = new Vector3D();
 		private var _cage				:Asset;

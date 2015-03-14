@@ -175,7 +175,7 @@
 			var colliderShape:AWPCollisionShape;//create correct Collision shape with dimentions to encompass the model
 		
 			if(this._collisionType == BOX)	//Bounding box
-				colliderShape = new AWPBoxShape(Bounds.maxX - Bounds.minX + 1, Bounds.maxY - Bounds.minY + 1, Bounds.maxZ - Bounds.minZ + 1);
+				colliderShape = new AWPBoxShape(Bounds.maxX - Bounds.minX + 2, Bounds.maxY - Bounds.minY + 2, Bounds.maxZ - Bounds.minZ + 2);
 			else if(this._collisionType == SPHERE)	//bounding sphere
 			{
 				var radius = Math.sqrt(Math.pow(Bounds.width/2,2) + Math.sqrt(Math.pow(Bounds.depth/2, 2) + Math.pow(Bounds.height/2, 2)));

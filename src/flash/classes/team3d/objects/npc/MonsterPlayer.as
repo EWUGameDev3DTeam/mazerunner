@@ -8,6 +8,7 @@
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
@@ -29,6 +30,9 @@
 	import away3d.tools.helpers.data.MeshDebug;
 	import away3d.entities.Mesh;
 	import treefortress.sound.SoundAS;
+	import flash.media.Sound;
+	import team3d.sound.Sound3D;
+	import away3d.audio.drivers.SimplePanVolumeDriver;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -55,6 +59,7 @@
 		private var _currentTarget	:Vector3D;
 		public var targetTouchedSignal:Signal = new Signal();
 		
+		private var _mainSound:Sound3D;
 
 		/**
 		*	Creates a kinematic character controller 
@@ -74,6 +79,11 @@
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0,0,0));
+			_character.gravity = 0.1;
+			_character.ghostObject.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);
+			
+			
+			
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -95,6 +105,8 @@
 		override public function End():void
 		{
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
+			if(this._mainSound != null)
+				this._mainSound.removeEventListener("soundComplete", this.playSound);
 			//this._character.ghostObject.removeEventListener("MovementOverride", this.overrideMovement);
 		}
 		
@@ -111,8 +123,9 @@
 				this.targetTouchedSignal.dispatch();
 			}
 			
-			if (!SoundAS.getSound("MonsterSounds").isPlaying)
-				SoundAS.playFx("MonsterSounds", .75);
+			//if (!SoundAS.getSound("MonsterSounds").isPlaying)
+			//	SoundAS.playFx("MonsterSounds", .75);
+
 		}
 		
 		/**
@@ -221,6 +234,17 @@
 		public function setTarget($target:ObjectContainer3D)
 		{
 			this._target = $target;
+			this._mainSound = new Sound3D(SoundAS.getSound("MonsterSounds").sound, this._target, null, 2.0, 2000);
+			this._character.ghostObject.skin.addChild(this._mainSound);
+			this._mainSound.addEventListener("soundComplete", this.playSound);
+			this._mainSound.play();
+		}
+		
+		
+		private function playSound(e:Event)
+		{
+			this._mainSound.stop();
+			this._mainSound.play();
 		}
 		
 		
@@ -266,6 +290,7 @@
 			for each(var p:PathNode in this._currentPath)
 				path.push(p);
 				
+			path.push(new PathNode(this._currentTarget));
 			path.push(new PathNode(this._character.ghostObject.position));
 			var ret:ObjectContainer3D =  NavGraph.getPathMesh(path);
 			var target: Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF00FF));

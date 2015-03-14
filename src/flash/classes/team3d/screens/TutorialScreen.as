@@ -126,6 +126,9 @@
 		{
 			var wall:Asset = AssetManager.instance.getAsset("Wall");
 			var floor:Asset = AssetManager.instance.getAsset("Floor");
+			var skyBox:Asset = AssetManager.instance.getAsset("Sky");
+			
+			skyBox.addToScene(World.instance.view, World.instance.physics);
 			
 			Bounds.getMeshBounds(floor.model);
 			var floorWidth:Number = Bounds.width;
