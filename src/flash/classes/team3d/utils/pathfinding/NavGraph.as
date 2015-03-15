@@ -20,7 +20,7 @@
 	*/
 	public class NavGraph 
 	{
-		public static const INFINITY:Number = 10000000000000000000000000.0;
+		public static const INFINITY:Number = 100000000000000000000000000000.0;
 		
 		private var waypoints:Vector.<PathNode>;
 		
@@ -40,7 +40,6 @@
 			
 			//Generate a grid of pathnodes
 			var points:Vector.<Vector.<PathNode>> = new Vector.<Vector.<PathNode>>;
-			trace("Offset " + offset);
 			for(var z:int = 0; z < (maze.length/maze[0].length);z++)
 			{
 				points.push(new Vector.<PathNode>);

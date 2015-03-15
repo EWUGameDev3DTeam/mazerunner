@@ -101,7 +101,8 @@
 		 */
 		public function Move($speed:Number):void
 		{
-
+			if(!this._character.canJump())
+			   return;
 			if(!this.canWalk)
 			{
 				_character.setWalkDirection(new Vector3D());

@@ -1,9 +1,13 @@
 package team3d.builders
 {
+	import adobe.utils.CustomActions;
 	import away3d.entities.Mesh;
 	import away3d.tools.utils.Bounds;
+	import awayphysics.collision.dispatch.AWPGhostObject;
 	import com.jakobwilson.Asset;
+	import com.jakobwilson.Cannon.Cannon;
 	import flash.geom.Vector3D;
+	import team3d.factory.CannonFactory;
 	import team3d.objects.maze.Maze;
 	import team3d.objects.maze.MazeRoom;
 	import team3d.utils.Utils;
@@ -17,6 +21,8 @@ package team3d.builders
 		/* ---------------------------------------------------------------------------------------- */
 		
 		private static var _instance	:MazeBuilder;
+		private static const ORIGIN		:Vector3D = new Vector3D();
+		private static const NINETY		:Vector3D = new Vector3D(0, 90);
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -30,8 +36,6 @@ package team3d.builders
 		{
 			if ($lock != Singleton)
 				throw new Error("Cannot be instantiated.");
-			
-			
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -46,7 +50,7 @@ package team3d.builders
 		 * 			$starty		The starting y location for the maze
 		 * @return				A vector containing all the rooms for the maze
 		 */
-		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $wall:Asset = null, $floor:Asset = null):Maze
+		public function Build($rows:int, $cols:int, $startx:Number, $startz:Number, $ghost:AWPGhostObject, $wall:Asset = null, $floor:Asset = null):Maze
 		{
 			var wall:Asset = $wall;
 			var floor:Asset = $floor;
@@ -99,6 +103,9 @@ package team3d.builders
 			}
 			
 			genMaze(maze, $startx, $startz, wall, floor);
+			addExit(maze, wall, floor);
+			addEntrance(maze, wall, floor);
+			addCannons(maze, $ghost);
 			
 			return maze;
 		}
@@ -202,56 +209,45 @@ package team3d.builders
 			var spacing:Number = walldepth;
 			
 			// declare some variables to help with the build process
-			var rowwall:Asset;
-			var colwall:Asset;
-			var floor:Asset;
 			var x:Number;
 			var z:Number;
-			var y:Number;
-			var room:MazeRoom;
 			var roomRow:Vector.<MazeRoom>;
 			
 			// assign walls to each room
 			for (var row:int = 0; row < $maze.Rows; row++)
 			{
-				// null the walls out each time through to prevent any walls from being messed up or carried over
-				rowwall = null
-				colwall = null;
 				for (var col:int = 0; col < $maze.Columns; col++)
 				{
 					x = $startx;
 					z = $startz;
 					// set the floor before anything else has a chance to mess with the x and y
-					floor = $floor.clone();
-					floor.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
-					
 					roomRow = $maze.GetRow(row);
+					roomRow[col].Floor = moveAsset($floor.clone(), x, z, col, row, spacing);
+					
 					if (roomRow[col].HasRowWall) // row wall only
-					{
-						x = $startx;
-						z -= walldepth * 0.5;
-						rowwall = $wall.clone();
-						rowwall.rotateTo(new Vector3D(0, 90, 0));
-						rowwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
-					}
+						roomRow[col].RowWall = moveAsset($wall.clone(), $startx, z - walldepth * 0.5, col, row, spacing, true);
 					
 					if (roomRow[col].HasColumnWall) // col wall only
-					{
-						
-						x -= walldepth * 0.5;
-						z = $startz;
-						colwall = $wall.clone();
-						colwall.transformTo(new Vector3D(x + col * spacing, 0, z + row * spacing));
-					}
-					
-					roomRow[col].ColumnWall = colwall;
-					roomRow[col].RowWall = rowwall;
-					roomRow[col].Floor = floor;
+						roomRow[col].ColumnWall = moveAsset($wall.clone(), x - walldepth * 0.5, $startz, col, row, spacing);
 					
 					$maze.SetRow(row, roomRow);
 				}
 			}
-			//*
+			
+			addBorder($maze, $wall, $startx, $startz, walldepth, spacing);
+		}
+		
+		private function moveAsset($a:Asset,$x:Number, $z:Number, $col:int, $row:int, $spacing:Number, $rowWall:Boolean = false):Asset
+		{
+			if($rowWall)
+				$a.rotateTo(NINETY);
+			$a.transformTo(new Vector3D($x + $col * $spacing, 0, $z + $row * $spacing));
+			
+			return $a;
+		}
+		
+		private function addBorder($maze:Maze, $wall:Asset, $startx:Number, $startz:Number, $walldepth:Number, $spacing:Number):void
+		{
 			// The logic for border walls, although it can be integrated into the for loop above, is complicated and it's very easy
 			// to get turned around. Therefore I've put it in it's own section to minimize confusion
 			
@@ -264,31 +260,118 @@ package team3d.builders
 			// ===== add border walls =====
 			// Using the starting x and y from the columns because even though it's a row wall, it needs to match up
 			// to the starting of the columns.
-			x = $startx;
-			z = $startz - walldepth * 0.5;
 			for (i = 0; i < $maze.Columns; i++)
-			{
-				rowWallBorder[i] = $wall.clone();
-				rowWallBorder[i].rotateTo(new Vector3D(0, 90, 0));
-				rowWallBorder[i].transformTo(new Vector3D(x + i * spacing, 0, z + $maze.Rows * spacing));
-			}
+				rowWallBorder[i] = moveAsset($wall.clone(), $startx, $startz - $walldepth * 0.5, i, $maze.Rows, $spacing, true);
 			
-			//*
 			// same concept of using the starting x and y for the rows because they need to match up since this will
 			// be covering the columns
-			x = $startx - walldepth * 0.5;
-			z = $startz;
 			for (i = 0; i < $maze.Rows; i++)
-			{
-				colWallBorder[i] = $wall.clone();
-				colWallBorder[i].transformTo(new Vector3D(x + $maze.Columns * spacing, 0, z + i * spacing));
-			}
-			//*/
-			
-			colWallBorder[int(Math.floor($maze.Rows * 0.5))]
+				colWallBorder[i] = moveAsset($wall.clone(), $startx - $walldepth * 0.5, $startz, $maze.Columns, i, $spacing);
 			
 			$maze.RowBorder = rowWallBorder;
 			$maze.ColumnBorder = colWallBorder;
+		}
+		
+		private function addCannons($maze:Maze, $ghost:AWPGhostObject):void
+		{
+			var sideChance:Number = 0.5;
+			var chanceChance:Number = 0.5;
+			for (var i:Number = 0; i < $maze.Rooms.length; i++)
+			{	
+				var rooms = $maze.Rooms[i];
+				
+				if (rooms != null)
+				{
+					for(var j:Number = 0; j < rooms.length; j++)
+					{
+						var room:MazeRoom = rooms[j];
+						var transform1:Vector3D;
+						var transform2:Vector3D;
+						var transform3:Vector3D;
+						
+						var side:Number = Math.random();
+						var chance:Number = Math.random();
+						
+						if (side < sideChance && room.ColumnWall != null && chance < chanceChance)
+						{
+							transform1 = room.ColumnWall.position.add(new Vector3D(50, 200, 200));
+							transform2 = room.ColumnWall.position.add(new Vector3D(50, 200, -200));
+							transform3 = room.ColumnWall.position.add(new Vector3D(50, 200, 0));
+							
+							room.addCannon(CannonFactory.instance.create(transform1, NINETY, $ghost));
+							room.addCannon(CannonFactory.instance.create(transform2, NINETY, $ghost));
+							room.addCannon(CannonFactory.instance.create(transform3, NINETY, $ghost));
+						}
+						// added "&& room.RowWall != $maze.entranceWall" to the end to prevent the cannons from spawning on the entrance wall
+						else if (room.RowWall != null && chance < chanceChance  && room.RowWall != $maze.entranceWall)
+						{
+							transform1 = room.RowWall.position.add(new Vector3D(200, 200, 50));
+							transform2 = room.RowWall.position.add(new Vector3D( -200, 200, 50));
+							transform3 = room.RowWall.position.add(new Vector3D(0, 200, 50));
+							
+							room.addCannon(CannonFactory.instance.create(transform1, ORIGIN, $ghost));
+							room.addCannon(CannonFactory.instance.create(transform2, ORIGIN, $ghost));
+							room.addCannon(CannonFactory.instance.create(transform3, ORIGIN, $ghost));
+						}
+					}
+				}
+			}
+		}
+		
+		private function addExit($maze:Maze, $wall:Asset, $floor:Asset):void
+		{
+			var exit:Vector.<Asset> = new Vector.<Asset>();
+			Bounds.getMeshBounds($floor.model);
+			var floorLength:Number = Bounds.depth;
+			
+			Bounds.getMeshBounds($wall.model);
+			var wallWidth:Number = Bounds.width;
+			
+			var exitWall:Asset = $maze.RowBorder[int(Math.random() * $maze.Columns)];
+			$maze.exitWall = exitWall;
+			var xloc:Number = exitWall.position.x;
+			
+			var zloc:Number;
+			var halfWidth:Number = wallWidth * 0.5;
+			var halfLength:Number = floorLength * 0.5;
+			for (var i:int = 0; i < 10; i++)
+			{
+				zloc = floorLength * ($maze.Rows + i) + halfLength;
+				exit.push(moveAsset($floor.clone(), xloc, zloc + halfWidth, 0, 0, 0));
+				exit.push(moveAsset($wall.clone(), xloc - halfLength, zloc + halfWidth, 0, 0, 0));
+				exit.push(moveAsset($wall.clone(), xloc + halfLength, zloc + halfWidth, 0, 0, 0));
+			}
+			
+			exit.push(moveAsset($wall.clone(), xloc +halfWidth, zloc + halfLength, 0, 0, 0, true));
+			$maze.exit = exit;
+		}
+		
+		private function addEntrance($maze:Maze, $wall:Asset, $floor:Asset)
+		{
+			var entrance:Vector.<Asset> = new Vector.<Asset>();
+			Bounds.getMeshBounds($floor.model);
+			var floorLength:Number = Bounds.depth;
+			
+			Bounds.getMeshBounds($wall.model);
+			var wallWidth:Number = Bounds.width;
+			
+			var entranceWall:Asset = $maze.GetRoom(0, int(Math.floor($maze.Columns * 0.5))).RowWall;
+			//var entranceWall:Asset = $maze.RowBorder[int(Math.floor($maze.Columns * 0.5))];
+			$maze.entranceWall = entranceWall;
+			var xloc:Number = entranceWall.position.x;
+			
+			var zloc:Number;
+			var halfWidth:Number = wallWidth * 0.5;
+			var halfLength:Number = floorLength * 0.5;
+			for (var i:int = 1; i <= 10; i++)
+			{
+				zloc = -floorLength * i + halfLength;
+				entrance.push(moveAsset($floor.clone(), xloc, zloc + halfWidth, 0, 0, 0));
+				entrance.push(moveAsset($wall.clone(), xloc - halfLength, zloc + halfWidth, 0, 0, 0));
+				entrance.push(moveAsset($wall.clone(), xloc + halfLength, zloc + halfWidth, 0, 0, 0));
+			}
+			entrance.push(moveAsset($wall.clone(), xloc, zloc - halfLength + halfWidth, 0, 0, 0, true));
+			$maze.entrance = entrance;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */

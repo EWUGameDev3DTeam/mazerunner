@@ -1,5 +1,8 @@
 package team3d.objects.maze {
+	import adobe.utils.CustomActions;
 	import com.jakobwilson.Asset;
+	import com.jakobwilson.Cannon.Cannon;
+	import flash.geom.Vector3D;
 	
 	/**
 	 * ...
@@ -7,6 +10,7 @@ package team3d.objects.maze {
 	 */
 	public class MazeRoom
 	{
+		private var _cannons	:Vector.<Cannon>;
 		private var _rowWall	:Asset;
 		private var _colWall	:Asset;
 		private var _floor		:Asset;
@@ -18,6 +22,7 @@ package team3d.objects.maze {
 		{
 			_set = $set;
 			_hasColWall = _hasRowWall = true;
+			_cannons = new Vector.<Cannon>();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -122,6 +127,30 @@ package team3d.objects.maze {
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
+		public function addCannon($cannon:Cannon):void
+		{
+			if (_cannons.indexOf($cannon) > -1)
+				return;
+			
+			_cannons.push($cannon);
+		}
+		
+		public function removeCannon($cannon:Cannon):void
+		{
+			var index:int = _cannons.indexOf($cannon);
+			if (index < 0)
+				return;
+			
+			_cannons.splice(index, 1);
+		}
+		
+		public function endCannons():void
+		{
+			for each(var c:Cannon in _cannons)
+				c.End();
+			
+			_cannons = null;
+		}
 		
 		/* ---------------------------------------------------------------------------------------- */
 		

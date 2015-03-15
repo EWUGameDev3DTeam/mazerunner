@@ -88,12 +88,12 @@ package team3d.utils
 			if (_millis <= 0 && _secs > 0)
 			{
 				_secs -= 1;
-				_millis += 1000;
+				_millis += 999;
 			}
 			if (_secs <= 0 && _mins > 0)
 			{
 				_mins -= 1;
-				_secs += 60;
+				_secs += 59;
 			}
 			
 			if (_mins <= 0 && _secs <= 0 && _millis <= 0)
@@ -103,6 +103,31 @@ package team3d.utils
 				this.CompletedSignal.dispatch();
 				return;
 			}
+		}
+		
+		public function toString():String
+		{
+			var ret:String;
+			var seconds:String = _secs.toString();
+			
+			if (_secs < 10)
+				seconds = "0" + seconds;
+			
+			ret = _mins + ":" + seconds;
+			
+			
+			if (_mins < 1)
+			{
+				var millis:String = _millis.toString();
+				if (_millis < 100 && _millis > 10)
+					millis = "0" + millis;
+				else if (_millis < 10)
+					millis = "00" + millis;
+				
+				ret += ":" + millis;
+			}
+			
+			return ret;
 		}
 	}
 }

@@ -5,6 +5,7 @@ package team3d.bases
 	import org.osflash.signals.Signal;
 	import team3d.interfaces.IScreen;
 	import team3d.objects.World;
+	import team3d.screens.DebugScreen;
 	
 	/**
 	 * ...

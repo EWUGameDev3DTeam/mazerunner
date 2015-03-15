@@ -1,39 +1,28 @@
 ﻿package  team3d.objects.npc
 {
 	
-	import away3d.audio.drivers.ISound3DDriver;
 	import away3d.audio.Sound3D;
-	import away3d.cameras.Camera3D;
+	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.View3D;
-	import away3d.controllers.FirstPersonController;
+	import away3d.entities.Mesh;
+	import away3d.materials.ColorMaterial;
+	import away3d.primitives.CubeGeometry;
 	import awayphysics.collision.dispatch.AWPGhostObject;
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPDynamicsWorld;
 	import awayphysics.dynamics.character.AWPKinematicCharacterController;
-	import com.jakobwilson.AssetManager;
-	import com.natejc.input.KeyboardManager;
-	import com.natejc.input.KeyCode;
+	import com.jakobwilson.Asset;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
-	import flash.media.Camera;
-	import flash.media.Sound;
-	import flash.net.SharedObject;
+	import org.osflash.signals.Signal;
 	import team3d.bases.BasePlayer;
 	import team3d.events.MovementOverrideEvent;
-	import team3d.objects.World;
-	import team3d.utils.pathfinding.PathNode;
-	import away3d.containers.ObjectContainer3D;
+	import team3d.sound.Sound3D;
 	import team3d.utils.pathfinding.NavGraph;
-	import com.jakobwilson.Asset;
-	import org.osflash.signals.Signal;
-	import away3d.primitives.CubeGeometry;
-	import away3d.materials.ColorMaterial;
-	import away3d.tools.helpers.data.MeshDebug;
-	import away3d.entities.Mesh;
+	import team3d.utils.pathfinding.PathNode;
 	import treefortress.sound.SoundAS;
-	
+
 	/**
 	 * A player that uses the AWPKinematicCharacterController
 	 * @author	Jakob Wilson
@@ -61,6 +50,7 @@
 		private var _bSoundPlaying	:Boolean;
 		private var _bIsEnabled		:Boolean;
 		public var done				:Boolean;
+		private var _mainSound:Sound3D;
 
 		/**
 		*	Creates a kinematic character controller 
@@ -76,7 +66,7 @@
 			
 			this._ghostObject = new AWPGhostObject(shape, $model.model);
 			this._ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
-			_character = new AWPKinematicCharacterController(_ghostObject, 1);
+			_character = new AWPKinematicCharacterController(_ghostObject, 20);
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0, 0, 0));
@@ -107,6 +97,8 @@
 		override public function End():void
 		{
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
+			if(this._mainSound != null)
+				this._mainSound.removeEventListener("soundComplete", this.playSound);
 			//this._character.ghostObject.removeEventListener("MovementOverride", this.overrideMovement);
 			
 			this._bIsEnabled = false;
@@ -128,7 +120,26 @@
 				{
 					this.targetTouchedSignal.dispatch();
 				}
+				
+				if ( distanceMP < 5000 && !done)
+				{
+					SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
+					
+					if (SoundAS.getSound("MonsterSounds").isPaused)
+						SoundAS.resume("MonsterSounds");
+					else if (!SoundAS.getSound("MonsterSounds").isPlaying)
+						SoundAS.playLoop("MonsterSounds");
+						
+					this._bSoundPlaying = true;
+				}
+				else
+				{
+					SoundAS.pause("MonsterSounds");
+					this._bSoundPlaying = false;
+				}
 			}
+			//if (!SoundAS.getSound("MonsterSounds").isPlaying)
+			//	SoundAS.playFx("MonsterSounds", .75);
 		}
 		
 		/**
@@ -160,7 +171,10 @@
 					
 				vf = this._currentTarget.subtract(this._character.ghostObject.position);
 				vf.normalize();
-				this._character.ghostObject.rotationY = Math.atan(vf.x/vf.z)*57.2957795;
+				if(vf.z > 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
+				else if(vf.z < 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
 				vf.scaleBy($speed);
 				//if(this._currentPath != null && this._currentPath.length > 0)
 					//trace("Current target: " + this._currentTarget);
@@ -170,7 +184,10 @@
 				this._currentTarget = this._target.position;
 				vf = this._currentTarget.subtract(this._character.ghostObject.position);
 				vf.normalize();
-				this._character.ghostObject.rotationY = Math.atan(vf.x/vf.z)*57.2957795;
+				if(vf.z > 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
+				else if(vf.z < 0)
+					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
 				vf.scaleBy($speed);
 			}
 			
@@ -231,6 +248,22 @@
 		public function setTarget($target:ObjectContainer3D)
 		{
 			this._target = $target;
+// ------------------------------------- broke with merge
+			//this._mainSound = new Sound3D(SoundAS.getSound("MonsterSounds").sound, this._target, null, 2.0, 2000);
+			//this._character.ghostObject.skin.addChild(this._mainSound);
+			
+			//this._mainSound.addEventListener("soundComplete", this.playSound);
+			//this._mainSound.play();
+// -------------------------------------
+		}
+		
+		
+		private function playSound(e:Event)
+		{
+// ------------------------------------- broke with merge
+			this._mainSound.stop();
+			this._mainSound.play();
+// -------------------------------------
 		}
 		
 		
@@ -271,12 +304,13 @@
 			
 			var path:Vector.<PathNode> = new Vector.<PathNode>;
 			
-			path.push(new PathNode(this._character.ghostObject.position));
+			
 			
 			for each(var p:PathNode in this._currentPath)
 				path.push(p);
 				
-			
+			path.push(new PathNode(this._currentTarget));
+			path.push(new PathNode(this._character.ghostObject.position));
 			var ret:ObjectContainer3D =  NavGraph.getPathMesh(path);
 			var target: Mesh = new Mesh(new CubeGeometry(), new ColorMaterial(0xFF00FF));
 			target.position = this._currentTarget;
