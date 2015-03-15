@@ -274,7 +274,7 @@
 		
 		private function createGround():void
 		{
-			AssetManager.instance.getAsset("Ground").scaleTo(new Vector3D(100,100,100));
+			AssetManager.instance.getAsset("Ground").scaleTo(new Vector3D(100,1,100));
 			AssetManager.instance.getAsset("Ground").transformTo(new Vector3D(0,-5,0));
 			AssetManager.instance.getAsset("Ground").addToScene(World.instance.view, World.instance.physics);
 		}
