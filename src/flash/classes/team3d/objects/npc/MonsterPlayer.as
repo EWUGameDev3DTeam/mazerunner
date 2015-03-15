@@ -75,12 +75,12 @@
 			
 			this._ghostObject = new AWPGhostObject(shape, $model.model);
 			this._ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
-			_character = new AWPKinematicCharacterController(_ghostObject, 1);
+			_character = new AWPKinematicCharacterController(_ghostObject, 20);
 			_character.jumpSpeed = 12;
 			_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0,0,0));
-			_character.gravity = 0.1;
-			_character.ghostObject.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);
+			//_character.gravity = 0.1;
+			//_character.ghostObject.forceActivationState(AWPCollisionObject.DISABLE_DEACTIVATION);
 			
 			
 			

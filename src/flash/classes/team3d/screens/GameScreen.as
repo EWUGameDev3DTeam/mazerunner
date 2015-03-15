@@ -167,8 +167,8 @@
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
-			var rows:int = 10;
-			var cols:int = 10;
+			var rows:int = 15;
+			var cols:int = 20;
 			
 			SoundAS.playLoop("GameMusic", .05);
 			
@@ -186,7 +186,7 @@
 			createMonster();
 			wireTriggers(maze);
 			
-			_cageAnimation = new MoveYAnimation(_cage, 10, 20, cageDone);
+			_cageAnimation = new MoveYAnimation(_cage, 10, 0, cageDone);
 			_entranceAnimation = new MoveYAnimation(_maze.entranceWall, 1, -_wallHeight);
 			_exitAnimation = new MoveYAnimation(_maze.exitWall, 1, -_wallHeight, null, checkWin);
 			
