@@ -366,7 +366,7 @@
 			_paused = false;
 			if(_timer.HasBeenStarted)
 				_timer.start();
-				
+			
 			SoundAS.resume("GameMusic");
 			
 			this._monster.resumeSound();
@@ -404,7 +404,6 @@
 			//if (this._entranceOpening)
 			//	SoundAS.pause("DoorsOpening");
 // -------------------------------------
-				
 			_exitAnimation.Pause();
 			_entranceAnimation.Pause();
 			_cageAnimation.Pause();

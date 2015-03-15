@@ -11,6 +11,7 @@
 	import awayphysics.collision.shapes.AWPCapsuleShape;
 	import awayphysics.data.AWPCollisionFlags;
 	import awayphysics.dynamics.AWPDynamicsWorld;
+	import awayphysics.collision.dispatch.AWPCollisionObject;
 	import awayphysics.dynamics.character.AWPKinematicCharacterController;
 	import com.jakobwilson.Asset;
 	import flash.events.Event;
@@ -22,6 +23,9 @@
 	import team3d.utils.pathfinding.NavGraph;
 	import team3d.utils.pathfinding.PathNode;
 	import treefortress.sound.SoundAS;
+	import flash.media.Sound;
+	import team3d.sound.Sound3D;
+	import away3d.audio.drivers.SimplePanVolumeDriver;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -120,8 +124,8 @@
 				{
 					this.targetTouchedSignal.dispatch();
 				}
-				
-				if ( distanceMP < 5000 && !done)
+// ------------------------------------- broke during merge
+				/*if ( distanceMP < 5000 && !done)
 				{
 					SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
 					
@@ -136,7 +140,9 @@
 				{
 					SoundAS.pause("MonsterSounds");
 					this._bSoundPlaying = false;
-				}
+				}*/
+// -------------------------------------
+			
 			}
 			//if (!SoundAS.getSound("MonsterSounds").isPlaying)
 			//	SoundAS.playFx("MonsterSounds", .75);
@@ -261,8 +267,8 @@
 		private function playSound(e:Event)
 		{
 // ------------------------------------- broke with merge
-			this._mainSound.stop();
-			this._mainSound.play();
+			//this._mainSound.stop();
+			//this._mainSound.play();
 // -------------------------------------
 		}
 		
