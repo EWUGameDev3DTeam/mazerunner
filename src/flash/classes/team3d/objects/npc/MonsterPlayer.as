@@ -1,7 +1,5 @@
 ﻿package  team3d.objects.npc
 {
-	
-	import away3d.audio.Sound3D;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.View3D;
 	import away3d.entities.Mesh;
@@ -24,7 +22,6 @@
 	import team3d.utils.pathfinding.PathNode;
 	import treefortress.sound.SoundAS;
 	import flash.media.Sound;
-	import team3d.sound.Sound3D;
 	import away3d.audio.drivers.SimplePanVolumeDriver;
 
 	/**
@@ -41,6 +38,7 @@
 		private var _ghostObject	:AWPGhostObject;
 		private var _character		:AWPKinematicCharacterController;
 		private var _speed			:Number = 1;
+		private var _slowing 		:Number = 1.0;
 		private var _overrideVector	:Vector3D = new Vector3D();
 		
 		private var _navGraph		:NavGraph;
@@ -161,7 +159,7 @@
 					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
 				else if(vf.z < 0)
 					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
-				vf.scaleBy($speed);
+				vf.scaleBy($speed * this._slowing);
 				//if(this._currentPath != null && this._currentPath.length > 0)
 					//trace("Current target: " + this._currentTarget);
 			}
@@ -174,7 +172,7 @@
 					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795,0);
 				else if(vf.z < 0)
 					this._character.ghostObject.rotation = new Vector3D(0,Math.atan(vf.x/vf.z)*57.2957795 + 180,0);
-				vf.scaleBy($speed);
+				vf.scaleBy($speed * this._slowing);
 			}
 			
 			
@@ -207,7 +205,11 @@
 			this._currentPath = this._navGraph.getPath(
 								this._navGraph.getNearestWayPoint(this._character.ghostObject.position), 
 								this._navGraph.getNearestWayPoint(this._target.position));
-							
+			if(this._currentPath.length < 5)
+				this._slowing = 0.15;
+			else
+				this._slowing = 1.0;
+				
 			if(this._currentPath == null)
 			{
 				//trace("Idle state - no path");
@@ -235,11 +237,11 @@
 		{
 			this._target = $target;
 // ------------------------------------- broke with merge
-			//this._mainSound = new Sound3D(SoundAS.getSound("MonsterSounds").sound, this._target, null, 2.0, 2000);
-			//this._character.ghostObject.skin.addChild(this._mainSound);
+			this._mainSound = new Sound3D(SoundAS.getSound("MonsterSounds").sound, this._target, null, 2.0, 2000);
+			this._character.ghostObject.skin.addChild(this._mainSound);
 			
-			//this._mainSound.addEventListener("soundComplete", this.playSound);
-			//this._mainSound.play();
+			this._mainSound.addEventListener("soundComplete", this.playSound);
+			this._mainSound.play();
 // -------------------------------------
 		}
 		
@@ -247,8 +249,8 @@
 		private function playSound(e:Event)
 		{
 // ------------------------------------- broke with merge
-			//this._mainSound.stop();
-			//this._mainSound.play();
+			this._mainSound.stop();
+			this._mainSound.play();
 // -------------------------------------
 		}
 		

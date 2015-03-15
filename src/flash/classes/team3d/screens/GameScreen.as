@@ -56,7 +56,7 @@
 		private var _path					:ObjectContainer3D;
 		private var _maze					:Maze;
 		/** set to true for debug output*/
-		private var _debug = false;
+		private var _debug = true;
 		
 		private var _bElevator				:Boolean;
 		private var _cageAnimation			:MoveYAnimation;
@@ -299,7 +299,7 @@
 			//end navgraph			
 			
 			//Create a Monster
-			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"), 300, 100, 0.05);
+			_monster = new MonsterPlayer(AssetManager.instance.getAsset("Monster"), 300, 100, 0.3);
 			_monster.controller.ghostObject.position = new Vector3D(_player.controller.ghostObject.x, 150, _player.controller.ghostObject.z - 7000);
 			_monster.NavGraph = this._graph;
 			_monster.setTarget(this._player.controller.ghostObject.skin);

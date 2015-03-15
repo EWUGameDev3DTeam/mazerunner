@@ -1,0 +1,9 @@
+diff a/src/flash/classes/team3d/objects/npc/MonsterPlayer.as b/src/flash/classes/team3d/objects/npc/MonsterPlayer.as	(rejected hunks)
+@@ -49,6 +49,7 @@
+ 		private var _ghostObject	:AWPGhostObject;
+ 		private var _character		:AWPKinematicCharacterController;
+ 		private var _speed			:Number = 1;
++		private var _speedDrag		:Number = 1;
+ 		private var _overrideVector	:Vector3D = new Vector3D();
+ 		
+ 		private var _navGraph		:NavGraph;
