@@ -120,14 +120,14 @@
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy($speed);
-				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround() && !World.instance.IsPaused )
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
 			{
 				vf = _character.ghostObject.front;
 				vf.scaleBy( -$speed);
-				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround() && !World.instance.IsPaused)
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
@@ -136,7 +136,7 @@
 				vs = _character.ghostObject.right;
 				vs.scaleBy(-$speed*0.5);
 				vf.scaleBy(0.7);
-				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround() && !World.instance.IsPaused)
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
 
@@ -145,7 +145,7 @@
 				vs = _character.ghostObject.right;
 				vs.scaleBy($speed*0.5);
 				vf.scaleBy(0.7);
-				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround())
+				if (!SoundAS.getSound("PlayerFootstep").isPlaying && this._character.onGround() && !World.instance.IsPaused)
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			

@@ -123,29 +123,9 @@
 				if(this._target != null && this._character.ghostObject.position.subtract(this._target.position).length < 250)
 				{
 					this.targetTouchedSignal.dispatch();
-				}
-// ------------------------------------- broke during merge
-				/*if ( distanceMP < 5000 && !done)
-				{
-					SoundAS.getSound("MonsterSounds").volume = (5000 - distanceMP) * .0002;
-					
-					if (SoundAS.getSound("MonsterSounds").isPaused)
-						SoundAS.resume("MonsterSounds");
-					else if (!SoundAS.getSound("MonsterSounds").isPlaying)
-						SoundAS.playLoop("MonsterSounds");
-						
-					this._bSoundPlaying = true;
-				}
-				else
-				{
-					SoundAS.pause("MonsterSounds");
-					this._bSoundPlaying = false;
-				}*/
-// -------------------------------------
-			
+				}	
 			}
-			//if (!SoundAS.getSound("MonsterSounds").isPlaying)
-			//	SoundAS.playFx("MonsterSounds", .75);
+
 		}
 		
 		/**
