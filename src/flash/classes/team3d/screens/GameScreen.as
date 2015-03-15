@@ -45,6 +45,7 @@
 		
 		private var _paused					:Boolean;
 		private var _controlsEnabled		:Boolean;
+		private var _entranceOpening		:Boolean;
 		
 		private var _player					:KinematicPlayer;
 		private var _flyPlayer				:FlyPlayer;
@@ -120,10 +121,11 @@
 		
 		private function openEntrance($a:Asset):void
 		{
-// ------------------------------------- broke due to gamescreen changes
-			//if(!SoundAS.getSound("DoorsOpening").isPlaying && !this._entranceOpening)
-			//	SoundAS.playFx("DoorsOpening", .2);
-// -------------------------------------
+			if(!SoundAS.getSound("DoorsOpening").isPlaying && !this._entranceOpening)
+				SoundAS.playFx("DoorsOpening", .2);
+			
+			this._entranceOpening = true;
+				
 			_entranceOpenTrigger.end();
 			_entranceAnimation.Begin();
 		}
@@ -137,6 +139,7 @@
 			SoundAS.pause("DoorsOpening");
 			SoundAS.pause("Elevator");
 			this._bElevator = false;
+			this._entranceOpening = false;
 		}
 		
 		private function closeExit($a:Asset = null):void
@@ -223,6 +226,7 @@
 			_player.canWalk = false;
 			
 			this._bElevator = true;
+			this._entranceOpening = false;
 		}
 		
 		private function wireTriggers($maze:Maze):void
@@ -375,9 +379,8 @@
 				SoundAS.resume("Elevator");
 				
 // ------------------------------------- broke due to gamescreen changes
-			//if (this._entranceOpening)
-			//	SoundAS.resume("DoorsOpening");
-// -------------------------------------
+			if (this._entranceOpening)
+				SoundAS.resume("DoorsOpening");
 			
 			_exitAnimation.Resume();
 			_entranceAnimation.Resume();
@@ -401,9 +404,9 @@
 				SoundAS.pause("Elevator");
 				
 // ------------------------------------- broke due to gamescreen changes
-			//if (this._entranceOpening)
-			//	SoundAS.pause("DoorsOpening");
-// -------------------------------------
+			if (this._entranceOpening)
+				SoundAS.pause("DoorsOpening");
+				
 			_exitAnimation.Pause();
 			_entranceAnimation.Pause();
 			_cageAnimation.Pause();
