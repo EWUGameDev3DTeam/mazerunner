@@ -57,6 +57,7 @@
 		/** set to true for debug output*/
 		private var _debug = false;
 		
+		private var _bElevator				:Boolean;
 		private var _cageAnimation			:MoveYAnimation;
 		private var _cage					:Asset;
 		
@@ -119,10 +120,12 @@
 		
 		private function openEntrance($a:Asset):void
 		{
+// ------------------------------------- broke due to gamescreen changes
+			//if(!SoundAS.getSound("DoorsOpening").isPlaying && !this._entranceOpening)
+			//	SoundAS.playFx("DoorsOpening", .2);
+// -------------------------------------
 			_entranceOpenTrigger.end();
 			_entranceAnimation.Begin();
-			
-			SoundAS.playFx("DoorsOpening", .2);
 		}
 		
 		private function closeEntrance($a:Asset):void
@@ -133,6 +136,7 @@
 			
 			SoundAS.pause("DoorsOpening");
 			SoundAS.pause("Elevator");
+			this._bElevator = false;
 		}
 		
 		private function closeExit($a:Asset = null):void
@@ -217,6 +221,8 @@
 			_exitAnimation.Begin();
 			
 			_player.canWalk = false;
+			
+			this._bElevator = true;
 		}
 		
 		private function wireTriggers($maze:Maze):void
@@ -361,12 +367,24 @@
 			if(_timer.HasBeenStarted)
 				_timer.start();
 			
+			SoundAS.resume("GameMusic");
+			
+			this._monster.resumeSound();
+			
+			if (this._bElevator)
+				SoundAS.resume("Elevator");
+				
+// ------------------------------------- broke due to gamescreen changes
+			//if (this._entranceOpening)
+			//	SoundAS.resume("DoorsOpening");
+// -------------------------------------
+			
 			_exitAnimation.Resume();
 			_entranceAnimation.Resume();
 			_cageAnimation.Resume();
 			
 			World.instance.Resume();
-			SoundAS.resumeAll();
+			//SoundAS.resumeAll();
 		}
 		
 		public function Pause()
@@ -375,11 +393,22 @@
 			World.instance.Pause();
 			_timer.stop();
 			
+			SoundAS.pause("GameMusic");
+			
+			this._monster.pauseSound();
+			
+			if (this._bElevator)
+				SoundAS.pause("Elevator");
+				
+// ------------------------------------- broke due to gamescreen changes
+			//if (this._entranceOpening)
+			//	SoundAS.pause("DoorsOpening");
+// -------------------------------------
 			_exitAnimation.Pause();
 			_entranceAnimation.Pause();
 			_cageAnimation.Pause();
 			
-			SoundAS.pauseAll();
+			//SoundAS.pauseAll();
 		}
 		
 		protected function pauseGame():void
@@ -414,7 +443,17 @@
 			endCannons();
 			
 			SoundAS.pause("GameMusic");
-			SoundAS.playFx("PlayerDeath");
+			
+			this._monster.pauseSound();
+			if (this._bElevator)
+				SoundAS.pause("Elevator");
+
+// ------------------------------------- broke due to gamescreen changes
+			//if (this._entranceOpening)
+			//	SoundAS.pause("DoorsOpening");
+// -------------------------------------
+			
+			//SoundAS.playFx("PlayerDeath");
 			
 			World.instance.unlockMouse();
 			

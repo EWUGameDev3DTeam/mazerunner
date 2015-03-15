@@ -108,7 +108,8 @@ package team3d.screens
 		override public function Begin():void
 		{
 			super.Begin();
-			
+
+			SoundAS.playFx("PlayerDeath");
 			SoundAS.playFx("DefeatSound");
 			
 			TweenMax.fromTo(this, _fadeTime, { autoAlpha: 0 }, { autoAlpha:1 } );

@@ -73,7 +73,8 @@
 		
 		private function goDown($a:Asset):void
 		{
-			SoundAS.playFx("Elevator");
+			if(!SoundAS.getSound("Elevator").isPlaying)
+				SoundAS.playFx("Elevator", .7);
 			
 			if (_goingDown) return;
 			_goingDown = true;
