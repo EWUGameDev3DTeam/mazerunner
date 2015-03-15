@@ -168,7 +168,7 @@
 		 */
 		private function onSceneChanged(ev:Object3DEvent):void
 		{
-			trace('scene changed');
+			//trace('scene changed');
 			// mute driver if there is no scene available, i.e. when the
 			// sound3d object has been removed from the scene
 			_driver.mute = (_scene == null);
