@@ -174,8 +174,8 @@
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
-			var rows:int = 15;
-			var cols:int = 20;
+			var rows:int = 20;
+			var cols:int = 15;
 			
 			SoundAS.playLoop("GameMusic", .05);
 			

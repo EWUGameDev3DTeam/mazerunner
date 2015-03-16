@@ -238,10 +238,10 @@
 		{
 			var ninety:Vector3D = new Vector3D(0, 90, 0);
 			var ghost:AWPGhostObject = _player.controller.ghostObject;
-			var xloc:Number = $startx - $floorWidth * 0.5 + 50;
-			var zloc:Number = $startz + $floorWidth * 2;
+			var xloc:Number = $startx + $floorWidth;
+			var zloc:Number = $startz + $floorWidth * 1.5 + 50;
 			for (var i:int = -1; i < 2; i++)
-				_cannons.push(CannonFactory.instance.create(new Vector3D(xloc, 200, zloc + 200 * i), ninety, ghost));
+				_cannons.push(CannonFactory.instance.create(new Vector3D(xloc + 200 * i, 200, zloc), new Vector3D(), ghost));
 		}
 		
 		public function Unpause():void
