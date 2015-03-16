@@ -12,8 +12,13 @@
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Shape;
+	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	import org.osflash.signals.Signal;
 	import team3d.bases.BaseScreen;
 	import team3d.factory.CannonFactory;
@@ -34,22 +39,16 @@
 		/* ---------------------------------------------------------------------------------------- */
 		
 		public var PausedSignal			:Signal;
-		
 		private var _paused				:Boolean;
-		
 		private var _controlsEnabled	:Boolean;
-
 		private var _player				:KinematicPlayer;
-		
 		private var _flyPlayer			:FlyPlayer;
-		
 		private var _elevatorDown		:Trigger3D;
-		
 		private var _goingDown			:Boolean;
-		
 		private var _cage				:Asset;
-		
 		private var _cannons			:Vector.<Cannon>;
+		private var _tutorialText		:TextField;
+		private var _mob				:Asset;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -69,6 +68,13 @@
 			_elevatorDown = new Trigger3D(400);
 			_elevatorDown.TriggeredSignal.add(goDown);
 			_cannons = new Vector.<Cannon>();
+			
+			var textFormat:TextFormat = new TextFormat(null, 30, 0x00FF00, true, true, null, null, null, TextFormatAlign.CENTER);
+			_tutorialText = new TextField();
+			_tutorialText.defaultTextFormat = textFormat;
+			_tutorialText.autoSize = TextFieldAutoSize.CENTER;
+			_tutorialText.text = "tutorial text";
+			this.addChild(_tutorialText);
 		}
 		
 		private function goDown($a:Asset):void
@@ -156,9 +162,9 @@
 			addCannons(startx, startz, floorWidth);
 			
 			// load monster
-			var monster:Asset = AssetManager.instance.getCopy("Monster");
-			monster.transformTo(new Vector3D(startx + floorWidth, 200, startz + floorWidth));
-			World.instance.addObject(monster);
+			_mob = AssetManager.instance.getCopy("Monster");
+			_mob.transformTo(new Vector3D(startx + floorWidth, 200, startz + floorWidth));
+			World.instance.addObject(_mob);
 			
 			// create the cage
 			_cage = AssetManager.instance.getCopy("Cage");
@@ -218,11 +224,11 @@
 			tile = $wall.clone();
 			tile.transformTo(new Vector3D($startx + $width - $width * 0.5, 0, $startz + $width));
 			World.instance.addObject(tile);
-			
+			/*
 			tile = $wall.clone();
 			tile.transformTo(new Vector3D($startx + $width + $width * 0.5, 0, $startz + $width));
 			World.instance.addObject(tile);
-			
+			*/
 			tile = $wall.clone();
 			tile.transformTo(new Vector3D($startx + $width, 0, $startz + $width + $width * 0.5));
 			tile.rotateTo(new Vector3D(0, 90, 0));
@@ -335,13 +341,60 @@
 				_cage.rigidBody.y -= 10;
 			}
 			
+			checkDistance();
+			
 			World.instance.update();
+		}
+		
+		private function checkDistance():void
+		{
+			var x:Number = _mob.position.x - _player.controller.ghostObject.x;
+			var y:Number = _mob.position.y - _player.controller.ghostObject.y;
+			var z:Number = _mob.position.z - _player.controller.ghostObject.z;
+			var mobDist:Number = Math.sqrt(x * x + y * y + z * z);
+			var cannonDist:Number = cannonDist();
+			_tutorialText.visible = false;
+			if (mobDist < 400)
+			{
+				_tutorialText.visible = true;
+				_tutorialText.text = "This is the monster. Get too close in the maze and it will kill you.";
+				_tutorialText.appendText("\nIt also chases you, this is your motivation.");
+			}
+			else if (cannonDist < 400)
+			{
+				_tutorialText.visible = true;
+				_tutorialText.text = "These are cannons. Their shots will bounce you around.";
+				_tutorialText.appendText("\nThey can help but can also hinder.");
+			}
+		}
+		
+		
+		
+		private function cannonDist():Number
+		{
+			var dist:Number = 0;
+			var x:Number = _cannons[0].model.position.x - _player.controller.ghostObject.x;
+			var y:Number = _cannons[0].model.position.y - _player.controller.ghostObject.y;
+			var z:Number = _cannons[0].model.position.z - _player.controller.ghostObject.z;
+			var closest:Number =  Math.sqrt(x * x + y * y + z * z);
+			
+			for (var i:int = 1; i < _cannons.length; i++)
+			{
+				x = _cannons[i].model.position.x - _player.controller.ghostObject.x
+				y = _cannons[i].model.position.y - _player.controller.ghostObject.y;
+				z = _cannons[i].model.position.z - _player.controller.ghostObject.z;
+				dist = Math.sqrt(x * x + y * y + z * z);
+				if (dist < closest)
+					closest = dist;
+			}
+			
+			return closest;
 		}
 		
 		override protected function resize($e:Event = null):void 
 		{
-			//super.resize($e);
-			// do nothing, VERY intentional
+			_tutorialText.x = (World.instance.stage.stageWidth - _tutorialText.width) * 0.5;
+			_tutorialText.y = 0;
 		}
 	}
 }
