@@ -180,7 +180,7 @@
 			SoundAS.playLoop("GameMusic", .05);
 			
 			_timer.stop();
-			_timer.reset(5,5,0);
+			_timer.reset(2,35,0);
 			_timerText.textColor = 0xFFFFFF;
 			
 			_controlsEnabled = false;
