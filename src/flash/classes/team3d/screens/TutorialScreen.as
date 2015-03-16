@@ -74,6 +74,7 @@
 			_tutorialText.defaultTextFormat = textFormat;
 			_tutorialText.autoSize = TextFieldAutoSize.CENTER;
 			_tutorialText.text = "tutorial text";
+			_tutorialText.visible = false;
 			this.addChild(_tutorialText);
 		}
 		
