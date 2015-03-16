@@ -57,8 +57,8 @@
 			this._ghostObject = new AWPGhostObject(shape, Camera3D(_fpc.targetObject));
 			this._ghostObject.collisionFlags = AWPCollisionFlags.CF_CHARACTER_OBJECT;
 			_character = new AWPKinematicCharacterController(_ghostObject, 1);
-			_character.jumpSpeed = 10;
-			_character.fallSpeed = _character.jumpSpeed * 0.8;
+			//_character.jumpSpeed = 1;
+			//_character.fallSpeed = _character.jumpSpeed * 0.8;
 			_character.setWalkDirection(new Vector3D(0, 0, 0));
 		}
 		
@@ -149,8 +149,8 @@
 					SoundAS.playFx("PlayerFootstep", .5);
 			}
 			
-			if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
-				_character.jump();
+			//if(KeyboardManager.instance.isKeyDown(KeyCode.SPACEBAR))
+			//	_character.jump();
 			
 			if(KeyboardManager.instance.isKeyDown(KeyCode.SHIFT))
 			{

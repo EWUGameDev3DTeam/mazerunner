@@ -111,7 +111,7 @@ package team3d.screens
 			tf.text = "You escaped from the maze within the given time.";
 			tf.appendText("\nAfter your ordeal, you have decided to live a");
 			tf.appendText("\nbetter life. You earned your freedom.");
-			tf.x = 50;
+			tf.x = 30;
 			tf.y = this.height - tf.textHeight - 100;
 			this.addChild(tf);
 			
