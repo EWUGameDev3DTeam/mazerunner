@@ -174,7 +174,7 @@
 			World.instance.lockMouse();
 			this.addChild(World.instance.view);
 			
-			var rows:int = 20;
+			var rows:int = 15;
 			var cols:int = 15;
 			
 			SoundAS.playLoop("GameMusic", .05);
@@ -259,6 +259,7 @@
 			//trace("time start trigger start");
 			
 			_exitCloseTrigger = new Trigger3D(800);
+			_exitCloseTrigger.TriggeredSignal.add(closeExit);
 			_exitCloseTrigger.position = new Vector3D(exitWall.position.x, exitWall.position.y, exitWall.position.z + 810);
 			_exitCloseTrigger.addObjectActivator(_player.controller.ghostObject);
 			_exitCloseTrigger.begin();
