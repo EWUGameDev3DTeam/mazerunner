@@ -31,7 +31,7 @@
 			attributes.name = "Team3D";
 			attributes.align = "center";
 			swfobject.createCSS("html", "height:100%; background-color: #000000;");
-			swfobject.createCSS("body", "margin:0 auto; padding:0; overflow:hidden; width:50%; height:100%;");
+			swfobject.createCSS("body", "margin:0; padding:0; height:100%;");
 			swfobject.embedSWF(
 				"Team3D.swf", "flashContent",
 				"900", "600",
@@ -44,15 +44,15 @@
         if(navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin.filename == "pepflashplayer.dll")
         {
             document.write('<div style="width:100%; margin:0 auto;">');
-            document.write('<div style="color:#FF0000; text-align:center;font-size:200%">');
-            document.write('Warning: You are using a browser plugin that is known to cause issues.<br />');
-            document.write('To maximize the experience, we recommend downloading the flash player plugin provided by the link below.');
+            document.write('<div style="color:#FF0000; text-align:center;font-size:150%">');
+            document.write('Warning: You are using a browser plugin that is known to cause issues. ');
+            document.write('To maximize the experience, we recommend downloading<br /> the flash player plugin provided by the link below <b style="font-size:125%">and disabling the pepflashplayer plugin.</b>');
             document.write('</div>');
             document.write('<div style="color:#FFFF00; text-align:center;font-size:125%">');
             document.write('Detected Plugin: ' + navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin.filename);
             document.write('</div>');
             document.write('<div style="text-align:center;">');
-            document.write('<br /><a href="http://get.adobe.com/flashplayer/?no_redirect" target="_blank" style="color:green;font-size:125%">Download Page for Flash Plugin</a>');
+            document.write('<a href="http://get.adobe.com/flashplayer/?no_redirect" target="_blank" style="color:green;font-size:125%">Download Page for Flash Plugin</a>');
             document.write('</div>');
             document.write('<div style="height:30px;"></div>');
             document.write('</div>');
