@@ -56,7 +56,7 @@
 		private var _path					:ObjectContainer3D;
 		private var _maze					:Maze;
 		/** set to true for debug output*/
-		private var _debug = true;
+		private var _debug = false;
 		
 		private var _bElevator				:Boolean;
 		private var _cageAnimation			:MoveYAnimation;
