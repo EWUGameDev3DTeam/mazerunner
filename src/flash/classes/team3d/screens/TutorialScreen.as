@@ -106,7 +106,7 @@
 			_paused = false;
 			
 			//*			TEMPORARY KEY BINDINGS
-			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -277,7 +277,7 @@
 		override public function End():void
 		{
 			//*			TEMPORARY KEY BINDINGS
-			KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
+			//KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
 			//			TEMPORARY KEY BINDINGS*/
 			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.P, pauseGame);

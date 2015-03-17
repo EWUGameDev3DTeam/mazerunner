@@ -198,7 +198,7 @@
 			_exitAnimation = new MoveYAnimation(_maze.exitWall, 1, -_wallHeight, null, checkWin);
 			
 			//*			TEMPORARY KEY BINDINGS
-			KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
+			//KeyboardManager.instance.addKeyUpListener(KeyCode.T, toggleCamera, true);
 			//			TEMPORARY KEY BINDINGS*/
 			
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -430,7 +430,7 @@
 		{
 			this.removeEventListener(Event.ENTER_FRAME, enterFrame);
 			//*			TEMPORARY KEY BINDINGS
-			KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
+			//KeyboardManager.instance.removeKeyUpListener(KeyCode.T, toggleCamera);
 			//			TEMPORARY KEY BINDINGS*/
 			
 			KeyboardManager.instance.removeKeyUpListener(KeyCode.P, pauseGame);
