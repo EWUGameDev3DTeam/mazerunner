@@ -275,7 +275,7 @@ package team3d.builders
 		private function addCannons($maze:Maze, $ghost:AWPGhostObject):void
 		{
 			var sideChance:Number = 0.5;
-			var chanceChance:Number = 0.5;
+			var chanceChance:Number = 0.35;
 			for (var i:Number = 0; i < $maze.Rooms.length; i++)
 			{	
 				var rooms = $maze.Rooms[i];
