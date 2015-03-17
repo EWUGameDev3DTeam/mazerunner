@@ -76,14 +76,20 @@ package team3d.screens
 			tf.visible = true;
 			tf.alpha = 1;
 			format = new TextFormat();
-			format.size = 50;
+			format.size = 15;
 			format.bold = true;
 			tf.defaultTextFormat = format;
 			
-			tf.text = "Credits";
-			tf.appendText("\nCredits...");
-			tf.appendText("\nCredits...");
-			tf.appendText("\nMore Credits...");
+			tf.text = "Lead Programmer - Dan Watt";
+			tf.appendText("\ndanwatt24@gmail.com");
+			tf.appendText("\n\nLead Artist & Programmer - Jake Wilson");
+			tf.appendText("\njwshortcircuit@gmail.com");
+			tf.appendText("\n\nLead Designer & Programmer - John McNutt");
+			tf.appendText("\nmcnuttjohnathan@gmail.com");
+			tf.appendText("\n\nAll Sound Effects and Game Screen Music - freesfx.co.uk");
+			tf.appendText("\nTitle Screen Music - Youtube.com 'Sci Fi Music - Agoraphobia'");
+			tf.appendText("\nAll Textures made using - CGTextures.com");
+			tf.appendText("\nSkybox generator - Alex Peterson");
 			tf.x = this.width * 0.5 - tf.width * 0.5;
 			tf.y = this.getChildByName("titleText").y + this.getChildByName("titleText").height + 10;
 			this.addChild(tf);
