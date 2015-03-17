@@ -307,7 +307,7 @@ var swfobject = function() {
 	}
 
 	/* Show the Adobe Express Install dialog
-		- Reference: http://www.adobe.com/cfusion/knowledgebase/index.cfm?id=6a253b75
+		- Reference: http://www.adobe.com/go/flashpro_player_express_install
 	*/
 	function showExpressInstall(att, par, replaceElemIdStr, callbackFn) {
 		isExpressInstallActive = true;
