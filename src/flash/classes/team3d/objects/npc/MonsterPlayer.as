@@ -23,6 +23,7 @@
 	import treefortress.sound.SoundAS;
 	import flash.media.Sound;
 	import away3d.audio.drivers.SimplePanVolumeDriver;
+	import team3d.objects.World;
 
 	/**
 	 * A player that uses the AWPKinematicCharacterController
@@ -85,7 +86,6 @@
 		{
 			this.addEventListener(Event.ENTER_FRAME,this.onFrame);
 			//this._character.ghostObject.addEventListener("MovementOverride", this.overrideMovement);
-			
 			this._bSoundPlaying = false;
 			this._bIsEnabled = true;
 			this.done = false;
@@ -98,6 +98,13 @@
 		 */
 		override public function End():void
 		{
+			if(this._mainSound != null)
+			{
+				World.instance.PauseSignal.add(this._mainSound.pause);
+				World.instance.ResumeSignal.add(this._mainSound.play);
+				this._mainSound.stop();
+				this._mainSound.removeEventListener("soundComplete", this.playSound);
+			}
 			this.removeEventListener(Event.ENTER_FRAME,this.onFrame);
 			if(this._mainSound != null)
 				this._mainSound.removeEventListener("soundComplete", this.playSound);
@@ -239,6 +246,9 @@
 // ------------------------------------- broke with merge
 			this._mainSound = new Sound3D(SoundAS.getSound("MonsterSounds").sound, this._target, null, 2.0, 2000);
 			this._character.ghostObject.skin.addChild(this._mainSound);
+			
+			World.instance.PauseSignal.add(this._mainSound.pause);
+			World.instance.ResumeSignal.add(this._mainSound.play);
 			
 			this._mainSound.addEventListener("soundComplete", this.playSound);
 			this._mainSound.play();
