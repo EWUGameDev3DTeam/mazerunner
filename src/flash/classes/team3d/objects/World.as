@@ -35,6 +35,7 @@
 		private			var _physics		:AWPDynamicsWorld;
 		private			var _curScreen		:String;
 		private			var _paused			:Boolean;
+		private			var _isSafe			:Boolean;
 		
 		/* ---------------------------------------------------------------------------------------- */
 		
@@ -52,6 +53,7 @@
 		
 		private function createWorld():void
 		{
+			_isSafe = true;
 			_view = new View3D();
 			
 			//Set up the physics world
@@ -139,6 +141,11 @@
 			
 			_stage = $stage;
 			//_stage.addEventListener(Event.RESIZE, windowResize);
+		}
+		
+		public function set setSafe($safe:Boolean):void
+		{
+			_isSafe = $safe;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -327,7 +334,11 @@
 			if (isNormal)
 				return false;
 			
-			_stage.mouseLock = false;
+			if (!(_isSafe || isNormal))
+				_stage.displayState = StageDisplayState.NORMAL;
+			else
+				_stage.mouseLock = false;
+			
 			return true;
 		}
 		

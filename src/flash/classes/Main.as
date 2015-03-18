@@ -134,6 +134,8 @@ package
 			//var pluginCheck:PluginOverlay = new PluginOverlay();
 			//this.addChildAt(pluginCheck, 0);
 			//pluginCheck.check();
+			if (root.loaderInfo.parameters.plugin == "pepflashplayer.dll")
+				World.instance.setSafe = false;
 			
 			var queue:LoaderMax = new LoaderMax( { onProgress:progress, onComplete:compeleted } );
 			loadLoading(queue);

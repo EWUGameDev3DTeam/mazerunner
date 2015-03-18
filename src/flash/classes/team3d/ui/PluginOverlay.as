@@ -56,14 +56,14 @@ package team3d.ui
 			_txtPlugin.autoSize = TextFieldAutoSize.CENTER;
 			this.addChild(_txtPlugin);
 			
-			_pluginFormat = new TextFormat(null, 20, 0x00FF00, true, null, true, "http://get.adobe.com/flashplayer/?no_redirect", "_blank", TextFormatAlign.CENTER);
+			_pluginFormat = new TextFormat(null, 20, 0x00FF00, true, null, null, null, null, TextFormatAlign.CENTER);
 			_pluginLink = new TextField();
 			_pluginLink.autoSize = TextFieldAutoSize.LEFT;
 			_pluginLink.defaultTextFormat = _pluginFormat;
 			_pluginLink.name = "lnkPlugin";
-			_pluginLink.text = "Download Page for Flash Plugin";
-			_pluginLink.addEventListener(MouseEvent.ROLL_OUT, linkOut);
-			_pluginLink.addEventListener(MouseEvent.ROLL_OVER, linkOver);
+			_pluginLink.text = "http://get.adobe.com/flashplayer/?no_redirect";
+			//_pluginLink.addEventListener(MouseEvent.ROLL_OUT, linkOut);
+			//_pluginLink.addEventListener(MouseEvent.ROLL_OVER, linkOver);
 			this.addChild(_pluginLink);
 			
 			_dismissFormat = new TextFormat(null, 20, 0x00FF00, true, null, true, "", null, TextFormatAlign.CENTER);
