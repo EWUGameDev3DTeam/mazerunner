@@ -147,15 +147,15 @@
 		
 		private function loadAssets()
 		{
-			AssetManager.instance.enqueue("Wall", "Models/Wall/WallSegment.awd", Asset.BOX, Asset.STATIC);
-			AssetManager.instance.enqueue("Floor", "Models/Floor/Floor.awd", Asset.BOX, Asset.STATIC);
-			AssetManager.instance.enqueue("Sky", "Models/Sky/NightSky.awd", Asset.SKYBOX);
-			AssetManager.instance.enqueue("DebugSky", "Models/Sky/AxisSky.awd", Asset.SKYBOX);//remove for release
-			AssetManager.instance.enqueue("Cage", "Models/Cage/PlatForm.awd", Asset.BOX, Asset.STATIC);
-			AssetManager.instance.enqueue("Cannon", "Models/Cannon/Cannon.awd", Asset.NONE);
-			AssetManager.instance.enqueue("CannonBall", "Models/CannonBall/CannonBall.awd", Asset.SPHERE, Asset.DYNAMIC);
-			AssetManager.instance.enqueue("Monster", "Models/Monster/Monster.awd", Asset.BOX, Asset.STATIC);
-			AssetManager.instance.enqueue("Ground", "Models/Ground/Ground.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Wall", "models/wall/wallsegment.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Floor", "models/floor/floor.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Sky", "models/sky/nightsky.awd", Asset.SKYBOX);
+			AssetManager.instance.enqueue("DebugSky", "models/sky/axissky.awd", Asset.SKYBOX);//remove for release
+			AssetManager.instance.enqueue("Cage", "models/cage/platform.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Cannon", "models/cannon/cannon.awd", Asset.NONE);
+			AssetManager.instance.enqueue("CannonBall", "models/cannonball/cannonball.awd", Asset.SPHERE, Asset.DYNAMIC);
+			AssetManager.instance.enqueue("Monster", "models/monster/monster.awd", Asset.BOX, Asset.STATIC);
+			AssetManager.instance.enqueue("Ground", "models/ground/ground.awd", Asset.BOX, Asset.STATIC);
 			AssetManager.instance.load(this.onProgress, this.onComplete);
 		}
 		

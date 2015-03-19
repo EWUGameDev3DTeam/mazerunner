@@ -48,9 +48,9 @@ package team3d.ui
 			_text.height = imgHeight;
 			
 			var queue:LoaderMax = new LoaderMax( { onComplete:completed } );
-			var idle:ImageLoader = new ImageLoader("images/Button/ButtonStill.png", { name: ("idle" + _btnID), container:this, width:imgWidth, height:imgHeight, alpha:1 } );
-			var down:ImageLoader = new ImageLoader("images/Button/ButtonDown.png", { name:("down" + _btnID), container:this, visible:false, width:imgWidth, height:imgHeight, alpha:1 } );
-			var hover:ImageLoader = new ImageLoader("images/Button/ButtonHover.png", { name:("hover" + _btnID), container:this, visible:false, width:imgWidth, height:imgHeight, alpha:1 } );
+			var idle:ImageLoader = new ImageLoader("./images/button/buttonstill.png", { name: ("idle" + _btnID), container:this, width:imgWidth, height:imgHeight, alpha:1 } );
+			var down:ImageLoader = new ImageLoader("./images/button/buttondown.png", { name:("down" + _btnID), container:this, visible:false, width:imgWidth, height:imgHeight, alpha:1 } );
+			var hover:ImageLoader = new ImageLoader("./images/button/buttonhover.png", { name:("hover" + _btnID), container:this, visible:false, width:imgWidth, height:imgHeight, alpha:1 } );
 			
 			queue.append(idle);
 			queue.append(down);
