@@ -12,6 +12,7 @@
 	import flash.utils.Dictionary;
 	import org.osflash.signals.Signal;
 	import team3d.objects.maze.Maze;
+	import team3d.screens.DebugScreen;
 	import team3d.screens.GameScreen;
 	import team3d.screens.TutorialScreen;
 	
@@ -29,6 +30,7 @@
 		public			var PauseSignal		:Signal;
 		public			var ResumeSignal	:Signal;
 		public			var ScreenChange	:Signal;
+		public			var ResizeSignal	:Signal;
 		
 		private			var	_stage			:Stage;
 		private			var _view			:View3D;
@@ -47,6 +49,7 @@
 			ScreenChange = new Signal();
 			PauseSignal = new Signal();
 			ResumeSignal = new Signal();
+			ResizeSignal = new Signal();
 			
 			createWorld();
 		}
@@ -146,6 +149,11 @@
 		public function set setSafe($safe:Boolean):void
 		{
 			_isSafe = $safe;
+		}
+		
+		public function get IsSafe():Boolean
+		{
+			return _isSafe;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -255,6 +263,7 @@
 		{
 			_view.width = _stage.stageWidth;
 			_view.height = _stage.stageHeight;
+			this.ResizeSignal.dispatch();
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -334,11 +343,7 @@
 			if (isNormal)
 				return false;
 			
-			if (!(_isSafe || isNormal))
-				_stage.displayState = StageDisplayState.NORMAL;
-			else
-				_stage.mouseLock = false;
-			
+			_stage.mouseLock = false;
 			return true;
 		}
 		

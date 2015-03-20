@@ -5,6 +5,22 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script type="text/javascript" src="swfobject.js"></script>
 		<script type="text/javascript">
+            <!--
+            function breakout_of_frame()
+            {
+                var plgin = navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin.filename;
+                if(plgin == "pepflashplayer.dll" || plgin == "PepperFlashPlayer.plugin")
+                {
+                    // see http://www.thesitewizard.com/archive/framebreak.shtml
+                    // for an explanation of this script and how to use it on your
+                    // own website
+                    if (top.location != location) {
+                        top.location.href = document.location.href ;
+                    }
+                }
+            }
+            -->
+        
 			<!-- Adobe recommends that developers use SWFObject2 for Flash Player detection. -->
 			<!-- For more information see the SWFObject page at Google code (http://code.google.com/p/swfobject/). -->
 			<!-- Information is also available on the Adobe Developer Connection Under Detecting Flash Player versions and embedding SWF files with SWFObject 2" -->
@@ -41,7 +57,7 @@
 				flashvars, params, attributes);
 		</script>
 	</head>
-	<body>
+	<body onload="breakout_of_frame()">
 		<!-- SWFObject's dynamic embed method replaces this alternative HTML content for Flash content when enough JavaScript and Flash plug-in support is available. -->
 		<div id="flashContent">
 			<a href="http://www.adobe.com/go/getflash">

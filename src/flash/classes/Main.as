@@ -98,23 +98,23 @@ package
 		private function loadSounds():void
 		{
 			SoundAS.loadCompleted.add(soundCompleted);
-			SoundAS.loadSound("./audio/sfx/button.mp3", "Button");
-			SoundAS.loadSound("./audio/sfx/soundlevelchange.mp3", "SoundLevelChange");
-			SoundAS.loadSound("./audio/sfx/cannonfiring.mp3", "CannonFiring");
-			SoundAS.loadSound("./audio/sfx/defeatsound.mp3", "DefeatSound");
-			SoundAS.loadSound("./audio/sfx/doorclosing.mp3", "DoorClosing");
-			SoundAS.loadSound("./audio/sfx/doorsopening.mp3", "DoorsOpening");
-			SoundAS.loadSound("./audio/sfx/elevator.mp3", "Elevator");
-			SoundAS.loadSound("./audio/sfx/loadingfinished.mp3", "LoadingFinished");
-			SoundAS.loadSound("./audio/sfx/monstersounds.mp3", "MonsterSounds");
-			SoundAS.loadSound("./audio/sfx/orbhitplayer.mp3", "OrbHitPlayer");
-			SoundAS.loadSound("./audio/sfx/playerdeath.mp3", "PlayerDeath");
-			SoundAS.loadSound("./audio/sfx/playerfootstep.mp3", "PlayerFootstep");
-			SoundAS.loadSound("./audio/sfx/timeends.mp3", "TimeEnds");
-			SoundAS.loadSound("./audio/sfx/victorysound.mp3", "VictorySound");
+			SoundAS.loadSound("./audio/sfx/button.moc", "Button");
+			SoundAS.loadSound("./audio/sfx/soundlevelchange.moc", "SoundLevelChange");
+			SoundAS.loadSound("./audio/sfx/cannonfiring.moc", "CannonFiring");
+			SoundAS.loadSound("./audio/sfx/defeatsound.moc", "DefeatSound");
+			SoundAS.loadSound("./audio/sfx/doorclosing.moc", "DoorClosing");
+			SoundAS.loadSound("./audio/sfx/doorsopening.moc", "DoorsOpening");
+			SoundAS.loadSound("./audio/sfx/elevator.moc", "Elevator");
+			SoundAS.loadSound("./audio/sfx/loadingfinished.moc", "LoadingFinished");
+			SoundAS.loadSound("./audio/sfx/monstersounds.moc", "MonsterSounds");
+			SoundAS.loadSound("./audio/sfx/orbhitplayer.moc", "OrbHitPlayer");
+			SoundAS.loadSound("./audio/sfx/playerdeath.moc", "PlayerDeath");
+			SoundAS.loadSound("./audio/sfx/playerfootstep.moc", "PlayerFootstep");
+			SoundAS.loadSound("./audio/sfx/timeends.moc", "TimeEnds");
+			SoundAS.loadSound("./audio/sfx/victorysound.moc", "VictorySound");
 			
-			SoundAS.loadSound("./audio/music/title.mp3", "title");
-			SoundAS.loadSound("./audio/music/gamemusic.mp3", "GameMusic");
+			SoundAS.loadSound("./audio/music/title.moc", "title");
+			SoundAS.loadSound("./audio/music/gamemusic.moc", "GameMusic");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -134,8 +134,6 @@ package
 			var pluginCheck:PluginOverlay = new PluginOverlay();
 			this.addChildAt(pluginCheck, 0);
 			pluginCheck.check();
-			if (root.loaderInfo.parameters.plugin == "pepflashplayer.dll")
-				World.instance.setSafe = false;
 			
 			var queue:LoaderMax = new LoaderMax( { onProgress:progress, onComplete:compeleted } );
 			loadLoading(queue);

@@ -165,8 +165,8 @@ package team3d.screens
 		{
 			if(World.instance.isFullScreenInteractive)
 			{
-				World.instance.lockMouse();
-				this.DoneSignal.dispatch(BaseScreen.GAME);
+				if(World.instance.lockMouse())
+					this.DoneSignal.dispatch(BaseScreen.GAME);
 			}
 			else
 			{
