@@ -160,15 +160,16 @@
 		}
 		
 		var prevPerc:Number;
+		var prevNum:int = 0;
 		private function onProgress($e:Number)
 		{
 			var curPerc:Number = $e;
-			var show:int = int(Math.round(_aArrows.length * (curPerc - prevPerc)));
-			for (var i:int = 0; i < show; i++)
+			var show:int = int(Math.round(_aArrows.length * (curPerc))) - 1;
+			for (var i:int = prevNum; i < show; i++)
 			{
-				TweenMax.fromTo(_aArrows[show + i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
+				TweenMax.fromTo(_aArrows[i], 0.5, { autoAlpha:0 }, { autoAlpha:1 } );
 			}
-			
+			prevNum = show;
 			prevPerc = curPerc;
 		}
 		
