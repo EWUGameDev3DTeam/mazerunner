@@ -1,6 +1,7 @@
 package team3d.ui
 {
 	import com.greensock.easing.Cubic;
+	import com.greensock.loading.LoaderMax;
 	import com.greensock.TweenMax;
 	import flash.display.Shape;
 	import flash.display.SimpleButton;
@@ -44,7 +45,7 @@ package team3d.ui
 			_txtFormat = new TextFormat(null, 20, 0xFF0000, true, null, null, null, null, TextFormatAlign.CENTER);
 			_txtNotice = new TextField();
 			_txtNotice.defaultTextFormat = _txtFormat;
-			_txtNotice.text = "Warning: You are using a browser plugin that has been known to cause issues.\nTo maximize the experience, we recommend downloading the flash\nplayer plugin provided by thelink below";
+			_txtNotice.text = "Warning: You are using a browser plugin that has been known to cause issues.\nTo maximize your experience, we recommend downloading the flash player\nplugin provided at the link below and disabling your current one";
 			_txtNotice.autoSize = TextFieldAutoSize.CENTER;
 			_txtNotice.name = "txtNotice";
 			this.addChild(_txtNotice);
@@ -52,18 +53,18 @@ package team3d.ui
 			_txtPluginFormat = new TextFormat(null, 20, 0xFFFF00, true, null, true, null, null, TextFormatAlign.CENTER);
 			_txtPlugin = new TextField();
 			_txtPlugin.defaultTextFormat = _txtPluginFormat;
-			_txtPlugin.text = "Detected Plugin: pepflashplayer.dll";
+			_txtPlugin.text = "Detected Plugin: pepflashplayer";
 			_txtPlugin.autoSize = TextFieldAutoSize.CENTER;
 			this.addChild(_txtPlugin);
 			
-			_pluginFormat = new TextFormat(null, 20, 0x00FF00, true, null, true, "http://get.adobe.com/flashplayer/?no_redirect", "_blank", TextFormatAlign.CENTER);
+			_pluginFormat = new TextFormat(null, 20, 0x00FF00, true, null, null, null, null, TextFormatAlign.CENTER);
 			_pluginLink = new TextField();
 			_pluginLink.autoSize = TextFieldAutoSize.LEFT;
 			_pluginLink.defaultTextFormat = _pluginFormat;
 			_pluginLink.name = "lnkPlugin";
-			_pluginLink.text = "Download Page for Flash Plugin";
-			_pluginLink.addEventListener(MouseEvent.ROLL_OUT, linkOut);
-			_pluginLink.addEventListener(MouseEvent.ROLL_OVER, linkOver);
+			_pluginLink.text = "http://get.adobe.com/flashplayer/?no_redirect";
+			//_pluginLink.addEventListener(MouseEvent.ROLL_OUT, linkOut);
+			//_pluginLink.addEventListener(MouseEvent.ROLL_OVER, linkOver);
 			this.addChild(_pluginLink);
 			
 			_dismissFormat = new TextFormat(null, 20, 0x00FF00, true, null, true, "", null, TextFormatAlign.CENTER);
@@ -78,6 +79,25 @@ package team3d.ui
 			this.addChild(_dismissLink);
 			
 			this.visible = false;
+		}
+		private function showWarning():void
+		{
+			_txtNotice.text = "Warning: If the screen refuses to exit the pause menu, exit and re-enter full screen.\nThis is the bug with pepflashplayer.";
+			_tween.play();
+		}
+		
+		private function hideWarning():void
+		{
+			_tween.reverse();
+		}
+		
+		private function screenChange():void
+		{
+			if (World.instance.CurrentScreen != "Loading" && !_tween.reversed())
+			{
+				_tween.reverse();
+				World.instance.ScreenChange.remove(screenChange);
+			}
 		}
 		
 		private function linkOut($e:MouseEvent):void
@@ -97,8 +117,11 @@ package team3d.ui
 		
 		public function check():void
 		{
-			if (root.loaderInfo.parameters.plugin == "pepflashplayer.dll")
+			var pluginTxt:String = root.loaderInfo.parameters.plugin;
+			_txtPlugin.text = "Detected Plugin: " + pluginTxt;
+			if (pluginTxt == "pepflashplayer.dll" || pluginTxt == "PepperFlashPlayer.plugin")
 			{
+				World.instance.setSafe = false;
 				_txtNotice.x = (World.instance.stage.stageWidth - _txtNotice.textWidth) * 0.5;
 				_txtNotice.y = 10;
 				
@@ -117,16 +140,16 @@ package team3d.ui
 				rect.graphics.endFill();
 				this.addChildAt(rect, 0);
 				
-				_tween = TweenMax.fromTo(this, 0.5, { y: -rect.height }, { y:0, ease:Cubic.easeOut, onReverseComplete:hideOverlay } );
-				this.visible = true;
+				_tween = TweenMax.fromTo(this, 0.5, { y: -rect.height }, { autoAlpha:1, y:0, ease:Cubic.easeOut } );
 				this.addEventListener(Event.RESIZE, resize);
-				
+				World.instance.ScreenChange.add(screenChange);
 			}
-		}
-		
-		private function hideOverlay():void
-		{
-			this.visible = false;
+			
+			if (!World.instance.IsSafe)
+			{
+				World.instance.PauseSignal.add(showWarning);
+				World.instance.ResumeSignal.add(hideWarning);
+			}
 		}
 		
 		private function resize($e:Event):void

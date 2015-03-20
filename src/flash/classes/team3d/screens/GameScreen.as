@@ -13,6 +13,7 @@
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Shape;
+	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import flash.net.SharedObject;
@@ -369,6 +370,7 @@
 		public function Unpause()
 		{
 			_paused = false;
+			World.instance.lockMouse();
 			if(_timer.HasBeenStarted)
 				_timer.start();
 			

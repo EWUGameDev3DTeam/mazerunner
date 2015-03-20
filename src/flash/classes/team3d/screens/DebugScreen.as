@@ -57,8 +57,7 @@ package team3d.screens
 			_text.visible = true;
 			_text.alpha = 1;
 			
-			_text.x = World.instance.stage.stageWidth * 0.5;
-			_text.y = 0;
+			resize();
 			this.addChild(_text);
 			World.instance.stage.addEventListener(Event.RESIZE, resize);
 		}
@@ -76,8 +75,9 @@ package team3d.screens
 				_text.visible = true;
 		}
 		
-		private function resize($e:Event)
+		private function resize($e:Event = null)
 		{
+			_text.y = 0;
 			_text.x = World.instance.stage.stageWidth * 0.5;
 		}
 	}

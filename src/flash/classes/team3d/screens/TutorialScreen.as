@@ -12,6 +12,7 @@
 	import com.natejc.input.KeyboardManager;
 	import com.natejc.input.KeyCode;
 	import flash.display.Shape;
+	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
@@ -132,7 +133,7 @@
 			createTutorial();
 			//toggleCamera();
 			
-			var rectangle:Shape = new Shape;
+			var rectangle:Shape = new Shape();
 			rectangle.name = "rectangleFade";
 			rectangle.graphics.beginFill(0x000000);
 			rectangle.graphics.drawRect(0, 0, this.width, this.height);

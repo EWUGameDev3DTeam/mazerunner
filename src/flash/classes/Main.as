@@ -98,23 +98,23 @@ package
 		private function loadSounds():void
 		{
 			SoundAS.loadCompleted.add(soundCompleted);
-			SoundAS.loadSound("./audio/sfx/Button.mp3", "Button");
-			SoundAS.loadSound("./audio/sfx/SoundLevelChange.mp3", "SoundLevelChange");
-			SoundAS.loadSound("./audio/sfx/CannonFiring.mp3", "CannonFiring");
-			SoundAS.loadSound("./audio/sfx/DefeatSound.mp3", "DefeatSound");
-			SoundAS.loadSound("./audio/sfx/DoorClosing.mp3", "DoorClosing");
-			SoundAS.loadSound("./audio/sfx/DoorsOpening.mp3", "DoorsOpening");
-			SoundAS.loadSound("./audio/sfx/Elevator.mp3", "Elevator");
-			SoundAS.loadSound("./audio/sfx/LoadingFinished.mp3", "LoadingFinished");
-			SoundAS.loadSound("./audio/sfx/MonsterSounds.mp3", "MonsterSounds");
-			SoundAS.loadSound("./audio/sfx/OrbHitPlayer.mp3", "OrbHitPlayer");
-			SoundAS.loadSound("./audio/sfx/PlayerDeath.mp3", "PlayerDeath");
-			SoundAS.loadSound("./audio/sfx/PlayerFootstep.mp3", "PlayerFootstep");
-			SoundAS.loadSound("./audio/sfx/TimeEnds.mp3", "TimeEnds");
-			SoundAS.loadSound("./audio/sfx/VictorySound.mp3", "VictorySound");
+			SoundAS.loadSound("./audio/sfx/button.moc", "Button");
+			SoundAS.loadSound("./audio/sfx/soundlevelchange.moc", "SoundLevelChange");
+			SoundAS.loadSound("./audio/sfx/cannonfiring.moc", "CannonFiring");
+			SoundAS.loadSound("./audio/sfx/defeatsound.moc", "DefeatSound");
+			SoundAS.loadSound("./audio/sfx/doorclosing.moc", "DoorClosing");
+			SoundAS.loadSound("./audio/sfx/doorsopening.moc", "DoorsOpening");
+			SoundAS.loadSound("./audio/sfx/elevator.moc", "Elevator");
+			SoundAS.loadSound("./audio/sfx/loadingfinished.moc", "LoadingFinished");
+			SoundAS.loadSound("./audio/sfx/monstersounds.moc", "MonsterSounds");
+			SoundAS.loadSound("./audio/sfx/orbhitplayer.moc", "OrbHitPlayer");
+			SoundAS.loadSound("./audio/sfx/playerdeath.moc", "PlayerDeath");
+			SoundAS.loadSound("./audio/sfx/playerfootstep.moc", "PlayerFootstep");
+			SoundAS.loadSound("./audio/sfx/timeends.moc", "TimeEnds");
+			SoundAS.loadSound("./audio/sfx/victorysound.moc", "VictorySound");
 			
-			SoundAS.loadSound("./audio/music/title.mp3", "title");
-			SoundAS.loadSound("./audio/music/GameMusic.mp3", "GameMusic");
+			SoundAS.loadSound("./audio/music/title.moc", "title");
+			SoundAS.loadSound("./audio/music/gamemusic.moc", "GameMusic");
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -131,9 +131,9 @@ package
 			World.instance.stage.align = StageAlign.TOP_LEFT;
 			TweenPlugin.activate([GlowFilterPlugin]);
 			
-			//var pluginCheck:PluginOverlay = new PluginOverlay();
-			//this.addChildAt(pluginCheck, 0);
-			//pluginCheck.check();
+			var pluginCheck:PluginOverlay = new PluginOverlay();
+			this.addChildAt(pluginCheck, 0);
+			pluginCheck.check();
 			
 			var queue:LoaderMax = new LoaderMax( { onProgress:progress, onComplete:compeleted } );
 			loadLoading(queue);
@@ -155,47 +155,47 @@ package
 		
 		private function loadLoading($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
-			var mob:ImageLoader = new ImageLoader("images/MonsterSmall.png", { name:"monstersmall" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name:"overlayLoad", width:900, height:600, scaleMode:"strech" } );
+			var mob:ImageLoader = new ImageLoader("./images/monstersmall.png", { name:"monstersmall" } );
 			
 			$q.append(overlay);
 			$q.append(mob);
 			
 			for (var i:int = 0; i < 25; i++)
-				$q.append(new ImageLoader("images/GUI/Arrow.png", { name:("loadingArrow" + i), width:50, height:60, alpha:0 } ));
+				$q.append(new ImageLoader("./images/gui/arrow.png", { name:("loadingArrow" + i), width:50, height:60, alpha:0 } ));
 		}
 		
 		private function loadTitle($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayTitle", scaleMode:"stretch" } );
-			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManTitle" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayTitle", scaleMode:"stretch" } );
+			var runningMan:ImageLoader = new ImageLoader("./images/gui/man.png", { name: "runningManTitle" } );
 			
 			$q.append(overlay);
 			$q.append(runningMan);
 			
 			for (var i:int = 0; i < 3; i++)
-				$q.append(new ImageLoader("images/GUI/Arrow.png", { name: ("titleArrow" + i), width:146, height:175 } ));
+				$q.append(new ImageLoader("./images/gui/arrow.png", { name: ("titleArrow" + i), width:146, height:175 } ));
 		}
 		
 		private function loadCredits($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayCredits", scaleMode:"stretch" } );
-			var computerman:ImageLoader = new ImageLoader("images/GUI/Man_Computer.png", { name: "manComputer" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayCredits", scaleMode:"stretch" } );
+			var computerman:ImageLoader = new ImageLoader("./images/gui/man_computer.png", { name: "manComputer" } );
 			
 			$q.append(overlay);
 			$q.append(computerman);
 		}
 		private function loadSettings($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlaySettings", scaleMode:"stretch" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlaySettings", scaleMode:"stretch" } );
 			
 			$q.append(overlay);
 		}
 		
 		private function loadPause($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayPause" } );
-			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManPause" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayPause" } );
+			var runningMan:ImageLoader = new ImageLoader("./images/gui/man.png", { name: "runningManPause" } );
 			
 			$q.append(overlay);
 			$q.append(runningMan);
@@ -203,10 +203,10 @@ package
 		
 		private function loadControls($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayControls", scaleMode:"stretch" } );
-			var keys:ImageLoader = new ImageLoader("images/Controls/KeysDone.png", { name:"movekeys" } );
-			var mouseMove:ImageLoader = new ImageLoader("images/Controls/Move.png", { name:"mouseMove" } );
-			var shift:ImageLoader = new ImageLoader("images/Controls/ShiftKey.png", { name:"shiftMove" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayControls", scaleMode:"stretch" } );
+			var keys:ImageLoader = new ImageLoader("./images/controls/keysdone.png", { name:"movekeys" } );
+			var mouseMove:ImageLoader = new ImageLoader("./images/controls/move.png", { name:"mouseMove" } );
+			var shift:ImageLoader = new ImageLoader("./images/controls/shiftkey.png", { name:"shiftMove" } );
 			
 			$q.append(overlay);
 			$q.append(keys);
@@ -216,10 +216,10 @@ package
 		
 		private function loadWon($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayWon", scaleMode:"stretch" } );
-			var runningMan:ImageLoader = new ImageLoader("images/GUI/Man.png", { name: "runningManWon" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayWon", scaleMode:"stretch" } );
+			var runningMan:ImageLoader = new ImageLoader("./images/gui/man.png", { name: "runningManWon" } );
 			for (var i:int = 0; i < 4; i++)
-				$q.append(new ImageLoader("images/GUI/Arrow.png", { name:"wonArrow" + i } ));
+				$q.append(new ImageLoader("./images/gui/arrow.png", { name:"wonArrow" + i } ));
 			
 			$q.append(overlay);
 			$q.append(runningMan);
@@ -227,11 +227,11 @@ package
 		
 		private function loadLost($q:LoaderMax):void
 		{
-			var overlay:ImageLoader = new ImageLoader("images/GUI/Overlay.png", { name: "overlayLost", scaleMode:"stretch" } );
-			var grave:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave0" } );
-			var grave1:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave1" } );
-			var grave2:ImageLoader = new ImageLoader("images/GUI/Man_Sad.png", { name: "grave2" } );
-			var cross:ImageLoader = new ImageLoader("images/GUI/Cross.png", { name:"cross" } );
+			var overlay:ImageLoader = new ImageLoader("./images/gui/overlay.png", { name: "overlayLost", scaleMode:"stretch" } );
+			var grave:ImageLoader = new ImageLoader("./images/gui/man_sad.png", { name: "grave0" } );
+			var grave1:ImageLoader = new ImageLoader("./images/gui/man_sad.png", { name: "grave1" } );
+			var grave2:ImageLoader = new ImageLoader("./images/gui/man_sad.png", { name: "grave2" } );
+			var cross:ImageLoader = new ImageLoader("./images/gui/cross.png", { name:"cross" } );
 			
 			$q.append(overlay);
 			$q.append(grave);
