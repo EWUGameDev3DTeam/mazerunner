@@ -119,7 +119,7 @@ package team3d.ui
 		{
 			var pluginTxt:String = root.loaderInfo.parameters.plugin;
 			_txtPlugin.text = "Detected Plugin: " + pluginTxt;
-			//if (pluginTxt == "pepflashplayer.dll" || pluginTxt == "PepperFlashPlayer.plugin")
+			if (pluginTxt == "pepflashplayer.dll" || pluginTxt == "PepperFlashPlayer.plugin")
 			{
 				World.instance.setSafe = false;
 				_txtNotice.x = (World.instance.stage.stageWidth - _txtNotice.textWidth) * 0.5;
@@ -145,7 +145,7 @@ package team3d.ui
 				World.instance.ScreenChange.add(screenChange);
 			}
 			
-			//if (!World.instance.IsSafe)
+			if (!World.instance.IsSafe)
 			{
 				World.instance.PauseSignal.add(showWarning);
 				World.instance.ResumeSignal.add(hideWarning);
