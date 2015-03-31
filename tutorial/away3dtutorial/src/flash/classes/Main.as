@@ -1,6 +1,7 @@
 package 
 {
 	import away3d.containers.View3D;
+	import away3d.controllers.FirstPersonController;
 	import away3d.core.base.Geometry;
 	import away3d.entities.Mesh;
 	import away3d.materials.ColorMaterial;
@@ -13,6 +14,8 @@ package
 	import flash.display.StageDisplayState;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.FullScreenEvent;
+	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	
 	
@@ -24,6 +27,7 @@ package
 	public class Main extends MovieClip
 	{
 		private var _view	:View3D;
+		private var _fpc	:FirstPersonController;
 		/* ---------------------------------------------------------------------------------------- */
 		
 		/**
@@ -56,10 +60,39 @@ package
 			greenCube.z = -400;
 			_view.scene.addChild(greenCube);
 			
+			_fpc = new FirstPersonController(_view.camera, 0, 0, -90, 90, 8, true);
+			
 			this.addChild(_view);
 			this.addEventListener(Event.ENTER_FRAME, enterFrame);
 			this.stage.addEventListener(Event.RESIZE, stageResize);
+			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			this.stage.addEventListener(FullScreenEvent.FULL_SCREEN_INTERACTIVE_ACCEPTED, fullScreenAccepted);
 			KeyboardManager.instance.addKeyUpListener(KeyCode.F, toggleFullScreen);
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * An event handler for the full_screen_interative_accepted event
+		 *
+		 * @param	$e	An unused event object
+		 */
+		private function fullScreenAccepted($e:FullScreenEvent):void
+		{
+			this.stage.mouseLock = true;
+		}
+		
+		/* ---------------------------------------------------------------------------------------- */
+		
+		/**
+		 * Handles when the mouse moves on the stage
+		 *
+		 * @param	$e	The event object that tells us how far the mouse has moved.
+		 */
+		private function mouseMove($e:MouseEvent):void
+		{
+			_fpc.panAngle += $e.movementX * 0.05;
+			_fpc.tiltAngle += $e.movementY * 0.05;
 		}
 		
 		/* ---------------------------------------------------------------------------------------- */
@@ -85,6 +118,7 @@ package
 			if (this.stage.displayState == StageDisplayState.NORMAL)
 			{
 				this.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+				this.stage.mouseLock = true;
 			}
 			else
 			{
@@ -105,7 +139,8 @@ package
 			// move forward
 			if (KeyboardManager.instance.isKeyDown(KeyCode.W))
 			{
-				_view.camera.moveForward(speed);
+				_fpc.incrementWalk(speed);
+				//_view.camera.moveForward(speed);
 			}
 			// move backward
 			else if (KeyboardManager.instance.isKeyDown(KeyCode.S))
